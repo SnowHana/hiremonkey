@@ -1,0 +1,64 @@
+{
+  "jobs": [
+    {
+      "id": "1",
+      "title": "Software Engineer Intern",
+      "type": "Internship",
+      "location": "Sydney, NSW",
+      "description": "At IMC, Software Engineers don’t just write code and design technology. They are responsible for spotting new opportunities, developing new technologies and solving problems. Every day our software makes millions of trading decisions in some of the most competitive markets across the globe, and we win by making smarter and faster decisions than our competition. Our Software Engineers deliver results and make a difference. As a Software Engineer Intern at IMC, you will be supported by a mentor who will oversee your projects and professional development. You will also have access to pair programming and code reviews.",
+      "salary": "$",
+      "company": {
+        "name": "IMC is a leading trading firm, known worldwide for our advanced, low-latency technology and world-class execution capabilities. Over the past 30 years, we’ve been a stabilizing force in the financial markets – providing the essential liquidity our counterparties depend on. Across offices in the US, Europe, and Asia Pacific, our talented employees are united by our entrepreneurial spirit, exceptional culture, and commitment to giving back. It's a strong foundation that allows us to grow and add new capabilities, year after year. From entering dynamic new markets, to developing a state-of-the-art research environment and diversifying our trading strategies, we dare to imagine what could be and work together to make it happen..",
+        "description": "IMC is a leading trading firm, known worldwide for our advanced, low-latency technology and world-class execution capabilities. Over the past 30 years, we’ve been a stabilizing force in the financial markets – providing the essential liquidity our counterparties depend on. Across offices in the US, Europe, and Asia Pacific, our talented employees are united by our entrepreneurial spirit, exceptional culture, and commitment to giving back. It's a strong foundation that allows us to grow and add new capabilities, year after year. From entering dynamic new markets, to developing a state-of-the-art research environment and diversifying our trading strategies, we dare to imagine what could be and work together to make it happen..",
+        "contactEmail": "IMC@IMC.com",
+        "contactPhone": "555-555-5555",
+        "website": "https://www.imc.com/ap/"
+      }
+    },
+    {
+      "id": "2",
+      "title": "Software Engineer Intern",
+      "type": "Internship",
+      "location": "Sydney, NSW",
+      "description": "We are looking for a ambitious and talented Intern Software Engineer to join our dynamic tech team. As a Intern Engineer at swipejobs, you will work closely with our experienced engineers gaining hands-on experience through testing our platform. This internship will provide valuable insights into the industry and equip you with practical skills to jumpstart your career in computer engineering.",
+      "salary": "$",
+      "company": {
+        "name": "swipjobs",
+        "description": "swipeJobs is a fast-growing, disruptive, and award-winning on-demand staffing platform that is transforming the way people find work and businesses manage their workforce. Our platform connects job seekers with employers, allowing businesses to easily fill their staffing needs. We are slowly becoming the stand alone market leader in the US market and are looking for the right candidate to join us on the journey.",
+        "contactEmail": "swipjobs@swipjobs.com",
+        "contactPhone": "555-555-5555",
+        "website": "https://www.swipejobs.com/"
+      }
+    },
+    {
+      "id": "3",
+      "title": "Software Developer Intern",
+      "type": "Internship",
+      "location": "Melbourne, VIC",
+      "description": "We’re looking for a Software Developer Intern. Our host company offers meaningful work experience, strong supervision, supportive work environment, and is planning to offer ongoing employment for the suitable candidate.",
+      "salary": "$",
+      "company": {
+        "name": "STUDY AND WORK",
+        "description": "Our Host Company believes in investing in fresh talent and nurturing them for growth and career success.",
+        "contactEmail": "SW@SW.com",
+        "contactPhone": "555-555-5555",
+        "website": "https://www.studyandwork.com.au/"
+      }
+    },
+    {
+      "id": "4",
+      "title": "Software Developer",
+      "type": "Full-Time",
+      "description": "At TBH, we are growing faster than ever, expanding in Australia and internationally. To help drive engagement and alignment throughout our global organisation, we are seeking a Software Developer to join our team. Reporting to the IT Manager, the Software Developer is responsible for developing, customising SharePoint solutions, creating and supporting PowerApps applications, and integrating these with Microsoft Dynamics 365 and Power BI for enhanced data analysis and reporting capabilities. This role will ensure robust data governance in SharePoint and leverage their expertise to support applications like Dynamics CRM 365 and TBH IMS, promoting efficient business process automation and data-driven decision-making.",
+      "location": "Sydney, NSW",
+      "salary": "$",
+      "company": {
+        "name": "TBH",
+        "description": "With almost 60 years of involvement in global, cutting-edge projects, established project delivery services, forensic and quantum claims analysis, TBH is one of Australia’s most reputable and largest privately owned project advisory firm with a growing international footprint. TBH provides quality advisory services to partners in both the public and private sector by leveraging diverse experience of the entire project lifecycle to guarantee the successful delivery of iconic and major projects across a variety of industries.",
+        "contactEmail": "TBH@TBH.com",
+        "contactPhone": "555-555-5555",
+        "website": "https://tbhconsultancy.com/"
+      }
+    }
+  ]
+}
