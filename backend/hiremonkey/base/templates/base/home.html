@@ -5,7 +5,7 @@
 <div>
     {% for ape in apes %}
     <div>
-        <h3>{{ape.id}} -- <a href="/ape/{{ape.id}}">{{ape.name}}</a></h3>
+        <h3>{{ape.id}} -- <a href="{% url 'ape' ape.id %}">{{ape.name}}</a></h3>
     </div>
     {% endfor %}
 </div>
