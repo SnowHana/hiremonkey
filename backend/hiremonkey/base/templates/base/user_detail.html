@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ user.username }}'s Page</title>
+</head>
+<body>
+    <h1>{{ user.username }}</h1>
+    <p>Email: {{ user.email }}</p>
+    <!-- Add more user details here -->
+
+    <h2>Profiles</h2>
+    <ul>
+        {% for profile in profiles %}
+        <li>
+            <a href="{% url 'profile_detail' user_id=user.id profile_id=profile.id %}">
+                {{ profile.get_profile_type_display }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
