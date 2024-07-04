@@ -6,7 +6,9 @@ apes = [{"id": 1, "name": "azir"}, {"id": 2, "name": "jax"}, {"id": 3, "name": "
 
 
 def home(request):
-    context = {"apes": apes}
+    profiles = Profile.objects.all()[0:5]
+    context = {"profiles": profiles}
+
     return render(request, "base/home.html", context)
 
 
@@ -16,10 +18,10 @@ def home(request):
 #     return render(request, "user_detail.html", {"user": user, "profiles": profiles})
 
 
-def profile_detail(request, user_id, profile_id):
+def profile(request, user_id, profile_id):
     profile = get_object_or_404(Profile, id=profile_id, user_id=user_id)
     context = {"profile": profile}
-    return render(request, "base/profile_detail.html", context)
+    return render(request, "base/profile.html", context)
 
 
 # def zoo(request):
