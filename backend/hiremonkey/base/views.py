@@ -10,16 +10,16 @@ def home(request):
     return render(request, "base/home.html", context)
 
 
-def user_detail(request, user_id):
-    user = get_object_or_404(User, id=user_id)
-    profiles = user.profiles.all()
-    return render(request, "user_detail.html", {"user": user, "profiles": profiles})
+# def user_detail(request, user_id):
+#     user = get_object_or_404(User, id=user_id)
+#     profiles = user.profiles.all()
+#     return render(request, "user_detail.html", {"user": user, "profiles": profiles})
 
 
 def profile_detail(request, user_id, profile_id):
     profile = get_object_or_404(Profile, id=profile_id, user_id=user_id)
     context = {"profile": profile}
-    return render(request, "profile_detail.html", context)
+    return render(request, "base/profile_detail.html", context)
 
 
 # def zoo(request):
