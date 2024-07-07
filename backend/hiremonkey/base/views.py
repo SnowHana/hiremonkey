@@ -1,8 +1,43 @@
-from django.shortcuts import get_object_or_404, render
-from .models import Profile, User
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from .models import Profile
 
-# For testing. changer it alter
-apes = [{"id": 1, "name": "azir"}, {"id": 2, "name": "jax"}, {"id": 3, "name": "kaisa"}]
+
+def loginPage(request):
+    if request.method == "POST":
+        # POST method : User trying to log-in
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        # Check if user exists
+        try:
+            # NOTE: Later change it with email
+            user = User.objects.get(username=username)
+        except:
+            # User doesnt exist
+            messages.error(request, "User does not exist")
+            # NOTE: idk might lead to an error
+            page = "login"
+            context = {"page": page}
+            return render(request, "base/login_register.html", context)
+        # User exists
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect("home")
+        else:
+            messages.error(request, "Username or password does not exit")
+
+    page = "login"
+    context = {"page": page}
+    return render(request, "base/login_register.html", context)
+
+
+def logoutPage(request):
+    logout(request)
+    return redirect("home")
 
 
 def home(request):
