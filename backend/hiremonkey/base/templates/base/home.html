@@ -1,0 +1,11 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<h1>Home Template</h1>
+<div>
+    <h5>Hello</h5>
+    {% for profile in profiles %}
+    <p>{{profile.user.username}} -- Looking for {{profile.profile_type}}</p>
+    {% endfor %}
+</div>
+{% endblock content %}
