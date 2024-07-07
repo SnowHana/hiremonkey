@@ -2,10 +2,13 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import UserCreationForm
 from .models import Profile
 
 
 def loginPage(request):
+    page = "login"
+    context = {"page": page}
     if request.method == "POST":
         # POST method : User trying to log-in
         username = request.POST.get("username")
@@ -18,8 +21,7 @@ def loginPage(request):
             # User doesnt exist
             messages.error(request, "User does not exist")
             # NOTE: idk might lead to an error
-            page = "login"
-            context = {"page": page}
+
             return render(request, "base/login_register.html", context)
         # User exists
         user = authenticate(request, username=username, password=password)
@@ -30,14 +32,31 @@ def loginPage(request):
         else:
             messages.error(request, "Username or password does not exit")
 
-    page = "login"
-    context = {"page": page}
     return render(request, "base/login_register.html", context)
 
 
 def logoutPage(request):
     logout(request)
     return redirect("home")
+
+
+def registerPage(request):
+    page = "register"
+    form = UserCreationForm()
+    context = {"page": page, "form": form}
+
+    if request.method == "POST":
+        # Register user
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            # user.username = user.username.lower()
+            user.save()
+            login(request, user)
+            return redirect("home")
+        else:
+            messages.error(request, "Error occured during registration process")
+    return render(request, "base/login_register.html", context)
 
 
 def home(request):
