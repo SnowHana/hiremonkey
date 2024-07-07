@@ -72,8 +72,8 @@ def home(request):
 #     return render(request, "user_detail.html", {"user": user, "profiles": profiles})
 
 
-def profile(request, user_id, profile_id):
-    profile = get_object_or_404(Profile, id=profile_id, user_id=user_id)
+def profile(request, profile_id):
+    profile = get_object_or_404(Profile, id=profile_id)
     context = {"profile": profile}
     return render(request, "base/profile.html", context)
 

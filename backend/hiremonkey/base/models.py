@@ -14,6 +14,14 @@ from django.contrib.auth.models import User
 #         return self.name
 
 
+
+class Skill(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+    
+
 class Profile(models.Model):
     JOB_SEEKER = "JS"
     RECRUITER = "RE"
@@ -25,9 +33,10 @@ class Profile(models.Model):
         (BOTH, "Both"),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="profiles")
-    email = models.EmailField(unique=True, null=True)
     profile_type = models.CharField(max_length=2, choices=PROFILE_CHOICES)
     bio = models.TextField(blank=True, null=True)
+    skills = models.ManyToManyField(Skill, related_name='profiles')
 
     def __str__(self):
         return f"{self.user.username} - {self.profile_type}"
+    
