@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+
 
 # Create your models here.
 
@@ -19,6 +22,15 @@ class Skill(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ProfileReference(models.Model):
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+
+    def get_profile(self):
+        return self.content_object
 
 
 class Profile(models.Model):
@@ -49,8 +61,15 @@ class JobSeeker(Profile):
     skills = models.ManyToManyField("Skill", related_name="profiles")
 
     def save(self, *args, **kwargs):
+
         self.profile_type = Profile.JOB_SEEKER
         super().save(*args, **kwargs)
+        # Create ProfileReference model
+        ProfileReference.objects.get_or_create(
+            content_type=ContentType.objects.get_for_model(self),
+            object_id=self.id,
+            defaults={"content_object": self},
+        )
 
 
 class Recruiter(Profile):
@@ -62,6 +81,12 @@ class Recruiter(Profile):
     def save(self, *args, **kwargs):
         self.profile_type = Profile.RECRUITER
         super().save(*args, **kwargs)
+        # Create ProfileReference model
+        ProfileReference.objects.get_or_create(
+            content_type=ContentType.objects.get_for_model(self),
+            object_id=self.id,
+            defaults={"content_object": self},
+        )
 
 
 # class Profile(models.Model):

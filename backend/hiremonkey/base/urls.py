@@ -7,8 +7,8 @@ urlpatterns = [
     path("register/", views.registerPage, name="register"),
     path("", views.home, name="home"),
     path(
-        "profile/<int:profile_id>/",
-        views.profile,
-        name="profile",
+        "profile/<int:pk>/",
+        views.userProfile,
+        name="user-profile",
     ),
 ]
