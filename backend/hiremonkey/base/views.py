@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
-from .models import Profile
+from .models import JobSeeker, Profile, Recruiter
 
 
 def loginPage(request):
@@ -60,8 +60,12 @@ def registerPage(request):
 
 
 def home(request):
-    profiles = Profile.objects.all()[0:5]
-    context = {"profiles": profiles}
+    # Query concrete subclasses
+    job_seekers = JobSeeker.objects.prefetch_related("skills")[:5]
+    recruiters = Recruiter.objects.all()[:5]
+    # profiles = Profile.objects.all()[0:5]
+    # context = {"profiles": profiles}
+    context = {"job_seekers": job_seekers, "recruiters": recruiters}
 
     return render(request, "base/home.html", context)
 
@@ -72,9 +76,12 @@ def home(request):
 #     return render(request, "user_detail.html", {"user": user, "profiles": profiles})
 
 
-def profile(request, user_id, profile_id):
-    profile = get_object_or_404(Profile, id=profile_id, user_id=user_id)
-    context = {"profile": profile}
+def userProfile(request, pk):
+    # profile = get_object_or_404(Profile, id=profile_id)
+    # context = {"profile": profile}
+    profile = get_object_or_404(Profile, id=pk)
+    user = profile.user
+    context = {"user": user}
     return render(request, "base/profile.html", context)
 
 
