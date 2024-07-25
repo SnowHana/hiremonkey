@@ -3,19 +3,25 @@ from django.contrib import admin
 # Register your models here.
 from .models import JobSeeker, Recruiter, Skill
 
-admin.site.register(Skill)
+
+class SkillInline(admin.TabularInline):
+    model = JobSeeker.skills.through
+    extra = 1
 
 
 @admin.register(JobSeeker)
 class JobSeekerAdmin(admin.ModelAdmin):
-    # list_display = ("user", "bio", "academics", "skills")
-    list_display = ("user", "bio", "academics")
+    list_display = ("user", "academics", "profile_type", "created", "updated")
+    search_fields = ("user__username", "academics")
+    inlines = [SkillInline]
 
 
 @admin.register(Recruiter)
 class RecruiterAdmin(admin.ModelAdmin):
-    list_display = ("user", "bio", "company")
+    list_display = ("user", "company", "profile_type", "created", "updated")
+    search_fields = ("user__username", "company")
 
 
-# admin.site.register(Profile)
-# admin.site.register(User)
+@admin.register(Skill)
+class SkillAdmin(admin.ModelAdmin):
+    list_display = ("name",)
