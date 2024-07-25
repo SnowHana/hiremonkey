@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import JobSeeker, Profile, ProfileReference, Recruiter
 from .forms import JobSeekerForm, RecruiterForm
@@ -94,6 +95,7 @@ def recruiter(request, pk):
     return render(request, "base/recruiter.html", context)
 
 
+@login_required
 def select_profile_type(request):
     if request.method == "POST":
         # Register or Create a profile
@@ -105,12 +107,15 @@ def select_profile_type(request):
     return render(request, "base/select_profile_type.html")
 
 
+@login_required
 def create_job_seeker(request):
     if request.method == "POST":
         # Ceate a job seeker
         form = JobSeekerForm(request.POST)
         if form.is_valid():
-            form.save()
+            job_seeker = form.save(commit=False)
+            job_seeker.user = request.user
+            job_seeker.save()
             messages.success(request, "Successfully created a job seeker profile!")
             return redirect("home")
         else:
@@ -122,12 +127,15 @@ def create_job_seeker(request):
         return render(request, "base/create_job_seeker.html", {"form": form})
 
 
+@login_required
 def create_recruiter(request):
     if request.method == "POST":
         # Ceate a job seeker
         form = RecruiterForm(request.POST)
         if form.is_valid():
-            form.save()
+            recruiter = form.save(commit=False)
+            recruiter.user = request.user
+            recruiter.save()
             messages.success(request, "Successfully created a recruiter profile!")
             return redirect("home")
         else:
