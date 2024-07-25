@@ -14,12 +14,18 @@ class JobSeekerAdmin(admin.ModelAdmin):
     list_display = ("user", "academics", "profile_type", "created", "updated")
     search_fields = ("user__username", "academics")
     inlines = [SkillInline]
+    exclude = ["profile_type"]
+    # For debugging
+    readonly_fields = ("id",)
 
 
 @admin.register(Recruiter)
 class RecruiterAdmin(admin.ModelAdmin):
     list_display = ("user", "company", "profile_type", "created", "updated")
     search_fields = ("user__username", "company")
+    exclude = ["profile_type"]
+    # For debugging
+    readonly_fields = ("id",)
 
 
 @admin.register(Skill)

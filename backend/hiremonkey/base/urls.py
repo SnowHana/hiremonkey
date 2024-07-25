@@ -7,8 +7,13 @@ urlpatterns = [
     path("register/", views.registerPage, name="register"),
     path("", views.home, name="home"),
     path(
-        "profile/<int:pk>/",
-        views.profile,
-        name="profile",
+        "job-seeker/<int:pk>/",
+        views.job_seeker,
+        name="job-seeker",
+    ),
+    path(
+        "recruiter/<int:pk>/",
+        views.recruiter,
+        name="recruiter",
     ),
 ]

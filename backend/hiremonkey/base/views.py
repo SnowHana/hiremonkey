@@ -69,16 +69,24 @@ def registerPage(request):
     return render(request, "base/login_register.html", context)
 
 
-def profile(request, pk):
+def job_seeker(request, pk):
     # profile = get_object_or_404(Profile, id=profile_id)
     # context = {"profile": profile}
-    try:
-        profile_reference = ProfileReference.objects.get(object_id=pk)
-        profile = profile_reference.get_profile()
-    except ProfileReference.DoesNotExist:
-        # TODO: Later create a 404.html to handle 404 errors
-        raise Http404("Profile does not exist")
-    # profile = get_object_or_404(Profile, id=pk)
+    # try:
+    #     profile_reference = ProfileReference.objects.get(object_id=pk)
+    #     profile = profile_reference.get_profile()
+    # except ProfileReference.DoesNotExist:
+    #     # TODO: Later create a 404.html to handle 404 errors
+    #     raise Http404("Profile does not exist")
+    profile = get_object_or_404(JobSeeker, id=pk)
     # user = profile.user
     context = {"profile": profile}
-    return render(request, "base/profile.html", context)
+    return render(request, "base/job_seeker.html", context)
+
+
+def recruiter(request, pk):
+
+    profile = get_object_or_404(Recruiter, id=pk)
+    # user = profile.user
+    context = {"profile": profile}
+    return render(request, "base/recruiter.html", context)
