@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -45,12 +46,15 @@ class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="profiles")
     profile_type = models.CharField(max_length=2, choices=PROFILE_CHOICES)
     bio = models.TextField(blank=True, null=True)
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.profile_type}"
 
     class Meta:
         abstract = True  # Mark this model as abstract
+        ordering = ["-updated", "-created"]
 
 
 class JobSeeker(Profile):
