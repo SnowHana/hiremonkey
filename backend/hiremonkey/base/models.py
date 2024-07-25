@@ -26,6 +26,7 @@ class Skill(models.Model):
 
 
 class ProfileReference(models.Model):
+    # NOTE: We dont really utilise this model, we can delete this later
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
@@ -43,6 +44,7 @@ class Profile(models.Model):
         (RECRUITER, "Recruiter"),
     ]
 
+    profile_title = models.TextField(max_length=200, default="default profile")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="profiles")
     profile_type = models.CharField(max_length=2, choices=PROFILE_CHOICES)
     bio = models.TextField(blank=True, null=True)

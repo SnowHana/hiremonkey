@@ -1,12 +1,14 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<h1>Home Template</h1>
+<h1>Home</h1>
+<hr>
+
 <div>
-    <h5>Hello</h5>
+    <h2>Active Job Seekers</h2>
     {% for profile in job_seekers %}
     <div>
-        <h2>{{ profile.user.username }}</h2>
+        <h3>{{ profile.user.username }}</h3>
         <p>{{ profile.bio }}</p>
         <p>Academics: {{ profile.academics }}</p>
         <p>Skills:</p>
@@ -17,8 +19,19 @@
         </ul>
     </div>
     {% endfor %}
-    {% for recruiter in recruiters %}
-    <p>{{recruiter.user.username}} -- Looking for {{recruiter.company}}</p>
+
+    <hr>
+
+    <h2>Active Recruiters</h2>
+    {% for profile in recruiters %}
+    <div>
+        <h3>{{ profile.user.username }}</h3>
+        <p>{{ profile.bio }}</p>
+        <p>Company: {{ profile.companty }}</p>
+    </div>
     {% endfor %}
+
+    <hr>
+
 </div>
 {% endblock content %}

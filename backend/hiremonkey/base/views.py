@@ -4,7 +4,9 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
 from .models import JobSeeker, Profile, ProfileReference, Recruiter
+from .forms import JobSeekerForm, RecruiterForm
 
 
 def home(request):
@@ -90,3 +92,46 @@ def recruiter(request, pk):
     # user = profile.user
     context = {"profile": profile}
     return render(request, "base/recruiter.html", context)
+
+
+def select_profile_type(request):
+    if request.method == "POST":
+        # Register or Create a profile
+        profile_type = request.POST.get("profile_type")
+        if profile_type == "job_seeker":
+            return redirect("create_job_seeker")
+        elif profile_type == "recruiter":
+            return redirect("create_recruiter")
+    return render(request, "base/select_profile_type.html")
+
+
+def create_job_seeker(request):
+    if request.method == "POST":
+        # Ceate a job seeker
+        form = JobSeekerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Successfully created a job seeker profile!")
+            return redirect("home")
+        else:
+            messages.error(
+                request, "Error occured during creating a job seeker profile"
+            )
+    else:
+        form = JobSeekerForm()
+        return render(request, "base/create_job_seeker.html", {"form": form})
+
+
+def create_recruiter(request):
+    if request.method == "POST":
+        # Ceate a job seeker
+        form = RecruiterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Successfully created a recruiter profile!")
+            return redirect("home")
+        else:
+            messages.error(request, "Error occured during creating a recruiter profile")
+    else:
+        form = RecruiterForm()
+        return render(request, "base/create_recruiter.html", {"form": form})
