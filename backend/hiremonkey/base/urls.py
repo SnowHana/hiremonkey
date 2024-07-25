@@ -8,7 +8,7 @@ urlpatterns = [
     path("", views.home, name="home"),
     path(
         "profile/<int:pk>/",
-        views.userProfile,
-        name="user-profile",
+        views.profile,
+        name="profile",
     ),
 ]

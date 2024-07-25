@@ -1,9 +1,19 @@
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
-from .models import JobSeeker, Profile, Recruiter
+from .models import JobSeeker, Profile, ProfileReference, Recruiter
+
+
+def home(request):
+    # Query concrete subclasses
+    job_seekers = JobSeeker.objects.prefetch_related("skills")[:5]
+    recruiters = Recruiter.objects.all()[:5]
+    context = {"job_seekers": job_seekers, "recruiters": recruiters}
+
+    return render(request, "base/home.html", context)
 
 
 def loginPage(request):
@@ -59,40 +69,16 @@ def registerPage(request):
     return render(request, "base/login_register.html", context)
 
 
-def home(request):
-    # Query concrete subclasses
-    job_seekers = JobSeeker.objects.prefetch_related("skills")[:5]
-    recruiters = Recruiter.objects.all()[:5]
-    # profiles = Profile.objects.all()[0:5]
-    # context = {"profiles": profiles}
-    context = {"job_seekers": job_seekers, "recruiters": recruiters}
-
-    return render(request, "base/home.html", context)
-
-
-# def user_detail(request, user_id):
-#     user = get_object_or_404(User, id=user_id)
-#     profiles = user.profiles.all()
-#     return render(request, "user_detail.html", {"user": user, "profiles": profiles})
-
-
-def userProfile(request, pk):
+def profile(request, pk):
     # profile = get_object_or_404(Profile, id=profile_id)
     # context = {"profile": profile}
-    profile = get_object_or_404(Profile, id=pk)
-    user = profile.user
-    context = {"user": user}
+    try:
+        profile_reference = ProfileReference.objects.get(object_id=pk)
+        profile = profile_reference.get_profile()
+    except ProfileReference.DoesNotExist:
+        # TODO: Later create a 404.html to handle 404 errors
+        raise Http404("Profile does not exist")
+    # profile = get_object_or_404(Profile, id=pk)
+    # user = profile.user
+    context = {"profile": profile}
     return render(request, "base/profile.html", context)
-
-
-# def zoo(request):
-#     return render(request, "base/zoo.html")
-
-
-# def ape(request, pk):
-#     ape = None
-#     for i in apes:
-#         if i["id"] == int(pk):
-#             ape = i
-#     context = {"ape": ape}
-#     return render(request, "base/ape.html", context)
