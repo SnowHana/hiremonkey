@@ -5,7 +5,20 @@
 <h1>Create Job Seeker Profile</h1>
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Create</button>
+    {{ job_seeker_form.as_p }}
+    <h3>Skills</h3>
+    {{ skill_formset.management_form }}
+    <div id="skills">
+        {% for form in skill_formset %}
+        <div class="skill-form">
+            {{ form.as_p }}
+            {% if form.instance.pk %}
+            <label for="{{ form.prefix }}-DELETE">Delete</label>
+            {{ form.DELETE }}
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    <button type="submit">Save</button>
 </form>
 {% endblock content %}

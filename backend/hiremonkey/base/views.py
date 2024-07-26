@@ -1,3 +1,4 @@
+from django.forms import modelformset_factory
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.models import User
@@ -6,8 +7,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import JobSeeker, Profile, ProfileReference, Recruiter
-from .forms import JobSeekerForm, RecruiterForm
+from .models import JobSeeker, Profile, ProfileReference, Recruiter, Skill
+from .forms import JobSeekerForm, RecruiterForm, SkillForm
 
 
 def home(request):
@@ -109,22 +110,53 @@ def select_profile_type(request):
 
 @login_required
 def create_job_seeker(request):
+    SkillFormSet = modelformset_factory(Skill, form=SkillForm, extra=1, can_delete=True)
     if request.method == "POST":
-        # Ceate a job seeker
-        form = JobSeekerForm(request.POST)
-        if form.is_valid():
-            job_seeker = form.save(commit=False)
+        job_seeker_form = JobSeekerForm(request.POST)
+        skill_formset = SkillFormSet(request.POST, queryset=Skill.objects.none())
+
+        if job_seeker_form.is_valid() and skill_formset.is_valid():
+            job_seeker = job_seeker_form.save(commit=False)
             job_seeker.user = request.user
             job_seeker.save()
-            messages.success(request, "Successfully created a job seeker profile!")
+            job_seeker_form.save_m2m()  # Save the many-to-many relationships
+
+            # Save new skills
+            for form in skill_formset:
+                if form.cleaned_data and not form.cleaned_data.get("DELETE", False):
+                    skill = form.save()
+                    job_seeker.skills.add(skill)
+
+            messages.success(request, "Job Seeker profile created successfully!")
             return redirect("home")
-        else:
-            messages.error(
-                request, "Error occured during creating a job seeker profile"
-            )
     else:
-        form = JobSeekerForm()
-        return render(request, "base/create_job_seeker.html", {"form": form})
+        job_seeker_form = JobSeekerForm()
+        skill_formset = SkillFormSet(queryset=Skill.objects.none())
+
+    return render(
+        request,
+        "base/create_job_seeker.html",
+        {"job_seeker_form": job_seeker_form, "skill_formset": skill_formset},
+    )
+
+
+# def create_job_seeker(request):
+#     if request.method == "POST":
+#         # Ceate a job seeker
+#         form = JobSeekerForm(request.POST)
+#         if form.is_valid():
+#             job_seeker = form.save(commit=False)
+#             job_seeker.user = request.user
+#             job_seeker.save()
+#             messages.success(request, "Successfully created a job seeker profile!")
+#             return redirect("home")
+#         else:
+#             messages.error(
+#                 request, "Error occured during creating a job seeker profile"
+#             )
+#     else:
+#         form = JobSeekerForm()
+#         return render(request, "base/create_job_seeker.html", {"form": form})
 
 
 @login_required
