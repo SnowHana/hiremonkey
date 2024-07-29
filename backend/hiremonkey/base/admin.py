@@ -1,19 +1,19 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import JobSeeker, Recruiter, Skill
+from .models import JobSeeker, Recruiter
 
 
-class SkillInline(admin.TabularInline):
-    model = JobSeeker.skills.through
-    extra = 1
+# class SkillInline(admin.TabularInline):
+#     model = JobSeeker.skills.through
+#     extra = 1
 
 
 @admin.register(JobSeeker)
 class JobSeekerAdmin(admin.ModelAdmin):
     list_display = ("user", "academics", "profile_type", "created", "updated")
     search_fields = ("user__username", "academics")
-    inlines = [SkillInline]
+    # inlines = [SkillInline]
     exclude = ["profile_type"]
     # For debugging
     readonly_fields = ("id",)
@@ -28,6 +28,6 @@ class RecruiterAdmin(admin.ModelAdmin):
     readonly_fields = ("id",)
 
 
-@admin.register(Skill)
-class SkillAdmin(admin.ModelAdmin):
-    list_display = ("name",)
+# @admin.register(Skill)
+# class SkillAdmin(admin.ModelAdmin):
+#     list_display = ("name",)

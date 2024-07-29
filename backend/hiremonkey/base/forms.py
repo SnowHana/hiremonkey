@@ -1,12 +1,15 @@
 from django import forms
-from .models import JobSeeker, Recruiter, Skill
+from .models import JobSeeker, Recruiter
 
 
 class JobSeekerForm(forms.ModelForm):
     class Meta:
         model = JobSeeker
-        fields = ["profile_title", "academics", "skills"]
-        widgets = {"skills": forms.CheckboxSelectMultiple()}
+        fields = [
+            "profile_title",
+            "academics",
+            "skills",
+        ]
 
 
 class RecruiterForm(forms.ModelForm):
@@ -15,7 +18,7 @@ class RecruiterForm(forms.ModelForm):
         fields = ["company"]
 
 
-class SkillForm(forms.ModelForm):
-    class Meta:
-        model = Skill
-        fields = ["name"]
+# class SkillForm(forms.ModelForm):
+#     class Meta:
+#         model = Skill
+#         fields = ["name"]

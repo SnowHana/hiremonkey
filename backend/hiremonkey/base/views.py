@@ -7,8 +7,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import JobSeeker, Profile, ProfileReference, Recruiter, Skill
-from .forms import JobSeekerForm, RecruiterForm, SkillForm
+from .models import JobSeeker, Profile, ProfileReference, Recruiter
+from .forms import JobSeekerForm, RecruiterForm
 
 
 def home(request):
@@ -110,33 +110,29 @@ def select_profile_type(request):
 
 @login_required
 def create_job_seeker(request):
-    SkillFormSet = modelformset_factory(Skill, form=SkillForm, extra=1, can_delete=True)
+    common_skills = JobSeeker.skills.most_common()[:4]
+
     if request.method == "POST":
         job_seeker_form = JobSeekerForm(request.POST)
-        skill_formset = SkillFormSet(request.POST, queryset=Skill.objects.none())
 
-        if job_seeker_form.is_valid() and skill_formset.is_valid():
+        if job_seeker_form.is_valid():
             job_seeker = job_seeker_form.save(commit=False)
             job_seeker.user = request.user
             job_seeker.save()
-            job_seeker_form.save_m2m()  # Save the many-to-many relationships
-
-            # Save new skills
-            for form in skill_formset:
-                if form.cleaned_data and not form.cleaned_data.get("DELETE", False):
-                    skill = form.save()
-                    job_seeker.skills.add(skill)
+            # save skills
+            job_seeker_form.save_m2m()
 
             messages.success(request, "Job Seeker profile created successfully!")
             return redirect("home")
     else:
         job_seeker_form = JobSeekerForm()
-        skill_formset = SkillFormSet(queryset=Skill.objects.none())
 
     return render(
         request,
         "base/create_job_seeker.html",
-        {"job_seeker_form": job_seeker_form, "skill_formset": skill_formset},
+        {
+            "job_seeker_form": job_seeker_form,
+        },
     )
 
 

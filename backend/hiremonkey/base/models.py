@@ -4,12 +4,14 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
+from taggit.managers import TaggableManager
 
-class Skill(models.Model):
-    name = models.CharField(max_length=100, unique=True)
 
-    def __str__(self):
-        return self.name
+# class Skill(models.Model):
+#     name = models.CharField(max_length=100, unique=True)
+
+#     def __str__(self):
+#         return self.name
 
 
 class ProfileReference(models.Model):
@@ -51,7 +53,8 @@ class JobSeeker(Profile):
         User, on_delete=models.CASCADE, related_name="job_seeker_profiles"
     )
     academics = models.TextField(blank=True, null=True)
-    skills = models.ManyToManyField("Skill", related_name="job_seekers")
+    # skills = models.ManyToManyField("Skill", related_name="job_seekers")
+    skills = TaggableManager()
 
     def save(self, *args, **kwargs):
 
