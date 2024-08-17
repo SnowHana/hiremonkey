@@ -19,4 +19,7 @@ urlpatterns = [
     path("select_profile_type/", views.select_profile_type, name="select_profile_type"),
     path("create_job_seeker/", views.create_job_seeker, name="create_job_seeker"),
     path("create_recruiter/", views.create_recruiter, name="create_recruiter"),
+    path(
+        "update_job_seeker/<str:pk>/", views.update_job_seeker, name="update_job_seeker"
+    ),
 ]

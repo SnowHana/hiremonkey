@@ -113,30 +113,50 @@ def create_job_seeker(request):
     common_skills = JobSeeker.skills.most_common()[:4]
 
     if request.method == "POST":
-        job_seeker_form = JobSeekerForm(request.POST)
+        form = JobSeekerForm(request.POST)
 
-        if job_seeker_form.is_valid():
-            job_seeker = job_seeker_form.save(commit=False)
+        if form.is_valid():
+            job_seeker = form.save(commit=False)
             job_seeker.user = request.user
             job_seeker.save()
             # save skills
-            job_seeker_form.save_m2m()
+            form.save_m2m()
 
             messages.success(request, "Job Seeker profile created successfully!")
             return redirect("home")
     else:
-        job_seeker_form = JobSeekerForm()
+        form = JobSeekerForm()
 
     return render(
         request,
         "base/create_job_seeker.html",
         {
-            "job_seeker_form": job_seeker_form,
+            "job_seeker_form": form,
         },
     )
 
+
+@login_required
 def update_job_seeker(request, pk):
-    pass
+    job_seeker = JobSeeker.objects.get(id=pk)
+    form = JobSeekerForm(instance=job_seeker)
+
+    if request.method == "POST":
+        form = JobSeekerForm(request.POST, instance=job_seeker)
+        if form.is_valid():
+            job_seeker = form.save(commit=False)
+            job_seeker.user = request.user
+            job_seeker.save()
+            # save skills
+            form.save_m2m()
+
+            messages.success(request, "Job Seeker profile updated successfully!")
+            return redirect("home")
+
+    context = {"job_seeker_form": form}
+    return render(request, "base/create_job_seeker.html", context)
+
+
 # def create_job_seeker(request):
 #     if request.method == "POST":
 #         # Ceate a job seeker
