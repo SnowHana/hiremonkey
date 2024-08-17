@@ -1,35 +1,61 @@
 {% extends 'main.html' %}
 
 {% block content %}
+
+<style>
+    .home-container {
+        display: grid;
+        grid-template-columns: 1fr 3fr 1fr;
+    }
+</style>
+
+
 <h1>Home</h1>
 <hr>
 
-<div>
-    <h2>Active Job Seekers</h2>
-    {% for profile in job_seekers %}
+<div class="home-container">
     <div>
-        <h3>{{ profile.user.username }}</h3>
-        <p>{{ profile.bio }}</p>
-        <p>Academics: {{ profile.academics }}</p>
-        <p>Skills:</p>
-        <ul>
-            {% for skill in profile.skills.all|slice:":5" %}
-            <li>{{ skill.name }}</li>
-            {% endfor %}
-        </ul>
+        <h3>Browse Topics</h3>
+        <hr>
+
     </div>
-    {% endfor %}
+
+    <div>
+        <h2>Active Job Seekers</h2>
+        <hr>
+        {% for profile in job_seekers %}
+        <div>
+            <h3>Name: {{ profile.user.username }}</h3>
+            <p>Bio: {{ profile.bio }}</p>
+            <p>Academics: {{ profile.academics }}</p>
+            <p>Skills:</p>
+            <ul>
+                {% for skill in profile.skills.all|slice:":5" %}
+                <li>{{ skill.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <hr>
+        {% endfor %}
+        <hr>
+
+        <h2>Active Recruiters</h2>
+        {% for profile in recruiters %}
+        <div>
+            <h3>{{ profile.user.username }}</h3>
+            <p>{{ profile.bio }}</p>
+            <p>Company: {{ profile.companty }}</p>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <div>
+        <h3>My Profiles</h3>
+    </div>
+
 
     <hr>
-
-    <h2>Active Recruiters</h2>
-    {% for profile in recruiters %}
-    <div>
-        <h3>{{ profile.user.username }}</h3>
-        <p>{{ profile.bio }}</p>
-        <p>Company: {{ profile.companty }}</p>
-    </div>
-    {% endfor %}
 
     <hr>
 

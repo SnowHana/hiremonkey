@@ -1,6 +1,8 @@
 from django import forms
 from .models import JobSeeker, Recruiter
 
+from taggit.forms import TagWidget
+
 
 class JobSeekerForm(forms.ModelForm):
     class Meta:
@@ -10,9 +12,9 @@ class JobSeekerForm(forms.ModelForm):
             "academics",
             "skills",
         ]
-        # widgets = {
-        #     "skills": TagWidget(attrs={"placeholder": "Add skills here"}),
-        # }
+        widgets = {
+            "skills": TagWidget(attrs={"placeholder": "Add skills here"}),
+        }
 
 
 class RecruiterForm(forms.ModelForm):
