@@ -157,6 +157,20 @@ def update_job_seeker(request, pk):
     return render(request, "base/create_job_seeker.html", context)
 
 
+@login_required
+def delete_profile(request, pk):
+    # Profile Reference to query
+    profile_ref = get_object_or_404(ProfileReference, object_id=pk)
+    profile_model = profile_ref.content_type.model_class()
+    profile = get_object_or_404(profile_model, id=pk)
+    # profile = Profile.objects.get(id=pk)
+
+    if request.method == "POST":
+        profile.delete()
+        return redirect("home")
+    return render(request, "base/delete.html", {"obj": profile})
+
+
 # def create_job_seeker(request):
 #     if request.method == "POST":
 #         # Ceate a job seeker

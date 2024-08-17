@@ -22,7 +22,5 @@ urlpatterns = [
     path(
         "update_job_seeker/<str:pk>/", views.update_job_seeker, name="update_job_seeker"
     ),
-    path(
-        "delete_job_seeker/<str:pk>/", views.update_job_seeker, name="update_job_seeker"
-    ),
+    path("delete/<str:pk>/", views.delete_profile, name="delete_profile"),
 ]
