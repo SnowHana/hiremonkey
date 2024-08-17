@@ -8,7 +8,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import JobSeeker, Profile, ProfileReference, Recruiter
-from .forms import JobSeekerForm, RecruiterForm
+from .forms import JobSeekerForm, RecruiterForm, get_form_class_from_profile_reference
 
 
 def home(request):
@@ -137,24 +137,41 @@ def create_job_seeker(request):
 
 
 @login_required
-def update_job_seeker(request, pk):
-    job_seeker = JobSeeker.objects.get(id=pk)
-    form = JobSeekerForm(instance=job_seeker)
+def update_profile(request, pk):
+    profile_ref = get_object_or_404(ProfileReference, object_id=pk)
+    form_class = get_form_class_from_profile_reference(profile_ref)
+
+    if not form_class:
+        # Sth went wrong (Invalid profile ref?)
+        return redirect("home")
+
+    profile_instance = profile_ref.get_profile()
+
+    # profile_model = profile_ref.content_type.model_class()
+    # profile = get_object_or_404(profile_model, id=pk)
 
     if request.method == "POST":
-        form = JobSeekerForm(request.POST, instance=job_seeker)
+        form = form_class(request.POST, instance=profile_instance)
         if form.is_valid():
-            job_seeker = form.save(commit=False)
-            job_seeker.user = request.user
-            job_seeker.save()
+            profile = form.save(commit=False)
+            profile.user = request.user
+            profile.save()
             # save skills
             form.save_m2m()
 
-            messages.success(request, "Job Seeker profile updated successfully!")
+            messages.success(
+                request,
+                f"{profile_ref.content_type.model_class()} profile updated successfully!",
+            )
             return redirect("home")
-
-    context = {"job_seeker_form": form}
-    return render(request, "base/create_job_seeker.html", context)
+    else:
+        form = form_class(instance=profile_instance)
+        context = {"form": form}
+        return render(
+            request,
+            f"base/create_{profile_ref.content_type.model_class()}.html",
+            context,
+        )
 
 
 @login_required
