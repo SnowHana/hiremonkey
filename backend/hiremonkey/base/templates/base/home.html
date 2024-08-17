@@ -25,7 +25,7 @@
         <hr>
         {% for profile in job_seekers %}
         <div>
-            <h3>Name: {{ profile.user.username }}</h3>
+            <h3>@{{ profile.user.username }}</h3>
             <p>Bio: {{ profile.bio }}</p>
             <p>Academics: {{ profile.academics }}</p>
             <p>Skills:</p>
@@ -52,6 +52,7 @@
 
     <div>
         <h3>My Profiles</h3>
+        <a href="{% url 'create_job_seeker' %}">Create Profile</a>
     </div>
 
 

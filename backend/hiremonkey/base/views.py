@@ -135,7 +135,8 @@ def create_job_seeker(request):
         },
     )
 
-
+def update_job_seeker(request, pk):
+    pass
 # def create_job_seeker(request):
 #     if request.method == "POST":
 #         # Ceate a job seeker
