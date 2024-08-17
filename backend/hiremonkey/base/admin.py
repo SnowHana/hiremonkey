@@ -11,7 +11,15 @@ from .models import JobSeeker, Recruiter
 
 @admin.register(JobSeeker)
 class JobSeekerAdmin(admin.ModelAdmin):
-    list_display = ("user", "academics", "profile_type", "created", "updated")
+    list_display = (
+        "profile_title",
+        "user",
+        "academics",
+        "skills",
+        "profile_type",
+        "created",
+        "updated",
+    )
     search_fields = ("user__username", "academics")
     # inlines = [SkillInline]
     exclude = ["profile_type"]
