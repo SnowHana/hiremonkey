@@ -1,5 +1,4 @@
-from django.forms import modelformset_factory
-from django.http import Http404
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -7,15 +6,54 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.contenttypes.models import ContentType
 from .models import JobSeeker, Profile, ProfileReference, Recruiter
 from .forms import JobSeekerForm, RecruiterForm, get_form_class_from_profile_reference
 
 
 def home(request):
+    # Get 5 latest job seeker and recruiters' profile reference objects
+
     # Query concrete subclasses
     job_seekers = JobSeeker.objects.prefetch_related("skills")[:5]
     recruiters = Recruiter.objects.all()[:5]
-    context = {"job_seekers": job_seekers, "recruiters": recruiters}
+
+    # Get profile references
+    js_ids = [js.id for js in job_seekers]
+    rc_ids = [rc.id for rc in recruiters]
+
+    # Content type
+    js_content = ContentType.objects.get_for_model(JobSeeker)
+    rc_content = ContentType.objects.get_for_model(Recruiter)
+
+    # Query
+    js_ref = ProfileReference.objects.filter(
+        content_type=js_content, object_id__in=js_ids
+    )
+    rc_ref = ProfileReference.objects.filter(
+        content_type=rc_content, object_id__in=rc_ids
+    )
+
+    # Error checking
+
+    if len(js_ref) != len(js_ids) or len(rc_ref) != len(rc_ids):
+        # TODO: Flash message feature (saying sth went wrong)
+        print(len(js_ref))
+        print(js_ids)
+
+        print(rc_ref)
+        print(rc_ids)
+        return HttpResponse("Sth went wrong!")
+    js = list(zip(js_ref, job_seekers))
+    rc = list(zip(rc_ref, recruiters))
+    # profile_references = ProfileReference.objects.all()[:5]
+    # context = {
+    #     "js_ref": js_ref,
+    #     "rc_ref": rc_ref,
+    #     "job_seekers": job_seekers,
+    #     "recruiters": recruiters,
+    # }
+    context = {"job_seekers": js, "recruiters": rc}
 
     return render(request, "base/home.html", context)
 
@@ -85,7 +123,7 @@ def job_seeker(request, pk):
     profile = get_object_or_404(JobSeeker, id=pk)
     # user = profile.user
     context = {"profile": profile}
-    return render(request, "base/job_seeker.html", context)
+    return render(request, "base/jobseeker.html", context)
 
 
 def recruiter(request, pk):
@@ -129,7 +167,7 @@ def create_job_seeker(request):
 
     return render(
         request,
-        "base/create_job_seeker.html",
+        "base/create_jobseeker.html",
         {
             "job_seeker_form": form,
         },
@@ -181,7 +219,7 @@ def update_profile(request, pk):
 @login_required
 def delete_profile(request, pk):
     # Profile Reference to query
-    profile_ref = get_object_or_404(ProfileReference, object_id=pk)
+    profile_ref = get_object_or_404(ProfileReference, id=pk)
     profile_model = profile_ref.content_type.model_class()
     profile = get_object_or_404(profile_model, id=pk)
     # profile = Profile.objects.get(id=pk)
@@ -189,7 +227,8 @@ def delete_profile(request, pk):
     if request.method == "POST":
         profile.delete()
         return redirect("home")
-    return render(request, "base/delete.html", {"obj": profile})
+    else:
+        return render(request, "base/delete.html", {"obj": profile})
 
 
 # def create_job_seeker(request):
