@@ -38,11 +38,11 @@ def home(request):
 
     if len(js_ref) != len(js_ids) or len(rc_ref) != len(rc_ids):
         # TODO: Flash message feature (saying sth went wrong)
-        print(len(js_ref))
-        print(js_ids)
+        # print(len(js_ref))
+        # print(js_ids)
 
-        print(rc_ref)
-        print(rc_ids)
+        # print(rc_ref)
+        # print(rc_ids)
         return HttpResponse("Sth went wrong!")
     js = list(zip(js_ref, job_seekers))
     rc = list(zip(rc_ref, recruiters))
