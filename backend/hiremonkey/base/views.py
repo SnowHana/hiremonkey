@@ -138,16 +138,19 @@ def create_job_seeker(request):
 
 @login_required
 def update_profile(request, pk):
-    profile_ref = get_object_or_404(ProfileReference, object_id=pk)
+    profile_ref = get_object_or_404(ProfileReference, id=pk)
     form_class = get_form_class_from_profile_reference(profile_ref)
 
     if not form_class:
         # Sth went wrong (Invalid profile ref?)
         return redirect("home")
 
-    profile_instance = profile_ref.get_profile()
+    # profile_instance = profile_ref.get_profile()
+    profile_instance = profile_ref.content_object
 
-    # profile_model = profile_ref.content_type.model_class()
+    profile_model = profile_ref.content_type.model_class()
+    model_name = profile_model.__name__
+
     # profile = get_object_or_404(profile_model, id=pk)
 
     if request.method == "POST":
@@ -161,15 +164,16 @@ def update_profile(request, pk):
 
             messages.success(
                 request,
-                f"{profile_ref.content_type.model_class()} profile updated successfully!",
+                f"{profile_model.__name__} profile updated successfully!",
             )
             return redirect("home")
     else:
         form = form_class(instance=profile_instance)
         context = {"form": form}
+
         return render(
             request,
-            f"base/create_{profile_ref.content_type.model_class()}.html",
+            f"base/create_{profile_model.__name__}.html",
             context,
         )
 
