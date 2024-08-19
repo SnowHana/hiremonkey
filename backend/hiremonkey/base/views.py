@@ -221,7 +221,9 @@ def delete_profile(request, pk):
     # Profile Reference to query
     profile_ref = get_object_or_404(ProfileReference, id=pk)
     profile_model = profile_ref.content_type.model_class()
-    profile = get_object_or_404(profile_model, id=pk)
+    # We need to get pk (profileReference id) to profile id?
+
+    profile = get_object_or_404(profile_model, id=profile_ref.object_id)
     # profile = Profile.objects.get(id=pk)
 
     if request.method == "POST":
