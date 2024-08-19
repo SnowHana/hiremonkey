@@ -27,14 +27,27 @@ def home(request):
     rc_content = ContentType.objects.get_for_model(Recruiter)
 
     # Query
-    js_ref = ProfileReference.objects.filter(
+    # NOTE:Probably order got mixed here..?
+    # TODO: Fix this so it finds profile ref in order.
+    # for js_id in js_ids:
+    #     js_ref = ProfileReference.objects.filter(
+    #         content_type=js_content, object_id__in=js_ids
+    #     )
+    js_ref_q = ProfileReference.objects.filter(
         content_type=js_content, object_id__in=js_ids
     )
-    rc_ref = ProfileReference.objects.filter(
+    rc_ref_q = ProfileReference.objects.filter(
         content_type=rc_content, object_id__in=rc_ids
     )
 
-    # Error checking
+    js_ref_map = {ref.object_id: ref for ref in js_ref_q}
+    rc_ref_map = {ref.object_id: ref for ref in rc_ref_q}
+
+    js_ref = [js_ref_map[js_id] for js_id in js_ids if js_id in js_ref_map]
+
+    rc_ref = [
+        rc_ref_map[rc_id] for rc_id in rc_ids if rc_id in rc_ref_map
+    ]  # Error checking
 
     if len(js_ref) != len(js_ids) or len(rc_ref) != len(rc_ids):
         # TODO: Flash message feature (saying sth went wrong)
@@ -44,6 +57,7 @@ def home(request):
         # print(rc_ref)
         # print(rc_ids)
         return HttpResponse("Sth went wrong!")
+
     js = list(zip(js_ref, job_seekers))
     rc = list(zip(rc_ref, recruiters))
     # profile_references = ProfileReference.objects.all()[:5]
@@ -54,6 +68,7 @@ def home(request):
     #     "recruiters": recruiters,
     # }
     context = {"job_seekers": js, "recruiters": rc}
+    print(js[0])
 
     return render(request, "base/home.html", context)
 
@@ -190,7 +205,9 @@ def update_profile(request, pk):
     model_name = profile_model.__name__
 
     # profile = get_object_or_404(profile_model, id=pk)
-
+    print("IM HEREEFJSKLDFJLKSDFJLSL")
+    print(model_name)
+    print(profile_instance.profile_title)
     if request.method == "POST":
         form = form_class(request.POST, instance=profile_instance)
         if form.is_valid():
@@ -206,6 +223,7 @@ def update_profile(request, pk):
             )
             return redirect("home")
     else:
+        print("HELLOOOO")
         form = form_class(instance=profile_instance)
         context = {"form": form}
 

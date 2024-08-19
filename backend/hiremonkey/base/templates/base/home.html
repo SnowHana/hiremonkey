@@ -25,6 +25,7 @@
         <hr>
         {% for ref, profile in job_seekers %}
         <div>
+            <h5>{{ ref.id }} {{ profile.profile_title }}</h5>
             <a href="{% url 'update_profile' ref.id %}">Edit</a>
             <a href="{% url 'delete_profile' ref.id %}">Delete</a>
             <span>{{profile.profile_title}}</span>

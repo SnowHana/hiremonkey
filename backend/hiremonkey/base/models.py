@@ -30,6 +30,9 @@ class ProfileReference(models.Model):
     def get_profile(self):
         return self.content_object
 
+    def __str__(self):
+        return f"{self.id}/ object_id: {self.object_id} / {self.content_type}"
+
     class Meta:
         ordering = []
 
@@ -51,7 +54,7 @@ class Profile(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.profile_type}"
+        return f"{self.user.username} - {self.profile_type} - {self.profile_title} - {self.id}"
 
     class Meta:
         abstract = True  # Mark this model as abstract
