@@ -1,12 +1,29 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import JobSeeker, Recruiter
+from .models import JobSeeker, ProfileReference, Recruiter
 
 
 # class SkillInline(admin.TabularInline):
 #     model = JobSeeker.skills.through
 #     extra = 1
+
+
+@admin.register(ProfileReference)
+class ProfileReferenceAdmin(admin.ModelAdmin):
+    # Optionally, customize the list display
+    list_display = ("id", "content_type", "object_id", "content_object")
+    search_fields = ("object_id",)
+
+    def content_object_display(self, obj):
+        return str(obj.content_object)
+
+    content_object_display.short_description = "Profile"
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.select_related("content_type")
+        return queryset
 
 
 @admin.register(JobSeeker)

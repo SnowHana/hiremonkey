@@ -1,5 +1,4 @@
-from django.forms import modelformset_factory
-from django.http import Http404
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -7,15 +6,69 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.contenttypes.models import ContentType
 from .models import JobSeeker, Profile, ProfileReference, Recruiter
-from .forms import JobSeekerForm, RecruiterForm
+from .forms import JobSeekerForm, RecruiterForm, get_form_class_from_profile_reference
 
 
 def home(request):
+    # Get 5 latest job seeker and recruiters' profile reference objects
+
     # Query concrete subclasses
     job_seekers = JobSeeker.objects.prefetch_related("skills")[:5]
     recruiters = Recruiter.objects.all()[:5]
-    context = {"job_seekers": job_seekers, "recruiters": recruiters}
+
+    # Get profile references
+    js_ids = [js.id for js in job_seekers]
+    rc_ids = [rc.id for rc in recruiters]
+
+    # Content type
+    js_content = ContentType.objects.get_for_model(JobSeeker)
+    rc_content = ContentType.objects.get_for_model(Recruiter)
+
+    # Query
+    # NOTE:Probably order got mixed here..?
+    # TODO: Fix this so it finds profile ref in order.
+    # for js_id in js_ids:
+    #     js_ref = ProfileReference.objects.filter(
+    #         content_type=js_content, object_id__in=js_ids
+    #     )
+    js_ref_q = ProfileReference.objects.filter(
+        content_type=js_content, object_id__in=js_ids
+    )
+    rc_ref_q = ProfileReference.objects.filter(
+        content_type=rc_content, object_id__in=rc_ids
+    )
+
+    js_ref_map = {ref.object_id: ref for ref in js_ref_q}
+    rc_ref_map = {ref.object_id: ref for ref in rc_ref_q}
+
+    js_ref = [js_ref_map[js_id] for js_id in js_ids if js_id in js_ref_map]
+
+    rc_ref = [
+        rc_ref_map[rc_id] for rc_id in rc_ids if rc_id in rc_ref_map
+    ]  # Error checking
+
+    if len(js_ref) != len(js_ids) or len(rc_ref) != len(rc_ids):
+        # TODO: Flash message feature (saying sth went wrong)
+        # print(len(js_ref))
+        # print(js_ids)
+
+        # print(rc_ref)
+        # print(rc_ids)
+        return HttpResponse("Sth went wrong!")
+
+    js = list(zip(js_ref, job_seekers))
+    rc = list(zip(rc_ref, recruiters))
+    # profile_references = ProfileReference.objects.all()[:5]
+    # context = {
+    #     "js_ref": js_ref,
+    #     "rc_ref": rc_ref,
+    #     "job_seekers": job_seekers,
+    #     "recruiters": recruiters,
+    # }
+    context = {"job_seekers": js, "recruiters": rc}
+    # print(js[0])
 
     return render(request, "base/home.html", context)
 
@@ -85,7 +138,7 @@ def job_seeker(request, pk):
     profile = get_object_or_404(JobSeeker, id=pk)
     # user = profile.user
     context = {"profile": profile}
-    return render(request, "base/job_seeker.html", context)
+    return render(request, "base/jobseeker.html", context)
 
 
 def recruiter(request, pk):
@@ -129,32 +182,79 @@ def create_job_seeker(request):
 
     return render(
         request,
-        "base/create_job_seeker.html",
+        "base/create_jobseeker.html",
         {
-            "job_seeker_form": form,
+            "form": form,
         },
     )
 
 
 @login_required
-def update_job_seeker(request, pk):
-    job_seeker = JobSeeker.objects.get(id=pk)
-    form = JobSeekerForm(instance=job_seeker)
+def update_profile(request, pk):
+    # TODO: Allow user to only update their own profile
+    # TODO: When we finsih the tag(Skill) search feature, we will probably have to fix this as well.
+    profile_ref = get_object_or_404(ProfileReference, id=pk)
+    form_class = get_form_class_from_profile_reference(profile_ref)
 
+    if not form_class:
+        # Sth went wrong (Invalid profile ref?)
+        return redirect("home")
+
+    # profile_instance = profile_ref.get_profile()
+    profile_instance = profile_ref.content_object
+
+    profile_model = profile_ref.content_type.model_class()
+    model_name = profile_model.__name__
+
+    # profile = get_object_or_404(profile_model, id=pk)
+    print("IM HEREEFJSKLDFJLKSDFJLSL")
+    print(model_name)
+    print(profile_instance.profile_title)
     if request.method == "POST":
-        form = JobSeekerForm(request.POST, instance=job_seeker)
+        form = form_class(request.POST, instance=profile_instance)
         if form.is_valid():
-            job_seeker = form.save(commit=False)
-            job_seeker.user = request.user
-            job_seeker.save()
+            profile = form.save(commit=False)
+            profile.user = request.user
+            profile.save()
             # save skills
             form.save_m2m()
 
-            messages.success(request, "Job Seeker profile updated successfully!")
+            messages.success(
+                request,
+                f"{profile_model.__name__} profile updated successfully!",
+            )
             return redirect("home")
+    else:
+        print("HELLOOOO")
+        form = form_class(instance=profile_instance)
+        context = {"form": form}
+        html_name = f"base/create_{profile_model.__name__}.html".lower()
 
-    context = {"job_seeker_form": form}
-    return render(request, "base/create_job_seeker.html", context)
+        print(profile_instance)
+        print(html_name)
+        # print(form)
+        return render(
+            request,
+            html_name,
+            context,
+        )
+
+
+@login_required
+def delete_profile(request, pk):
+    # Profile Reference to query
+    profile_ref = get_object_or_404(ProfileReference, id=pk)
+    profile_model = profile_ref.content_type.model_class()
+    # We need to get pk (profileReference id) to profile id?
+
+    profile = get_object_or_404(profile_model, id=profile_ref.object_id)
+    # profile = Profile.objects.get(id=pk)
+
+    if request.method == "POST":
+        profile.delete()
+        return redirect("home")
+    else:
+        return render(request, "base/delete.html", {"obj": profile})
 
 
 # def create_job_seeker(request):
