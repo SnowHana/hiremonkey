@@ -11,6 +11,10 @@ class JobSeekerForm(forms.ModelForm):
         widget=autocomplete.ModelSelect2Multiple(url="skill-autocomplete"),
     )
 
+    # skills = forms.ModelMultipleChoiceField(
+    #     queryset=Tag.objects.all(), widget=forms.CheckboxSelectMultiple
+    # )
+
     class Meta:
         model = JobSeeker
         fields = [
