@@ -20,8 +20,21 @@ class ProfileReference(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
 
+    def save(self, *args, **kwargs):
+        if not self.content_object:
+            raise ValueError(
+                "ProfileReference cannot be created without a valid content_object."
+            )
+        super().save(*args, **kwargs)
+
     def get_profile(self):
         return self.content_object
+
+    def __str__(self):
+        return f"{self.id}/ object_id: {self.object_id} / {self.content_type}"
+
+    class Meta:
+        ordering = []
 
 
 class Profile(models.Model):
@@ -41,7 +54,7 @@ class Profile(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.profile_type}"
+        return f"{self.user.username} - {self.profile_type} - {self.profile_title} - {self.id}"
 
     class Meta:
         abstract = True  # Mark this model as abstract
