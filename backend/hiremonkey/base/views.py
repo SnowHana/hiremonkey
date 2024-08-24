@@ -7,8 +7,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
-from .models import JobSeeker, Profile, ProfileReference, Recruiter
+from .models import JobSeeker, ProfileReference, Recruiter
 from .forms import JobSeekerForm, RecruiterForm, get_form_class_from_profile_reference
+from dal import autocomplete
+from taggit.models import Tag
 
 
 def home(request):
@@ -301,3 +303,13 @@ def create_recruiter(request):
     else:
         form = RecruiterForm()
         return render(request, "base/create_recruiter.html", {"form": form})
+
+
+class SkillAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = Tag.objects.all()
+
+        if self.q:
+            qs = qs.filter(name__icontains=self.q)
+
+        return qs

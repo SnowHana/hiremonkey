@@ -6,6 +6,7 @@
     <h2>Create Job Seeker Profile</h2>
     <form method="POST" id="job-seeker-form">
         {% csrf_token %}
+        {{ form.non_field_errors }}
         {{ form.as_p }}
         <!--         
         <div class="form-group">

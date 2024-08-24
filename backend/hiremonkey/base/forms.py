@@ -1,10 +1,16 @@
 from django import forms
 from .models import JobSeeker, Recruiter, ProfileReference
-
+from dal import autocomplete
+from taggit.models import Tag
 from taggit.forms import TagWidget
 
 
 class JobSeekerForm(forms.ModelForm):
+    skills = forms.ModelMultipleChoiceField(
+        queryset=Tag.objects.all(),
+        widget=autocomplete.ModelSelect2Multiple(url="skill-autocomplete"),
+    )
+
     class Meta:
         model = JobSeeker
         fields = [
@@ -12,9 +18,10 @@ class JobSeekerForm(forms.ModelForm):
             "academics",
             "skills",
         ]
-        widgets = {
-            "skills": TagWidget(attrs={"placeholder": "Add skills here"}),
-        }
+        # ]
+        # widgets = {
+        #     "skills": TagWidget(attrs={"placeholder": "Add skills here"}),
+        # }
 
 
 class RecruiterForm(forms.ModelForm):
