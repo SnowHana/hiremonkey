@@ -191,6 +191,8 @@ def create_job_seeker(request):
 
 @login_required
 def update_profile(request, pk):
+    # TODO: Allow user to only update their own profile
+    # TODO: When we finsih the tag(Skill) search feature, we will probably have to fix this as well.
     profile_ref = get_object_or_404(ProfileReference, id=pk)
     form_class = get_form_class_from_profile_reference(profile_ref)
 
