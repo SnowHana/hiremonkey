@@ -74,6 +74,10 @@ def home(request):
 
 
 def loginPage(request):
+
+    # If user is alr logged in, redirect him to the home page when he tries to login - again
+    if request.user.is_authenticated:
+        return redirect("home")
     page = "login"
     context = {"page": page}
     if request.method == "POST":
@@ -161,7 +165,7 @@ def select_profile_type(request):
     return render(request, "base/select_profile_type.html")
 
 
-@login_required
+@login_required(login_url="/login")
 def create_job_seeker(request):
     common_skills = JobSeeker.skills.most_common()[:4]
 
@@ -189,7 +193,7 @@ def create_job_seeker(request):
     )
 
 
-@login_required
+@login_required(login_url="/login")
 def update_profile(request, pk):
     # TODO: Allow user to only update their own profile
     # TODO: When we finsih the tag(Skill) search feature, we will probably have to fix this as well.
@@ -206,6 +210,8 @@ def update_profile(request, pk):
     profile_model = profile_ref.content_type.model_class()
     model_name = profile_model.__name__
 
+    if request.user != profile_instance.user:
+        return HttpResponse("You are not allowed here.")
     # profile = get_object_or_404(profile_model, id=pk)
     print("IM HEREEFJSKLDFJLKSDFJLSL")
     print(model_name)
@@ -240,7 +246,7 @@ def update_profile(request, pk):
         )
 
 
-@login_required
+@login_required(login_url="/login")
 def delete_profile(request, pk):
     # Profile Reference to query
     profile_ref = get_object_or_404(ProfileReference, id=pk)
@@ -249,6 +255,9 @@ def delete_profile(request, pk):
 
     profile = get_object_or_404(profile_model, id=profile_ref.object_id)
     # profile = Profile.objects.get(id=pk)
+
+    if request.user != profile.user:
+        return HttpResponse("You are not allowed here.")
 
     if request.method == "POST":
         profile.delete()
@@ -276,7 +285,7 @@ def delete_profile(request, pk):
 #         return render(request, "base/create_job_seeker.html", {"form": form})
 
 
-@login_required
+@login_required(login_url="/login")
 def create_recruiter(request):
     if request.method == "POST":
         # Ceate a job seeker
