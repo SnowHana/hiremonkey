@@ -20,7 +20,7 @@ class JobSeekerForm(forms.ModelForm):
 class RecruiterForm(forms.ModelForm):
     class Meta:
         model = Recruiter
-        fields = ["company"]
+        fields = ["profile_title", "company"]
 
 
 PROFILE_FORM_MAPPING = {JobSeeker: JobSeekerForm, Recruiter: RecruiterForm}
