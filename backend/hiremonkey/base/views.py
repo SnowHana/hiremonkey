@@ -68,7 +68,7 @@ def home(request):
     #     "recruiters": recruiters,
     # }
     context = {"job_seekers": js, "recruiters": rc}
-    print(js[0])
+    # print(js[0])
 
     return render(request, "base/home.html", context)
 
@@ -184,7 +184,7 @@ def create_job_seeker(request):
         request,
         "base/create_jobseeker.html",
         {
-            "job_seeker_form": form,
+            "form": form,
         },
     )
 
@@ -226,10 +226,14 @@ def update_profile(request, pk):
         print("HELLOOOO")
         form = form_class(instance=profile_instance)
         context = {"form": form}
+        html_name = f"base/create_{profile_model.__name__}.html".lower()
 
+        print(profile_instance)
+        print(html_name)
+        # print(form)
         return render(
             request,
-            f"base/create_{profile_model.__name__}.html",
+            html_name,
             context,
         )
 
