@@ -7,17 +7,7 @@
     <form method="POST" id="job-seeker-form">
         {% csrf_token %}
         {{ form.as_p }}
-        <!--         
-        <div class="form-group">
-            <label for="id_skills">Skills</label>
-            <input type="text" id="id_skills" name="skills" class="form-control" data-role="tagsinput">
-        </div> -->
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
 {% endblock content %}
-<!-- 
-{% block scripts %}
-{{ block.super }}
-<script src="{% static 'js/tagsinput.js' %}"></script>
-{% endblock scripts %} -->

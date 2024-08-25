@@ -1,10 +1,29 @@
 from django import forms
 from .models import JobSeeker, Recruiter, ProfileReference
-
-from taggit.forms import TagWidget
+from dal import autocomplete
+from dal_select2.widgets import TagSelect2
+from django import forms
+from taggit.forms import TagField
 
 
 class JobSeekerForm(forms.ModelForm):
+    # skills = forms.ModelChoiceField(
+    #     label = 'Skills',
+    #     required=False,
+    #     queryset=Skills.ob
+    # )
+    #     obra_social = forms.ModelChoiceField(
+    #     label='Obra Social',
+    #     required=False,
+    #     queryset=ObraSocial.objects.all(),
+    #     widget=autocomplete.ModelSelect2(
+    #         url="obra-social-all-autocomplete",
+    #         attrs={"data-placeholder": "Seleccione una Obra social"}
+    #     ),
+    # )
+    # paciente = forms.ModelChoiceField(widget=forms.HiddenInput(), queryset=Paciente.objects.all(),)
+    skills = TagField(widget=TagSelect2(url="skill-autocomplete"))
+
     class Meta:
         model = JobSeeker
         fields = [
@@ -12,9 +31,6 @@ class JobSeekerForm(forms.ModelForm):
             "academics",
             "skills",
         ]
-        widgets = {
-            "skills": TagWidget(attrs={"placeholder": "Add skills here"}),
-        }
 
 
 class RecruiterForm(forms.ModelForm):
