@@ -16,7 +16,9 @@ def home(request):
     # Get 5 latest job seeker and recruiters' profile reference objects
 
     # Query concrete subclasses
-    job_seekers = JobSeeker.objects.prefetch_related("skills")[:5]
+    # job_seekers = JobSeeker.objects.prefetch_related("skills")[:5]
+    job_seekers = JobSeeker.objects.all()[:5]
+
     recruiters = Recruiter.objects.all()[:5]
 
     # Get profile references
@@ -168,7 +170,8 @@ def select_profile_type(request):
 
 @login_required(login_url="/login")
 def create_job_seeker(request):
-    common_skills = JobSeeker.skills.most_common()[:4]
+    # NOTE
+    # common_skills = JobSeeker.skills.most_common()[:4]
 
     if request.method == "POST":
         form = JobSeekerForm(request.POST)
@@ -316,3 +319,9 @@ class JobSeekerAutoComplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(name__istartswith=self.q)
 
         return qs
+
+
+# class SkillAutoComplete(autocomplete.Select2QuerySetView):
+#     def get_queryset(self):
+#         if not self.request.user.is_authenticated:
+#             return Skill

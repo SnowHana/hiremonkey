@@ -10,11 +10,11 @@ class JobSeekerForm(forms.ModelForm):
         fields = [
             "profile_title",
             "academics",
-            "skills",
         ]
-        widgets = {
-            "skills": TagWidget(attrs={"placeholder": "Add skills here"}),
-        }
+
+        # widgets = {
+        #     "skills": TagWidget(attrs={"placeholder": "Add skills here"}),
+        # }
 
 
 class RecruiterForm(forms.ModelForm):

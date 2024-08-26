@@ -61,13 +61,22 @@ class Profile(models.Model):
         ordering = ["-updated", "-created"]
 
 
+# class Skill(models.Model):
+#     name = models.CharField(max_length=255, unique=True)
+#     description = models.TextField(blank=True, null=True)
+
+#     # Later on add sth like description, skill level, years of experience etc
+#     def __str__(self) -> str:
+#         return self.name
+
+
 class JobSeeker(Profile):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="job_seeker_profiles"
     )
     academics = models.TextField(blank=True, null=True)
     # skills = models.ManyToManyField("Skill", related_name="job_seekers")
-    skills = TaggableManager()
+    # skills = TaggableManager()
 
     def save(self, *args, **kwargs):
 

@@ -32,7 +32,6 @@ class JobSeekerAdmin(admin.ModelAdmin):
         "profile_title",
         "user",
         "academics",
-        "skills",
         "profile_type",
         "created",
         "updated",
@@ -42,6 +41,9 @@ class JobSeekerAdmin(admin.ModelAdmin):
     exclude = ["profile_type"]
     # For debugging
     readonly_fields = ("id",)
+
+    # def get_skills(self, obj):
+    #     return "\n".join([j.skill for j in obj.skills.all()])
 
 
 @admin.register(Recruiter)
