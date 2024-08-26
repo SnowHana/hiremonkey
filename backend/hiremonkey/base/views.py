@@ -7,7 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
-from .models import JobSeeker, Profile, ProfileReference, Recruiter
+from .models import JobSeeker, Profile, ProfileReference, Recruiter, Skill
 from .forms import JobSeekerForm, RecruiterForm, get_form_class_from_profile_reference
 from dal import autocomplete
 
@@ -314,7 +314,14 @@ class JobSeekerAutoComplete(autocomplete.Select2QuerySetView):
         return qs
 
 
-# class SkillAutoComplete(autocomplete.Select2QuerySetView):
-#     def get_queryset(self):
-#         if not self.request.user.is_authenticated:
-#             return Skill
+class SkillAutoComplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Skill.objects.none()
+
+        qs = Skill.objects.all()
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs

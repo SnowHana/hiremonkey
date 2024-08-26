@@ -26,4 +26,9 @@ urlpatterns = [
         views.JobSeekerAutoComplete.as_view(),
         name="jobseeker-autocomplete",
     ),
+    path(
+        "skill-autocomplete/",
+        views.SkillAutoComplete.as_view(),
+        name="skill-autocomplete",
+    ),
 ]
