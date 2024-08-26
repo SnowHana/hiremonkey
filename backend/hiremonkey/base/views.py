@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from .models import JobSeeker, Profile, ProfileReference, Recruiter
 from .forms import JobSeekerForm, RecruiterForm, get_form_class_from_profile_reference
+from dal import autocomplete
 
 
 def home(request):
@@ -301,3 +302,17 @@ def create_recruiter(request):
     else:
         form = RecruiterForm()
         return render(request, "base/create_recruiter.html", {"form": form})
+
+
+class JobSeekerAutoComplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        # Filter out result based on a visitor
+        if not self.request.user.is_authenticated:
+            return JobSeeker.objects.none()
+
+        qs = JobSeeker.objects.all()
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs
