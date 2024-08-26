@@ -7,8 +7,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
-from .models import JobSeeker, Profile, ProfileReference, Recruiter
+from .models import JobSeeker, Profile, ProfileReference, Recruiter, Skill
 from .forms import JobSeekerForm, RecruiterForm, get_form_class_from_profile_reference
+from dal import autocomplete
 
 
 def home(request):
@@ -16,6 +17,8 @@ def home(request):
 
     # Query concrete subclasses
     job_seekers = JobSeeker.objects.prefetch_related("skills")[:5]
+    # job_seekers = JobSeeker.objects.all()[:5]
+
     recruiters = Recruiter.objects.all()[:5]
 
     # Get profile references
@@ -167,7 +170,8 @@ def select_profile_type(request):
 
 @login_required(login_url="/login")
 def create_job_seeker(request):
-    common_skills = JobSeeker.skills.most_common()[:4]
+    # NOTE
+    # common_skills = JobSeeker.skills.most_common()[:4]
 
     if request.method == "POST":
         form = JobSeekerForm(request.POST)
@@ -213,9 +217,6 @@ def update_profile(request, pk):
     if request.user != profile_instance.user:
         return HttpResponse("You are not allowed here.")
     # profile = get_object_or_404(profile_model, id=pk)
-    print("IM HEREEFJSKLDFJLKSDFJLSL")
-    print(model_name)
-    print(profile_instance.profile_title)
     if request.method == "POST":
         form = form_class(request.POST, instance=profile_instance)
         if form.is_valid():
@@ -231,14 +232,10 @@ def update_profile(request, pk):
             )
             return redirect("home")
     else:
-        print("HELLOOOO")
+
         form = form_class(instance=profile_instance)
         context = {"form": form}
         html_name = f"base/create_{profile_model.__name__}.html".lower()
-
-        print(profile_instance)
-        print(html_name)
-        # print(form)
         return render(
             request,
             html_name,
@@ -301,3 +298,30 @@ def create_recruiter(request):
     else:
         form = RecruiterForm()
         return render(request, "base/create_recruiter.html", {"form": form})
+
+
+class JobSeekerAutoComplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        # Filter out result based on a visitor
+        if not self.request.user.is_authenticated:
+            return JobSeeker.objects.none()
+
+        qs = JobSeeker.objects.all()
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs
+
+
+class SkillAutoComplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Skill.objects.none()
+
+        qs = Skill.objects.all()
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs

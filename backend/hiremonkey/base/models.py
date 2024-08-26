@@ -61,13 +61,22 @@ class Profile(models.Model):
         ordering = ["-updated", "-created"]
 
 
+class Skill(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    # Later on add sth like description, skill level, years of experience etc
+    def __str__(self) -> str:
+        return self.name
+
+
 class JobSeeker(Profile):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="job_seeker_profiles"
     )
     academics = models.TextField(blank=True, null=True)
-    # skills = models.ManyToManyField("Skill", related_name="job_seekers")
-    skills = TaggableManager()
+    skills = models.ManyToManyField("Skill", related_name="job_seekers")
+    # skills = TaggableManager()
 
     def save(self, *args, **kwargs):
 
@@ -96,26 +105,3 @@ class Recruiter(Profile):
             object_id=self.id,
             defaults={"content_object": self},
         )
-
-
-# class Profile(models.Model):
-#     JOB_SEEKER = "JS"
-#     RECRUITER = "RE"
-#     # BOTH = "BO"
-
-#     PROFILE_CHOICES = [
-#         (JOB_SEEKER, "Job Seeker"),
-#         (RECRUITER, "Recruiter"),
-#         # (BOTH, "Both"),
-#     ]
-#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="profiles")
-#     profile_type = models.CharField(max_length=2, choices=PROFILE_CHOICES)
-#     bio = models.TextField(blank=True, null=True)
-
-#     # Highest level of education
-#     edu_level = models.CharField(max_length=2, choices=)
-#     academics = models.TextField(blank=True, null=True)
-#     skills = models.ManyToManyField(Skill, related_name="profiles")
-
-#     def __str__(self):
-#         return f"{self.user.username} - {self.profile_type}"

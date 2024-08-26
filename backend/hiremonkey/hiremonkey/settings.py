@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "base.apps.BaseConfig",
     "taggit",
+    "dal",
+    "dal_select2",
 ]
 
 MIDDLEWARE = [

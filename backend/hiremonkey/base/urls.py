@@ -21,4 +21,14 @@ urlpatterns = [
     path("create_recruiter/", views.create_recruiter, name="create_recruiter"),
     path("update_profile/<str:pk>/", views.update_profile, name="update_profile"),
     path("delete/<str:pk>/", views.delete_profile, name="delete_profile"),
+    path(
+        "jobseeker-autocomplete/",
+        views.JobSeekerAutoComplete.as_view(),
+        name="jobseeker-autocomplete",
+    ),
+    path(
+        "skill-autocomplete/",
+        views.SkillAutoComplete.as_view(),
+        name="skill-autocomplete",
+    ),
 ]
