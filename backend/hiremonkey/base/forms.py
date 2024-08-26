@@ -1,18 +1,28 @@
 from django import forms
 from .models import JobSeeker, Recruiter, ProfileReference, Skill
-
+from dal import autocomplete
 from taggit.forms import TagWidget
 
 
 class JobSeekerForm(forms.ModelForm):
 
-    skills = forms.ModelMultipleChoiceField(
-        queryset=Skill.objects.all(), widget=forms.CheckboxSelectMultiple
-    )
+    # skills = forms.ModelMultipleChoiceField(
+    #     queryset=Skill.objects.all(), widget=forms.CheckboxSelectMultiple
+    # )
 
     class Meta:
         model = JobSeeker
         fields = ["profile_title", "academics", "skills"]
+        widgets = {
+            "skills": autocomplete.ModelSelect2Multiple(
+                url="skill-autocomplete",
+                attrs={
+                    "data-placeholder": "Autocomplete...",
+                    # Trigger after 3 characters are entered
+                    "data-minimum-input-length": 3,
+                },
+            )
+        }
 
         # skills = forms.(
         #     queryset=Skill.objects.all(),

@@ -1,5 +1,7 @@
 from django.contrib import admin
 
+from .forms import JobSeekerForm
+
 # Register your models here.
 from .models import JobSeeker, ProfileReference, Recruiter, Skill
 
@@ -46,6 +48,9 @@ class JobSeekerAdmin(admin.ModelAdmin):
     exclude = ["profile_type"]
     # For debugging
     readonly_fields = ("id",)
+
+    # Make it use our form
+    form = JobSeekerForm
 
     def get_skills(self, obj):
         return "\n".join([j.skill for j in obj.skills.all()])
