@@ -1,17 +1,22 @@
 from django import forms
-from .models import JobSeeker, Recruiter, ProfileReference
+from .models import JobSeeker, Recruiter, ProfileReference, Skill
 
 from taggit.forms import TagWidget
 
 
 class JobSeekerForm(forms.ModelForm):
+
+    skills = forms.ModelMultipleChoiceField(
+        queryset=Skill.objects.all(), widget=forms.CheckboxSelectMultiple
+    )
+
     class Meta:
         model = JobSeeker
-        fields = [
-            "profile_title",
-            "academics",
-        ]
+        fields = ["profile_title", "academics", "skills"]
 
+        # skills = forms.(
+        #     queryset=Skill.objects.all(),
+        # )
         # widgets = {
         #     "skills": TagWidget(attrs={"placeholder": "Add skills here"}),
         # }

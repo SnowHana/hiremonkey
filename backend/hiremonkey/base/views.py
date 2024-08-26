@@ -16,8 +16,8 @@ def home(request):
     # Get 5 latest job seeker and recruiters' profile reference objects
 
     # Query concrete subclasses
-    # job_seekers = JobSeeker.objects.prefetch_related("skills")[:5]
-    job_seekers = JobSeeker.objects.all()[:5]
+    job_seekers = JobSeeker.objects.prefetch_related("skills")[:5]
+    # job_seekers = JobSeeker.objects.all()[:5]
 
     recruiters = Recruiter.objects.all()[:5]
 
@@ -217,9 +217,6 @@ def update_profile(request, pk):
     if request.user != profile_instance.user:
         return HttpResponse("You are not allowed here.")
     # profile = get_object_or_404(profile_model, id=pk)
-    print("IM HEREEFJSKLDFJLKSDFJLSL")
-    print(model_name)
-    print(profile_instance.profile_title)
     if request.method == "POST":
         form = form_class(request.POST, instance=profile_instance)
         if form.is_valid():
@@ -235,14 +232,10 @@ def update_profile(request, pk):
             )
             return redirect("home")
     else:
-        print("HELLOOOO")
+
         form = form_class(instance=profile_instance)
         context = {"form": form}
         html_name = f"base/create_{profile_model.__name__}.html".lower()
-
-        print(profile_instance)
-        print(html_name)
-        # print(form)
         return render(
             request,
             html_name,
