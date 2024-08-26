@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HireMonkey</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/bootstrap-tagsinput.css' %}">
 </head>
 <body>
     {% include 'navbar.html' %}
@@ -18,14 +15,15 @@
     </ul>
     {% endif %}
     {% block content %}
-    {% endblock %}
-    {% block scripts %}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/selectize.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script src="{% static 'js/bootstrap-tagsinput.min.js' %}"></script>
-    {% endblock %}
+    {% endblock content %}
+    <script src="http://code.jquery.com/jquery-latest.js"></script> 
+    <!-- Select2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Select2 JS (should be loaded after jQuery) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+    
+    <!-- Autocomplete Light JS and CSS -->
+    {{ form.media }}
 </body>
 </html>
