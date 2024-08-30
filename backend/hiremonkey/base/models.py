@@ -75,6 +75,7 @@ class JobSeeker(Profile):
         User, on_delete=models.CASCADE, related_name="job_seeker_profiles"
     )
     academics = models.TextField(blank=True, null=True)
+
     skills = models.ManyToManyField("Skill", related_name="job_seekers")
     # skills = TaggableManager()
 

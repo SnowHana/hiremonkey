@@ -12,12 +12,24 @@ class JobSeekerForm(forms.ModelForm):
     skills = forms.ModelMultipleChoiceField(
         queryset=Skill.objects.all(),
         widget=autocomplete.ModelSelect2Multiple(url="skill-autocomplete"),
+        required=False,
         # widget=autocomplete.ModelSelect2Multiple(url="skill-autocomplete"),
     )
 
     class Meta:
         model = JobSeeker
         fields = ["profile_title", "academics", "skills"]
+
+    def clean_skills(self):
+        skills = self.cleaned_data.get("skills")
+        skill_names = self.data.getlist("skills")
+
+        for skill_name in skill_names:
+            if skill_name and not Skill.objects.filter(name=skill_name).exists():
+                new_skill = Skill.objects.create(name=skill_name)
+                skills = skills | Skill.objects.filter(pk=new_skill.pk)
+
+        return skills
         # widgets = {
         #     "skills": autocomplete.ModelSelect2Multiple(
         #         url="skill-autocomplete",

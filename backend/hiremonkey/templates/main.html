@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HireMonkey</title>
 </head>
+
 <body>
+
     {% include 'navbar.html' %}
+
     {% if messages %}
     <ul class="messages">
         {% for message in messages %}
@@ -14,16 +18,12 @@
         {% endfor %}
     </ul>
     {% endif %}
-    {% block content %}
-    {% endblock content %}
-    <script src="http://code.jquery.com/jquery-latest.js"></script> 
-    <!-- Select2 CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 
-    <!-- Select2 JS (should be loaded after jQuery) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
-    
-    <!-- Autocomplete Light JS and CSS -->
-    {{ form.media }}
+    {% block content %}
+
+    {% endblock %}
+
+
 </body>
+
 </html>

@@ -6,7 +6,8 @@
     <h2>Create Job Seeker Profile</h2>
     <form method="POST" id="job-seeker-form">
         {% csrf_token %}
-        {{ form.media }}  <!-- Ensuring media is loaded in content block -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        {{ form.media }} <!-- Ensuring media is loaded in content block -->
         {{ form.as_p }}
 
         <button type="submit" class="btn btn-primary">Submit</button>
