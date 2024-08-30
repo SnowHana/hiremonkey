@@ -7,7 +7,7 @@
     <form method="POST" id="job-seeker-form">
         {% csrf_token %}
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        {{ form.media }} <!-- Ensuring media is loaded in content block -->
+        {{ form.media }}
         {{ form.as_p }}
 
         <button type="submit" class="btn btn-primary">Submit</button>

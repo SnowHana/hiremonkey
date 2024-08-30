@@ -69,6 +69,12 @@ class Skill(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    class Meta:
+        ordering = ["-name"]
+
+        # def save(self, *args, **kwargs):
+        #     super().save(*args, **kwargs)
+
 
 class JobSeeker(Profile):
     user = models.ForeignKey(
