@@ -72,21 +72,29 @@ class JobSeekerForm(forms.ModelForm):
         model = JobSeeker
         fields = ["profile_title", "academics", "skills"]
 
-    def clean_skills(self):
-        skills = []
-        skill_names = self.data.getlist("skills")
+    # def clean_skills(self):
+    #     # TODO: So issue is probs related to this function delivering raw string value instead of String object
+    #     skills = []
+    #     skill_names = self.cleaned_data.get("skills")
 
-        # print("YOU ARE HERE ########")
-        for skill_name in skill_names:
-            skill_name = skill_name.lower().strip()
-            skill, created = Skill.objects.get_or_create(name=skill_name)
-            # print(skill)
-            skills.append(skill)
-            # if skill_name and not Skill.objects.filter(name=skill_name).exists():
-            #     new_skill = Skill.objects.create(name=skill_name)
-            #     skills = skills | Skill.objects.filter(id=new_skill.pk)
+    #     # print("YOU ARE HERE ########")
+    #     for item in skill_names:
+    #         # Check if item is alr a Skill object
+    #         if isinstance(item, Skill):
+    #             # Alr a skill object
+    #             skills.append(item)
+    #         else:
+    #             skill_name = item.lower().strip()
+    #             skill, created = Skill.objects.get_or_create(
+    #                 name=skill_name, defaults={"description": skill_name}
+    #             )
+    #             skills.append(skill)
+    #         # print(skill)
+    #         # if skill_name and not Skill.objects.filter(name=skill_name).exists():
+    #         #     new_skill = Skill.objects.create(name=skill_name)
+    #         #     skills = skills | Skill.objects.filter(id=new_skill.pk)
 
-        return skills
+    #     return skills
 
 
 # widgets = {
