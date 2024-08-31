@@ -231,6 +231,11 @@ def update_profile(request, pk):
                 f"{profile_model.__name__} profile updated successfully!",
             )
             return redirect("home")
+        else:
+            # Debuggig...sth went wrong.
+            print(form.non_field_errors())
+            print(form.errors)
+            return HttpResponse(f"Invalid form. Something went wrong")
     else:
 
         form = form_class(instance=profile_instance)
