@@ -58,12 +58,12 @@ class JobSeekerForm(forms.ModelForm):
         queryset=Skill.objects.all(),
         widget=autocomplete.ModelSelect2Multiple(
             url="skill-autocomplete",
-            attrs={
-                "data-tags": "true",
-                "data-token-separators": '[",", " "]',  # Allow comma and space as separators
-                "data-allow-clear": "true",  # Optional: Allow clearing the selection
-                "placeholder": "Search or add for skills",
-            },
+            # attrs={
+            #     "data-tags": "true",
+            #     "data-token-separators": '[",", " "]',  # Allow comma and space as separators
+            #     "data-allow-clear": "true",  # Optional: Allow clearing the selection
+            #     "placeholder": "Search or add for skills",
+            # },
         ),
         required=False,
     )
