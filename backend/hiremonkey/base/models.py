@@ -1,11 +1,9 @@
 from django.db import models
-from django.utils import timezone
+
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-
-from taggit.managers import TaggableManager
-
+from django.core.validators import MinValueValidator
 
 # class Skill(models.Model):
 #     name = models.CharField(max_length=100, unique=True)
@@ -62,12 +60,32 @@ class Profile(models.Model):
 
 
 class Skill(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
+    years_of_experience = models.PositiveIntegerField(
+        validators=[MinValueValidator(0)],
+        help_text="Number of years with this skill",
+        blank=True,
+        null=True,
+    )
+
+    SKILL_LEVEL_CHOICES = [
+        ("Beginner", "Beginner"),
+        ("Intermediate", "Intermediate"),
+        ("Advanced", "Advanced"),
+        ("Expert", "Expert"),
+    ]
+
+    skill_level = models.CharField(
+        max_length=20,
+        choices=SKILL_LEVEL_CHOICES,
+        default="Beginner",
+        help_text="Proficiency level of the skill",
+    )
 
     # Later on add sth like description, skill level, years of experience etc
     def __str__(self) -> str:
-        return self.name
+        return f"{self.name} - {self.skill_level}"
 
     class Meta:
         ordering = ["-name"]
