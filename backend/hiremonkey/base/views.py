@@ -219,9 +219,7 @@ def update_profile(request, pk):
     # profile = get_object_or_404(profile_model, id=pk)
     if request.method == "POST":
         form = form_class(request.POST, instance=profile_instance)
-        print("##########IS VALID???###########################")
         if form.is_valid():
-            print("##########VALID###########################")
             profile = form.save(commit=False)
             profile.user = request.user
             profile.save()
