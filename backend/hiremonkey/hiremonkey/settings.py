@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "taggit",
     "dal",
     "dal_select2",
+    "django_addanother",
 ]
 
 MIDDLEWARE = [

@@ -13,7 +13,7 @@ from .models import JobSeeker, ProfileReference, Recruiter, Skill
 
 @admin.register(Skill)
 class SkillAdmin(admin.ModelAdmin):
-    list_display = ("name",)
+    list_display = ("name", "years_of_experience", "skill_level", "description")
 
 
 @admin.register(ProfileReference)

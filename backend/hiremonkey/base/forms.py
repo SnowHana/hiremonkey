@@ -2,23 +2,32 @@ from django import forms
 from .models import JobSeeker, Recruiter, ProfileReference, Skill
 from dal import autocomplete
 from taggit.forms import TagWidget
+from django_addanother.widgets import AddAnotherWidgetWrapper
+from django.urls import reverse_lazy
 
 
 class JobSeekerForm(forms.ModelForm):
     skills = forms.ModelMultipleChoiceField(
         queryset=Skill.objects.all(),
-        widget=autocomplete.ModelSelect2Multiple(
-            url="skill-autocomplete",
-            attrs={
-                "data-placeholder": "Search or add skills",
-            },
+        widget=AddAnotherWidgetWrapper(
+            autocomplete.ModelSelect2Multiple(
+                url="skill-autocomplete",
+                attrs={
+                    "data-placeholder": "Search or add skills",
+                },
+            ),
+            reverse_lazy("skill_create"),
         ),
         required=False,
     )
 
     class Meta:
         model = JobSeeker
-        fields = ["profile_title", "academics", "skills"]
+        fields = [
+            "profile_title",
+            "academics",
+            "skills",
+        ]
 
 
 # def clean_skills(self):
