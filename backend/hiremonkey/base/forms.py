@@ -28,18 +28,30 @@ from taggit.forms import TagWidget
 #         model = JobSeeker
 #         fields = ["profile_title", "academics", "skills"]
 
-# # NOTE: This might break it?
-# def clean_skills(self):
-#     skills = self.cleaned_data.get("skills")
-#     skill_names = self.data.getlist("skills")  # Get raw data input
+#     # NOTE: This might break it?
+#     def clean_skills(self):
+#         skills = self.cleaned_data.get("skills") or []
+#         skill_names = self.data.getlist("skills")  # Get raw data input
 
-#     for skill_name in skill_names:
-#         # Create a new Skill if it does not already exist
-#         if skill_name and not Skill.objects.filter(name=skill_name).exists():
-#             new_skill = Skill.objects.create(name=skill_name)
-#             skills = skills | Skill.objects.filter(pk=new_skill.pk)
+#         final_skills = list(skills)
 
-#     return skills
+#         for skill_name in skill_names:
+#             skill_name = skill_name.strip().lower()
+#             if (
+#                 skill_name
+#                 and not Skill.objects.filter(name__iexact=skill_name).exists()
+#             ):
+#                 # Create a new Skill if it does not already exist
+#                 new_skill = Skill.objects.create(name=skill_name)
+#                 final_skills.append(new_skill)
+#             elif skill_name:
+#                 # Add the existing skill (for case-insensitive match)
+#                 existing_skill = Skill.objects.get(name__iexact=skill_name)
+#                 if existing_skill not in final_skills:
+#                     final_skills.append(existing_skill)
+
+#         return final_skills
+
 
 # def clean_skills(self):
 #     skills = self.cleaned_data.get("skills")
@@ -58,12 +70,9 @@ class JobSeekerForm(forms.ModelForm):
         queryset=Skill.objects.all(),
         widget=autocomplete.ModelSelect2Multiple(
             url="skill-autocomplete",
-            # attrs={
-            #     "data-tags": "true",
-            #     "data-token-separators": '[",", " "]',  # Allow comma and space as separators
-            #     "data-allow-clear": "true",  # Optional: Allow clearing the selection
-            #     "placeholder": "Search or add for skills",
-            # },
+            attrs={
+                "data-placeholder": "Search or add skills",
+            },
         ),
         required=False,
     )
@@ -72,29 +81,30 @@ class JobSeekerForm(forms.ModelForm):
         model = JobSeeker
         fields = ["profile_title", "academics", "skills"]
 
-    # def clean_skills(self):
-    #     # TODO: So issue is probs related to this function delivering raw string value instead of String object
-    #     skills = []
-    #     skill_names = self.cleaned_data.get("skills")
 
-    #     # print("YOU ARE HERE ########")
-    #     for item in skill_names:
-    #         # Check if item is alr a Skill object
-    #         if isinstance(item, Skill):
-    #             # Alr a skill object
-    #             skills.append(item)
-    #         else:
-    #             skill_name = item.lower().strip()
-    #             skill, created = Skill.objects.get_or_create(
-    #                 name=skill_name, defaults={"description": skill_name}
-    #             )
-    #             skills.append(skill)
-    #         # print(skill)
-    #         # if skill_name and not Skill.objects.filter(name=skill_name).exists():
-    #         #     new_skill = Skill.objects.create(name=skill_name)
-    #         #     skills = skills | Skill.objects.filter(id=new_skill.pk)
+# def clean_skills(self):
+#     # TODO: So issue is probs related to this function delivering raw string value instead of String object
+#     skills = []
+#     skill_names = self.cleaned_data.get("skills")
 
-    #     return skills
+#     # print("YOU ARE HERE ########")
+#     for item in skill_names:
+#         # Check if item is alr a Skill object
+#         if isinstance(item, Skill):
+#             # Alr a skill object
+#             skills.append(item)
+#         else:
+#             skill_name = item.lower().strip()
+#             skill, created = Skill.objects.get_or_create(
+#                 name=skill_name, defaults={"description": skill_name}
+#             )
+#             skills.append(skill)
+#         # print(skill)
+#         # if skill_name and not Skill.objects.filter(name=skill_name).exists():
+#         #     new_skill = Skill.objects.create(name=skill_name)
+#         #     skills = skills | Skill.objects.filter(id=new_skill.pk)
+
+#     return skills
 
 
 # widgets = {
