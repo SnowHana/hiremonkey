@@ -3,17 +3,20 @@ from django.contrib import admin
 from .forms import JobSeekerForm
 
 # Register your models here.
-from .models import JobSeeker, ProfileReference, Recruiter, Skill
+from .models import JobSeeker, ProfileReference, Recruiter, Skill, SkillName
 
 
 # class SkillInline(admin.TabularInline):
 #     model = JobSeeker.skills.through
 #     extra = 1
+@admin.register(SkillName)
+class SkillNameAdmin(admin.ModelAdmin):
+    list_display = ("name", "description")
 
 
 @admin.register(Skill)
 class SkillAdmin(admin.ModelAdmin):
-    list_display = ("name", "years_of_experience", "skill_level", "description")
+    list_display = ("skill_name", "years_of_experience", "skill_level", "description")
 
 
 @admin.register(ProfileReference)

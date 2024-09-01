@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
+from taggit.managers import TaggableManager
 
 # class Skill(models.Model):
 #     name = models.CharField(max_length=100, unique=True)
@@ -59,8 +61,32 @@ class Profile(models.Model):
         ordering = ["-updated", "-created"]
 
 
+class SkillName(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    def clean(self) -> None:
+        # Make all names lower
+        self.name = self.name.lower()
+
+        # Check if theres another object with same name
+        if SkillName.objects.filter(name__iexact=self.name).exists():
+            raise ValidationError(f"Skill '{self.name}' already exists.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["-name"]
+
+
 class Skill(models.Model):
-    name = models.CharField(max_length=255)
+    # name = models.CharField(max_length=255)
+    skill_name = models.ForeignKey(SkillName, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
     years_of_experience = models.PositiveIntegerField(
         validators=[MinValueValidator(0)],
@@ -85,10 +111,10 @@ class Skill(models.Model):
 
     # Later on add sth like description, skill level, years of experience etc
     def __str__(self) -> str:
-        return f"{self.name} - {self.skill_level}"
+        return f"{self.skill_name.name} - {self.skill_level}"
 
     class Meta:
-        ordering = ["-name"]
+        ordering = ["-skill_name__name"]
 
         # def save(self, *args, **kwargs):
         #     super().save(*args, **kwargs)
