@@ -1,5 +1,5 @@
 from django import forms
-from .models import JobSeeker, Recruiter, ProfileReference, Skill
+from .models import JobSeeker, Recruiter, ProfileReference, Skill, SkillName
 from dal import autocomplete
 from taggit.forms import TagWidget
 from django_addanother.widgets import AddAnotherWidgetWrapper
@@ -8,10 +8,10 @@ from django.urls import reverse_lazy
 
 class JobSeekerForm(forms.ModelForm):
     skills = forms.ModelMultipleChoiceField(
-        queryset=Skill.objects.all(),
+        queryset=SkillName.objects.all(),
         widget=AddAnotherWidgetWrapper(
             autocomplete.ModelSelect2Multiple(
-                url="skill-autocomplete",
+                url="skillname-autocomplete",
                 attrs={
                     "data-placeholder": "Search or add skills",
                 },
@@ -68,3 +68,8 @@ def get_form_class_from_profile_reference(profile_reference: ProfileReference):
     profile_model = profile_reference.content_type.model_class()
 
     return PROFILE_FORM_MAPPING.get(profile_model)
+
+
+class SkillForm(forms.ModelForm):
+    class Meta:
+        model = Skill
