@@ -8,7 +8,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from .models import JobSeeker, Profile, ProfileReference, Recruiter, Skill, SkillName
-from .forms import JobSeekerForm, RecruiterForm, SkillForm, get_form_class_from_profile_reference
+from .forms import (
+    JobSeekerForm,
+    RecruiterForm,
+    SkillForm,
+    get_form_class_from_profile_reference,
+)
 from dal import autocomplete
 
 
@@ -304,14 +309,15 @@ def create_recruiter(request):
         form = RecruiterForm()
         return render(request, "base/create_recruiter.html", {"form": form})
 
-@login_required(login_url='/login')
+
+@login_required(login_url="/login")
 def create_skill(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         # Create a skill
         form = SkillForm(request.POST)
         if form.is_valid():
             skill = form.save(commit=False)
-            skill.
+            skill.user
 
 
 class JobSeekerAutoComplete(autocomplete.Select2QuerySetView):
@@ -339,4 +345,3 @@ class SkillNameAutoComplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(name__icontains=self.q)
 
         return qs
-

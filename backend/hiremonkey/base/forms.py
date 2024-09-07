@@ -71,5 +71,7 @@ def get_form_class_from_profile_reference(profile_reference: ProfileReference):
 
 
 class SkillForm(forms.ModelForm):
+    # Form handling Skill Creation
     class Meta:
         model = Skill
+        fields = ["skill_name", "description", "years_of_experience", "skill_level"]
