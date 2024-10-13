@@ -67,7 +67,7 @@ class Skill(models.Model):
 
     # Later on add sth like description, skill level, years of experience etc
     def __str__(self) -> str:
-        return self.name
+        return str(self.name)
 
     class Meta:
         ordering = ["-name"]
