@@ -1,0 +1,16 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2>Create Job Seeker Profile</h2>
+    <form method="POST" id="job-seeker-form">
+        {% csrf_token %}
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        {{ form.media }}
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+{% endblock content %}

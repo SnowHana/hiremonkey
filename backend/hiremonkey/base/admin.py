@@ -1,21 +1,70 @@
 from django.contrib import admin
 
-# Register your models here.
-from .models import JobSeeker, Recruiter, Skill
+from .forms import JobSeekerForm
 
-admin.site.register(Skill)
+# Register your models here.
+from .models import JobSeeker, ProfileReference, Recruiter, Skill
+
+
+# class SkillInline(admin.TabularInline):
+#     model = JobSeeker.skills.through
+#     extra = 1
+
+
+@admin.register(Skill)
+class SkillAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+
+
+@admin.register(ProfileReference)
+class ProfileReferenceAdmin(admin.ModelAdmin):
+    # Optionally, customize the list display
+    list_display = ("id", "content_type", "object_id", "content_object")
+    search_fields = ("object_id",)
+
+    def content_object_display(self, obj):
+        return str(obj.content_object)
+
+    content_object_display.short_description = "Profile"
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.select_related("content_type")
+        return queryset
 
 
 @admin.register(JobSeeker)
 class JobSeekerAdmin(admin.ModelAdmin):
-    # list_display = ("user", "bio", "academics", "skills")
-    list_display = ("user", "bio", "academics")
+    list_display = (
+        "profile_title",
+        "user",
+        "academics",
+        "profile_type",
+        "created",
+        "updated",
+    )
+    search_fields = ("user__username", "academics")
+    # inlines = [SkillInline]
+    exclude = ["profile_type"]
+    # For debugging
+    readonly_fields = ("id",)
+
+    # Make it use our form
+    form = JobSeekerForm
+
+    def get_skills(self, obj):
+        return "\n".join([j.skill for j in obj.skills.all()])
 
 
 @admin.register(Recruiter)
 class RecruiterAdmin(admin.ModelAdmin):
-    list_display = ("user", "bio", "company")
+    list_display = ("user", "company", "profile_type", "created", "updated")
+    search_fields = ("user__username", "company")
+    exclude = ["profile_type"]
+    # For debugging
+    readonly_fields = ("id",)
 
 
-# admin.site.register(Profile)
-# admin.site.register(User)
+# @admin.register(Skill)
+# class SkillAdmin(admin.ModelAdmin):
+#     list_display = ("name",)

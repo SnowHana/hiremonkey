@@ -5,33 +5,36 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
 
-# Create your models here.
 
 
-# class Ape(models.Model):
-#     name = models.CharField(max_length=200)
-#     description = models.TextField(null=True, blank=True)
-#     updated = models.DateTimeField(auto_now=True)
-#     created = models.DateTimeField(auto_now_add=True)
+# class Skill(models.Model):
+#     name = models.CharField(max_length=100, unique=True)
 
 #     def __str__(self):
 #         return self.name
 
 
-class Skill(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-
-    def __str__(self):
-        return self.name
-
-
 class ProfileReference(models.Model):
+    # NOTE: We dont really utilise this model, we can delete this later
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
 
+    def save(self, *args, **kwargs):
+        if not self.content_object:
+            raise ValueError(
+                "ProfileReference cannot be created without a valid content_object."
+            )
+        super().save(*args, **kwargs)
+
     def get_profile(self):
         return self.content_object
+
+    def __str__(self):
+        return f"{self.id}/ object_id: {self.object_id} / {self.content_type}"
+
+    class Meta:
+        ordering = []
 
 
 class Profile(models.Model):
@@ -43,6 +46,7 @@ class Profile(models.Model):
         (RECRUITER, "Recruiter"),
     ]
 
+    profile_title = models.TextField(max_length=200, default="default profile")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="profiles")
     profile_type = models.CharField(max_length=2, choices=PROFILE_CHOICES)
     bio = models.TextField(blank=True, null=True)
@@ -50,11 +54,26 @@ class Profile(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.profile_type}"
+        return f"{self.user.username} - {self.profile_type} - {self.profile_title} - {self.id}"
 
     class Meta:
         abstract = True  # Mark this model as abstract
         ordering = ["-updated", "-created"]
+
+
+class Skill(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    # Later on add sth like description, skill level, years of experience etc
+    def __str__(self) -> str:
+        return str(self.name)
+
+    class Meta:
+        ordering = ["-name"]
+
+        # def save(self, *args, **kwargs):
+        #     super().save(*args, **kwargs)
 
 
 class JobSeeker(Profile):
@@ -62,7 +81,9 @@ class JobSeeker(Profile):
         User, on_delete=models.CASCADE, related_name="job_seeker_profiles"
     )
     academics = models.TextField(blank=True, null=True)
-    skills = models.ManyToManyField("Skill", related_name="profiles")
+
+    skills = models.ManyToManyField("Skill", related_name="job_seekers")
+    # skills = TaggableManager()
 
     def save(self, *args, **kwargs):
 
@@ -91,26 +112,3 @@ class Recruiter(Profile):
             object_id=self.id,
             defaults={"content_object": self},
         )
-
-
-# class Profile(models.Model):
-#     JOB_SEEKER = "JS"
-#     RECRUITER = "RE"
-#     # BOTH = "BO"
-
-#     PROFILE_CHOICES = [
-#         (JOB_SEEKER, "Job Seeker"),
-#         (RECRUITER, "Recruiter"),
-#         # (BOTH, "Both"),
-#     ]
-#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="profiles")
-#     profile_type = models.CharField(max_length=2, choices=PROFILE_CHOICES)
-#     bio = models.TextField(blank=True, null=True)
-
-#     # Highest level of education
-#     edu_level = models.CharField(max_length=2, choices=)
-#     academics = models.TextField(blank=True, null=True)
-#     skills = models.ManyToManyField(Skill, related_name="profiles")
-
-#     def __str__(self):
-#         return f"{self.user.username} - {self.profile_type}"
