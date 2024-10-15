@@ -77,7 +77,6 @@ def home(request):
 
 
 def loginPage(request):
-
     # If user is alr logged in, redirect him to the home page when he tries to login - again
     if request.user.is_authenticated:
         return redirect("home")
@@ -149,7 +148,6 @@ def job_seeker(request, pk):
 
 
 def recruiter(request, pk):
-
     profile = get_object_or_404(Recruiter, id=pk)
     # user = profile.user
     context = {"profile": profile}

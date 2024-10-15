@@ -1,7 +1,14 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<h1>{{ profile.user.username }}</h1>
-<!-- <p>{{ profile.bio }}</p> -->
+<h1>{{ profile.profile_title }}</h1>
+    <h2>by {{ profile.user.username }}</h2>
+<p>Studied at {{ profile.academics }}</p>
+<p>Skills:</p>
+            <ul>
+                {% for skill in profile.skills.all|slice:":5" %}
+                <li>{{ skill.name }}</li>
+                {% endfor %}
+            </ul>
 <!-- Add more profile details here -->
 {% endblock content %}
