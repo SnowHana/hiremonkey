@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
@@ -126,6 +126,12 @@ def registerPage(request):
             user = form.save(commit=False)
             # user.username = user.username.lower()
             user.save()
+            # Add skill add / edit permission to user
+            # Get all permissions related to the Skill model
+            skill_content_type = ContentType.objects.get_for_model(Skill)
+            all_skill_permissions = Permission.objects.filter(content_type=skill_content_type)
+            # Add all permissions to the user
+            user.user_permissions.add(*all_skill_permissions)
             login(request, user)
             return redirect("home")
         else:
