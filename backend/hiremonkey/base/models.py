@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.signals import pre_save, post_save
 from django.utils.text import slugify
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -56,8 +57,6 @@ class Profile(models.Model):
         return f"{self.user.username} - {self.profile_type} - {self.profile_title} - {self.id}"
 
     def save(self, *args, **kwargs):
-        if self.slug is None:
-            self.slug = slugify(f"{self.user}-{self.profile_title}")
         super().save(*args, **kwargs)
 
     class Meta:
@@ -116,3 +115,21 @@ class Recruiter(Profile):
             object_id=self.id,
             defaults={"content_object": self},
         )
+
+
+def profile_pre_save(sender, instance, *args, **kwargs):
+    if instance.slug is None:
+        # print("Saved Pre")
+        instance.slug = slugify(f"{instance.user}-{instance.profile_type}-{instance.profile_title}")
+
+def profile_post_save(sender, instance, created, *args, **kwargs):
+    if created:
+        instance.slug = slugify(f"{instance.user}-{instance.profile_type}-{instance.profile_title}")
+        instance.save()
+        # print("Saved Post")
+# Connect to JS, RE
+pre_save.connect(profile_pre_save, sender=JobSeeker)
+pre_save.connect(profile_pre_save, sender=Recruiter)
+
+post_save.connect(profile_post_save, sender=JobSeeker)
+post_save.connect(profile_post_save, sender=Recruiter)

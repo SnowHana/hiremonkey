@@ -1,16 +1,16 @@
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth.models import User, Permission
+from dal import autocomplete
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
-from .models import JobSeeker, Profile, ProfileReference, Recruiter, Skill
-from .forms import JobSeekerForm, RecruiterForm, get_form_class_from_profile_reference
-from dal import autocomplete
 from django.http import Http404
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .forms import JobSeekerForm, RecruiterForm, get_form_class_from_profile_reference
+from .models import JobSeeker, ProfileReference, Recruiter, Skill
 
 
 def home(request):
@@ -91,7 +91,7 @@ def loginPage(request):
         try:
             # NOTE: Later change it with email
             user = User.objects.get(username=username)
-        except:
+        except User.DoesNotExist:
             # User doesnt exist
             messages.error(request, "User does not exist")
             # NOTE: idk might lead to an error
@@ -316,6 +316,7 @@ def create_recruiter(request):
     else:
         form = RecruiterForm()
         return render(request, "base/create_recruiter.html", {"form": form})
+
 
 #
 # class JobSeekerAutoComplete(autocomplete.Select2QuerySetView):
