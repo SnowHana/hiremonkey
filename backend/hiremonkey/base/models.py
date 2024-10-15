@@ -1,10 +1,8 @@
 from django.db import models
-from django.utils import timezone
+from django.utils.text import slugify
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-
-
 
 
 # class Skill(models.Model):
@@ -48,6 +46,7 @@ class Profile(models.Model):
 
     profile_title = models.TextField(max_length=200, default="default profile")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="profiles")
+    slug = models.SlugField(max_length=200, blank=True, null=True, unique=True)
     profile_type = models.CharField(max_length=2, choices=PROFILE_CHOICES)
     bio = models.TextField(blank=True, null=True)
     updated = models.DateTimeField(auto_now=True)
@@ -55,6 +54,11 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.profile_type} - {self.profile_title} - {self.id}"
+
+    def save(self, *args, **kwargs):
+        if self.slug is None:
+            self.slug = slugify(f"{self.user}-{self.profile_title}")
+        super().save(*args, **kwargs)
 
     class Meta:
         abstract = True  # Mark this model as abstract
@@ -83,10 +87,10 @@ class JobSeeker(Profile):
     academics = models.TextField(blank=True, null=True)
 
     skills = models.ManyToManyField("Skill", related_name="job_seekers")
+
     # skills = TaggableManager()
 
     def save(self, *args, **kwargs):
-
         self.profile_type = Profile.JOB_SEEKER
         super().save(*args, **kwargs)
         # Create ProfileReference model

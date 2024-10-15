@@ -10,6 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from .models import JobSeeker, Profile, ProfileReference, Recruiter, Skill
 from .forms import JobSeekerForm, RecruiterForm, get_form_class_from_profile_reference
 from dal import autocomplete
+from django.http import Http404
 
 
 def home(request):
@@ -132,7 +133,7 @@ def registerPage(request):
     return render(request, "base/login_register.html", context)
 
 
-def job_seeker(request, pk):
+def job_seeker(request, slug=None):
     # profile = get_object_or_404(Profile, id=profile_id)
     # context = {"profile": profile}
     # try:
@@ -141,7 +142,15 @@ def job_seeker(request, pk):
     # except ProfileReference.DoesNotExist:
     #     # TODO: Later create a 404.html to handle 404 errors
     #     raise Http404("Profile does not exist")
-    profile = get_object_or_404(JobSeeker, id=pk)
+    if slug is not None:
+        try:
+            profile = get_object_or_404(JobSeeker, slug=slug)
+        except JobSeeker.DoesNotExist:
+            raise Http404
+        except JobSeeker.MultipleObjectsReturned:
+            profile = JobSeeker.objects.filter(slug=slug).first()
+        except:
+            raise Http404
     # user = profile.user
     context = {"profile": profile}
     return render(request, "base/jobseeker.html", context)

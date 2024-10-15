@@ -7,7 +7,7 @@ urlpatterns = [
     path("register/", views.registerPage, name="register"),
     path("", views.home, name="home"),
     path(
-        "jobseeker/<int:pk>/",
+        "jobseeker/<slug:slug>/",
         views.job_seeker,
         name="job_seeker",
     ),
