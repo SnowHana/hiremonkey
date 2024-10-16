@@ -341,6 +341,6 @@ class SkillAutoComplete(autocomplete.Select2QuerySetView):
         qs = Skill.objects.all()
 
         if self.q:
-            qs = qs.filter(name__icontains=self.q)
+            qs = qs.filter(title__icontains=self.q)
         # print("HELLOOOoooOOOOOOOO")
         return qs

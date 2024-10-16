@@ -23,7 +23,7 @@ urlpatterns = [
     path("delete/<str:pk>/", views.delete_profile, name="delete_profile"),
     path(
         "skill-autocomplete/",
-        views.SkillAutoComplete.as_view(create_field="name", validate_create=True),
+        views.SkillAutoComplete.as_view(create_field="title", validate_create=True),
         name="skill-autocomplete",
     ),
 ]

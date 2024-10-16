@@ -3,14 +3,13 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.signals import pre_save, post_save
-from django.utils.text import slugify
-import random
+from .utils import  slugify_instance_title
 
 # class Skill(models.Model):
-#     name = models.CharField(max_length=100, unique=True)
+#     title = models.CharField(max_length=100, unique=True)
 
 #     def __str__(self):
-#         return self.name
+#         return self.title
 
 
 class ProfileReference(models.Model):
@@ -45,7 +44,7 @@ class Profile(models.Model):
         (RECRUITER, "Recruiter"),
     ]
 
-    profile_title = models.TextField(max_length=200, default="default profile")
+    title = models.TextField(max_length=200, default="default profile")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="profiles")
     slug = models.SlugField(max_length=200, blank=True, null=True, unique=True)
     profile_type = models.CharField(max_length=2, choices=PROFILE_CHOICES)
@@ -54,9 +53,11 @@ class Profile(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.profile_type} - {self.profile_title} - {self.id}"
+        return f"{self.user.username} - {self.profile_type} - {self.title} - {self.id}"
 
     def save(self, *args, **kwargs):
+        # if self.slug is None:
+        #     slugify_instance_title(self)
         super().save(*args, **kwargs)
 
     class Meta:
@@ -65,15 +66,15 @@ class Profile(models.Model):
 
 
 class Skill(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    title = models.CharField(max_length=255, unique=True)
     description = models.TextField(blank=True, null=True)
 
     # Later on add sth like description, skill level, years of experience etc
     def __str__(self) -> str:
-        return str(self.name)
+        return str(self.title)
 
     class Meta:
-        ordering = ["-name"]
+        ordering = ["-title"]
 
         # def save(self, *args, **kwargs):
         #     super().save(*args, **kwargs)
@@ -117,35 +118,15 @@ class Recruiter(Profile):
         )
 
 
-def slugify_instance_of_profile(instance, save=False, new_slug=None):
-    if new_slug is not None:
-        slug = new_slug
-    else:
-        slug = slugify(f"{instance.user}-{instance.profile_type}-{instance.profile_title}")
-    # Check if slug alr exists using recursion
-    Klass = instance.__class__
-    qs = Klass.objects.filter(slug=slug).exclude(id=instance.id)
-    if qs.exists():
-        # NOTE: Think of better logic lol
-        rand_int = random.randint(300_000, 500_000) # random characters (to prevent duplicates)
-        slug = f"{slug}-{rand_int}"
-        return slugify_instance_of_profile(instance, save=save, new_slug=slug)
-    instance.slug = slug
-    # Save if needed
-    if save:
-        instance.save()
-    return instance
-
-
 def profile_pre_save(sender, instance, *args, **kwargs):
     if instance.slug is None:
         # print("Saved Pre")
-        slugify_instance_of_profile(instance)
+        slugify_instance_title(instance)
 
 
 def profile_post_save(sender, instance, created, *args, **kwargs):
     if created:
-        slugify_instance_of_profile(instance, save=True)
+        slugify_instance_title(instance, save=True)
         # print("Saved Post")
 
 

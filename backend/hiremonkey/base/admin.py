@@ -13,7 +13,7 @@ from .models import JobSeeker, ProfileReference, Recruiter, Skill
 
 @admin.register(Skill)
 class SkillAdmin(admin.ModelAdmin):
-    list_display = ("name",)
+    list_display = ("title",)
 
 
 @admin.register(ProfileReference)
@@ -36,7 +36,7 @@ class ProfileReferenceAdmin(admin.ModelAdmin):
 @admin.register(JobSeeker)
 class JobSeekerAdmin(admin.ModelAdmin):
     list_display = (
-        "profile_title",
+        "title",
         "user",
         "academics",
         "profile_type",
@@ -68,4 +68,4 @@ class RecruiterAdmin(admin.ModelAdmin):
 
 # @admin.register(Skill)
 # class SkillAdmin(admin.ModelAdmin):
-#     list_display = ("name",)
+#     list_display = ("title",)
