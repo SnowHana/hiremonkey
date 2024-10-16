@@ -1,10 +1,10 @@
-from django.db import models
-from django.db.models.signals import pre_save, post_save
-from django.utils.text import slugify
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-
+from django.db import models
+from django.db.models.signals import pre_save, post_save
+from django.utils.text import slugify
+import random
 
 # class Skill(models.Model):
 #     name = models.CharField(max_length=100, unique=True)
@@ -117,19 +117,41 @@ class Recruiter(Profile):
         )
 
 
+def slugify_instance_of_profile(instance, save=False, new_slug=None):
+    if new_slug is not None:
+        slug = new_slug
+    else:
+        slug = slugify(f"{instance.user}-{instance.profile_type}-{instance.profile_title}")
+    # Check if slug alr exists using recursion
+    Klass = instance.__class__
+    qs = Klass.objects.filter(slug=slug).exclude(id=instance.id)
+    if qs.exists():
+        # NOTE: Think of better logic lol
+        rand_int = random.randint(300_000, 500_000) # random characters (to prevent duplicates)
+        slug = f"{slug}-{rand_int}"
+        return slugify_instance_of_profile(instance, save=save, new_slug=slug)
+    instance.slug = slug
+    # Save if needed
+    if save:
+        instance.save()
+    return instance
+
+
 def profile_pre_save(sender, instance, *args, **kwargs):
     if instance.slug is None:
         # print("Saved Pre")
-        instance.slug = slugify(f"{instance.user}-{instance.profile_type}-{instance.profile_title}")
+        slugify_instance_of_profile(instance)
+
 
 def profile_post_save(sender, instance, created, *args, **kwargs):
     if created:
-        instance.slug = slugify(f"{instance.user}-{instance.profile_type}-{instance.profile_title}")
-        instance.save()
+        slugify_instance_of_profile(instance, save=True)
         # print("Saved Post")
+
+
 # Connect to JS, RE
-pre_save.connect(profile_pre_save, sender=JobSeeker)
 pre_save.connect(profile_pre_save, sender=Recruiter)
+pre_save.connect(profile_pre_save, sender=JobSeeker)
 
 post_save.connect(profile_post_save, sender=JobSeeker)
 post_save.connect(profile_post_save, sender=Recruiter)
