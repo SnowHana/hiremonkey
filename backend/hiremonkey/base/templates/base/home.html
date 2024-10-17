@@ -55,12 +55,12 @@
             <h2>Active Recruiters</h2>
             {% for ref, profile in recruiters %}
                 <div>
-                    <h5><a href="{% url 'recruiter' ref.id %}" class="h5-link">{{ profile.profile_title }}</a></h5>
+                    <h5><a href="{% url 'recruiter' profile.slug %}" class="h5-link">{{ profile.title }}</a></h5>
                     {% if request.user == profile.user %}
                         <a href="{% url 'update_profile' ref.id %}">Edit</a>
                         <a href="{% url 'delete_profile' ref.id %}">Delete</a>
                     {% endif %}
-                    <span>{{ profile.profile_title }}</span>
+                    <span>{{ profile.title }}</span>
                     <h5>@{{ profile.user.username }}</h5>
                     <!-- <p>Bio: {{ profile.bio }}</p> -->
                     <p>Company: {{ profile.company }}</p>

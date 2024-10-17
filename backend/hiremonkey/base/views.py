@@ -163,9 +163,17 @@ def job_seeker(request, slug=None):
     return render(request, "base/jobseeker.html", context)
 
 
-def recruiter(request, pk):
-    profile = get_object_or_404(Recruiter, id=pk)
-    # user = profile.user
+def recruiter(request, slug=None):
+    if slug is not None:
+        try:
+            profile = get_object_or_404(Recruiter, slug=slug)
+        except Recruiter.DoesNotExist:
+            raise Http404
+        except Recruiter.MultipleObjectsReturned:
+            profile = Recruiter.objects.filter(slug=slug).first()
+            # Or we can do http404
+        except:
+            raise Http404
     context = {"profile": profile}
     return render(request, "base/recruiter.html", context)
 
@@ -212,12 +220,11 @@ def create_job_seeker(request):
 
 
 @login_required(login_url="/login")
-def update_profile(request, pk):
+def update_profile(request, slug=None):
     # TODO: Allow user to only update their own profile
     # TODO: When we finsih the tag(Skill) search feature, we will probably have to fix this as well.
     profile_ref = get_object_or_404(ProfileReference, id=pk)
     form_class = get_form_class_from_profile_reference(profile_ref)
-
     if not form_class:
         # Sth went wrong (Invalid profile ref?)
         return redirect("home")
