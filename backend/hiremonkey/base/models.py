@@ -4,16 +4,6 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
-
-
-
-# class Skill(models.Model):
-#     name = models.CharField(max_length=100, unique=True)
-
-#     def __str__(self):
-#         return self.name
-
-
 class ProfileReference(models.Model):
     # NOTE: We dont really utilise this model, we can delete this later
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -81,12 +71,13 @@ class JobSeeker(Profile):
         User, on_delete=models.CASCADE, related_name="job_seeker_profiles"
     )
     academics = models.TextField(blank=True, null=True)
-
-    skills = models.ManyToManyField("Skill", related_name="job_seekers")
+    skills = models.ManyToManyField("Skill", related_name="job_seeker")
+    salary = models.FloatField(blank=True, null=True, default=0)
+    age = models.IntegerField(blank=True, null=True, default=0)
+    # matches = models.ManyToManyField(, related_name="matches")
     # skills = TaggableManager()
 
     def save(self, *args, **kwargs):
-
         self.profile_type = Profile.JOB_SEEKER
         super().save(*args, **kwargs)
         # Create ProfileReference model
@@ -102,6 +93,8 @@ class Recruiter(Profile):
         User, on_delete=models.CASCADE, related_name="recruiter_profiles"
     )
     company = models.TextField(blank=False, null=False)
+    skills = models.ManyToManyField("Skill", related_name='recruiter', null=True, blank=True)
+    salary = models.FloatField(blank=True, null=True, default=0)
 
     def save(self, *args, **kwargs):
         self.profile_type = Profile.RECRUITER
@@ -112,3 +105,7 @@ class Recruiter(Profile):
             object_id=self.id,
             defaults={"content_object": self},
         )
+
+class Company(models.Model):
+    name = models.TextField(blank=False, null=False)
+    # location = models.TextField(blank=True, null=True)
