@@ -32,7 +32,7 @@
             <hr>
             {% for ref, profile in job_seekers %}
                 <div>
-                    <h5><a href="{% url 'job_seeker' ref.id %}" class="h5-link">{{ profile.profile_title }}</a></h5>
+                    <h5><a href="{% url 'job_seeker' profile.slug %}" class="h5-link">{{ profile.title }}</a></h5>
                     {% if request.user == profile.user %}
                         <a href="{% url 'update_profile' ref.id %}">Edit</a>
                         <a href="{% url 'delete_profile' ref.id %}">Delete</a>

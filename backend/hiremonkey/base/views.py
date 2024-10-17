@@ -155,6 +155,7 @@ def job_seeker(request, slug=None):
             raise Http404
         except JobSeeker.MultipleObjectsReturned:
             profile = JobSeeker.objects.filter(slug=slug).first()
+            # Or we can do http404
         except:
             raise Http404
     # user = profile.user
