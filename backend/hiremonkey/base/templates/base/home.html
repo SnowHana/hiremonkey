@@ -35,7 +35,7 @@
                     <h5><a href="{% url 'jobseeker' profile.slug %}" class="h5-link">{{ profile.title }}</a></h5>
                     {% if request.user == profile.user %}
                         <a href="{% url 'update_profile' 'jobseeker' profile.slug %}">Edit</a>
-                        <a href="{% url 'delete_profile' ref.id %}">Delete</a>
+                        <a href="{% url 'delete_profile' 'jobseeker' profile.slug %}">Delete</a>
                     {% endif %}
                     <span>{{ profile.title }}</span>
                     <h5>@{{ profile.user.username }}</h5>
@@ -58,7 +58,7 @@
                     <h5><a href="{% url 'recruiter' profile.slug %}" class="h5-link">{{ profile.title }}</a></h5>
                     {% if request.user == profile.user %}
                         <a href="{% url 'update_profile' 'recruiter' profile.slug %}">Edit</a>
-                        <a href="{% url 'delete_profile' ref.id %}">Delete</a>
+                        <a href="{% url 'delete_profile' 'recruiter' profile.slug %}">Delete</a>
                     {% endif %}
                     <span>{{ profile.title }}</span>
                     <h5>@{{ profile.user.username }}</h5>

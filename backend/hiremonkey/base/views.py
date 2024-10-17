@@ -231,7 +231,17 @@ def update_profile(request, profile_type=None, slug=None):
         raise Http404("Profile type is not valid.")
 
     # Retrieve the profile using slug
-    profile = get_object_or_404(profile_model, slug=slug)
+    profile = None
+    if slug is not None:
+        try:
+            profile = get_object_or_404(profile_model, slug=slug)
+        except profile_model.DoesNotExist:
+            raise Http404
+        except profile_model.MultipleObjectsReturned:
+            profile = profile_model.objects.filter(slug=slug).first()
+            # Or we can do http404
+        except:
+            raise Http404
 
     if request.user != profile.user:
         # TODO: Later do some elegant way..maybe pop up message or sth
@@ -302,13 +312,34 @@ def update_profile(request, profile_type=None, slug=None):
 
 
 @login_required(login_url="/login")
-def delete_profile(request, pk):
+def delete_profile(request, profile_type=None, slug=None):
     # Profile Reference to query
-    profile_ref = get_object_or_404(ProfileReference, id=pk)
-    profile_model = profile_ref.content_type.model_class()
+    if profile_type == "jobseeker":
+        profile_model = JobSeeker
+        form_class = JobSeekerForm
+    elif profile_type == "recruiter":
+        profile_model = Recruiter
+        form_class = RecruiterForm
+    else:
+        raise Http404("Profile type is not valid.")
+
+    # Retrieve the profile using slug
+    profile = None
+    if slug is not None:
+        try:
+            profile = get_object_or_404(profile_model, slug=slug)
+        except profile_model.DoesNotExist:
+            raise Http404
+        except profile_model.MultipleObjectsReturned:
+            profile = profile_model.objects.filter(slug=slug).first()
+            # Or we can do http404
+        except:
+            raise Http404
+    # profile_ref = get_object_or_404(ProfileReference, id=pk)
+    # profile_model = profile_ref.content_type.model_class()
     # We need to get pk (profileReference id) to profile id?
 
-    profile = get_object_or_404(profile_model, id=profile_ref.object_id)
+    # profile = get_object_or_404(profile_model, id=profile_ref.object_id)
     # profile = Profile.objects.get(id=pk)
 
     if request.user != profile.user:

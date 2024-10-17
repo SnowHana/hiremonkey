@@ -20,7 +20,7 @@ urlpatterns = [
     path("create_jobseeker/", views.create_jobseeker, name="create_jobseeker"),
     path("create_recruiter/", views.create_recruiter, name="create_recruiter"),
     path('update/<str:profile_type>/<slug:slug>/', views.update_profile, name='update_profile'),
-    path("delete/<slug:slug>/", views.delete_profile, name="delete_profile"),
+    path("delete/<str:profile_type>/<slug:slug>/", views.delete_profile, name="delete_profile"),
     path(
         "skill-autocomplete/",
         views.SkillAutoComplete.as_view(create_field="title", validate_create=True),
