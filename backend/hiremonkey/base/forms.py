@@ -18,7 +18,7 @@ class JobSeekerForm(forms.ModelForm):
 
     class Meta:
         model = JobSeeker
-        fields = ["profile_title", "academics", "skills"]
+        fields = ["title", "academics", "skills"]
 
 
 # def clean_skills(self):
@@ -35,12 +35,12 @@ class JobSeekerForm(forms.ModelForm):
 #         else:
 #             skill_name = item.lower().strip()
 #             skill, created = Skill.objects.get_or_create(
-#                 name=skill_name, defaults={"description": skill_name}
+#                 title=skill_name, defaults={"description": skill_name}
 #             )
 #             skills.append(skill)
 #         # print(skill)
-#         # if skill_name and not Skill.objects.filter(name=skill_name).exists():
-#         #     new_skill = Skill.objects.create(name=skill_name)
+#         # if skill_name and not Skill.objects.filter(title=skill_name).exists():
+#         #     new_skill = Skill.objects.create(title=skill_name)
 #         #     skills = skills | Skill.objects.filter(id=new_skill.pk)
 
 #     return skills
@@ -49,7 +49,7 @@ class JobSeekerForm(forms.ModelForm):
 class RecruiterForm(forms.ModelForm):
     class Meta:
         model = Recruiter
-        fields = ["profile_title", "company"]
+        fields = ["title", "company"]
 
 
 PROFILE_FORM_MAPPING = {JobSeeker: JobSeekerForm, Recruiter: RecruiterForm}

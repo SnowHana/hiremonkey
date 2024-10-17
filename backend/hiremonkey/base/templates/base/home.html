@@ -2,77 +2,85 @@
 
 {% block content %}
 
-<style>
-    .home-container {
-        display: grid;
-        grid-template-columns: 1fr 3fr 1fr;
-    }
-</style>
+    <style>
+        .home-container {
+            display: grid;
+            grid-template-columns: 1fr 3fr 1fr;
+        }
+
+        .h5-link {
+            font-size: 1.25rem; /* Adjust the font size as needed */
+            font-weight: bold;
+            color: #007bff; /* Change the color as desired */
+            text-decoration: none; /* Remove the underline if you don't want it */
+        }
+    </style>
 
 
-<h1>Home</h1>
-<hr>
-
-<div class="home-container">
-    <div>
-        <h3>Browse Topics</h3>
-        <hr>
-
-    </div>
-
-    <div>
-        <h2>Active Job Seekers</h2>
-        <hr>
-        {% for ref, profile in job_seekers %}
-        <div>
-            <h5>{{ profile.profile_title }}</h5>
-            {% if request.user == profile.user %}
-            <a href="{% url 'update_profile' ref.id %}">Edit</a>
-            <a href="{% url 'delete_profile' ref.id %}">Delete</a>
-            {% endif %}
-            <span>{{ profile.profile_title }}</span>
-            <h5>@{{ profile.user.username }}</h5>
-            <p>Bio: {{ profile.bio }}</p>
-            <p>Academics: {{ profile.academics }}</p>
-            <p>Skills:</p>
-            <ul>
-                {% for skill in profile.skills.all|slice:":5" %}
-                <li>{{ skill.name }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        <hr>
-        {% endfor %}
-        <hr>
-
-        <h2>Active Recruiters</h2>
-        {% for ref, profile in recruiters %}
-        <div>
-            <h5> {{ profile.profile_title }}</h5>
-            {% if request.user == profile.user %}
-            <a href="{% url 'update_profile' ref.id %}">Edit</a>
-            <a href="{% url 'delete_profile' ref.id %}">Delete</a>
-            {% endif %}
-            <span>{{ profile.profile_title }}</span>
-            <h5>@{{ profile.user.username }}</h5>
-            <!-- <p>Bio: {{ profile.bio }}</p> -->
-            <p>Company: {{ profile.company }}</p>
-        </div>
-        {% endfor %}
-
-    </div>
-
-    <div>
-        <h3>My Profiles</h3>
-        <a href="{% url 'create_jobseeker' %}">Create Job Seeker Profile</a>
-        <br>
-        <a href="{% url 'create_recruiter' %}">Create Recruiter Profile</a>
-    </div>
-
-
+    <h1>Home</h1>
     <hr>
 
-    <hr>
+    <div class="home-container">
+        <div>
+            <h3>Browse Topics</h3>
+            <hr>
 
-</div>
+        </div>
+
+        <div>
+            <h2>Active Job Seekers</h2>
+            <hr>
+            {% for ref, profile in job_seekers %}
+                <div>
+                    <h5><a href="{% url 'jobseeker' profile.slug %}" class="h5-link">{{ profile.title }}</a></h5>
+                    {% if request.user == profile.user %}
+                        <a href="{% url 'update_profile' 'jobseeker' profile.slug %}">Edit</a>
+                        <a href="{% url 'delete_profile' 'jobseeker' profile.slug %}">Delete</a>
+                    {% endif %}
+                    <span>{{ profile.title }}</span>
+                    <h5>@{{ profile.user.username }}</h5>
+                    <p>Bio: {{ profile.bio }}</p>
+                    <p>Academics: {{ profile.academics }}</p>
+                    <p>Skills:</p>
+                    <ul>
+                        {% for skill in profile.skills.all|slice:":5" %}
+                            <li>{{ skill.title }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <hr>
+            {% endfor %}
+            <hr>
+
+            <h2>Active Recruiters</h2>
+            {% for ref, profile in recruiters %}
+                <div>
+                    <h5><a href="{% url 'recruiter' profile.slug %}" class="h5-link">{{ profile.title }}</a></h5>
+                    {% if request.user == profile.user %}
+                        <a href="{% url 'update_profile' 'recruiter' profile.slug %}">Edit</a>
+                        <a href="{% url 'delete_profile' 'recruiter' profile.slug %}">Delete</a>
+                    {% endif %}
+                    <span>{{ profile.title }}</span>
+                    <h5>@{{ profile.user.username }}</h5>
+                    <!-- <p>Bio: {{ profile.bio }}</p> -->
+                    <p>Company: {{ profile.company }}</p>
+                </div>
+                <hr>
+            {% endfor %}
+
+        </div>
+
+        <div>
+            <h3>My Profiles</h3>
+            <a href="{% url 'create_jobseeker' %}">Create Job Seeker Profile</a>
+            <br>
+            <a href="{% url 'create_recruiter' %}">Create Recruiter Profile</a>
+        </div>
+
+
+        <hr>
+
+        <hr>
+
+    </div>
 {% endblock content %}

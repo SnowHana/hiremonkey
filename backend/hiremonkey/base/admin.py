@@ -13,7 +13,7 @@ from .models import JobSeeker, ProfileReference, Recruiter, Skill
 
 @admin.register(Skill)
 class SkillAdmin(admin.ModelAdmin):
-    list_display = ("name",)
+    list_display = ("title",)
 
 
 @admin.register(ProfileReference)
@@ -36,12 +36,13 @@ class ProfileReferenceAdmin(admin.ModelAdmin):
 @admin.register(JobSeeker)
 class JobSeekerAdmin(admin.ModelAdmin):
     list_display = (
-        "profile_title",
+        "title",
         "user",
         "academics",
         "profile_type",
         "created",
         "updated",
+        'slug',
     )
     search_fields = ("user__username", "academics")
     # inlines = [SkillInline]
@@ -58,7 +59,7 @@ class JobSeekerAdmin(admin.ModelAdmin):
 
 @admin.register(Recruiter)
 class RecruiterAdmin(admin.ModelAdmin):
-    list_display = ("user", "company", "profile_type", "created", "updated")
+    list_display = ("user", "company", "profile_type", "created", "updated", 'slug')
     search_fields = ("user__username", "company")
     exclude = ["profile_type"]
     # For debugging
@@ -67,4 +68,4 @@ class RecruiterAdmin(admin.ModelAdmin):
 
 # @admin.register(Skill)
 # class SkillAdmin(admin.ModelAdmin):
-#     list_display = ("name",)
+#     list_display = ("title",)
