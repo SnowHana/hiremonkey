@@ -3,11 +3,11 @@ from django.template.defaultfilters import slugify
 
 
 def slugify_instance_title(instance, save=False, new_slug=None):
+    Klass = instance.__class__
     if new_slug is not None:
         slug = new_slug
     else:
         slug = slugify(f"{instance.title}")
-    Klass = instance.__class__
     # Check if slug alr exists using recursion
     qs = Klass.objects.filter(slug=slug).exclude(id=instance.id)
     if qs.exists():

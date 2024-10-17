@@ -139,7 +139,7 @@ def registerPage(request):
     return render(request, "base/login_register.html", context)
 
 
-def job_seeker(request, slug=None):
+def jobseeker(request, slug=None):
     # profile = get_object_or_404(Profile, id=profile_id)
     # context = {"profile": profile}
     # try:
@@ -183,16 +183,16 @@ def select_profile_type(request):
     if request.method == "POST":
         # Register or Create a profile
         profile_type = request.POST.get("profile_type")
-        if profile_type == "job_seeker":
-            return redirect("create_job_seeker")
+        if profile_type == "jobseeker":
+            return redirect("create_jobseeker")
         elif profile_type == "recruiter":
             return redirect("create_recruiter")
     return render(request, "base/select_profile_type.html")
 
 
 @login_required(login_url="/login")
-def create_job_seeker(request):
-    # NOTE
+def create_jobseeker(request):
+    # NOTE f
     # common_skills = JobSeeker.skills.most_common()[:4]
 
     if request.method == "POST":
@@ -220,53 +220,85 @@ def create_job_seeker(request):
 
 
 @login_required(login_url="/login")
-def update_profile(request, slug=None):
-    # TODO: Allow user to only update their own profile
-    # TODO: When we finsih the tag(Skill) search feature, we will probably have to fix this as well.
-    profile_ref = get_object_or_404(ProfileReference, id=pk)
-    form_class = get_form_class_from_profile_reference(profile_ref)
-    if not form_class:
-        # Sth went wrong (Invalid profile ref?)
-        return redirect("home")
+def update_profile(request, profile_type=None, slug=None):
+    if profile_type == "jobseeker":
+        profile_model = JobSeeker
+        form_class = JobSeekerForm
+    elif profile_type == "recruiter":
+        profile_model = Recruiter
+        form_class = RecruiterForm
+    else:
+        raise Http404("Profile type is not valid.")
 
-    # profile_instance = profile_ref.get_profile()
-    profile_instance = profile_ref.content_object
+    # Retrieve the profile using slug
+    profile = get_object_or_404(profile_model, slug=slug)
 
-    profile_model = profile_ref.content_type.model_class()
-    model_name = profile_model.__name__
-
-    if request.user != profile_instance.user:
+    if request.user != profile.user:
+        # TODO: Later do some elegant way..maybe pop up message or sth
         return HttpResponse("You are not allowed here.")
-    # profile = get_object_or_404(profile_model, id=pk)
-    if request.method == "POST":
-        form = form_class(request.POST, instance=profile_instance)
-        if form.is_valid():
-            profile = form.save(commit=False)
-            profile.user = request.user
-            profile.save()
-            # save skills
-            form.save_m2m()
 
-            messages.success(
-                request,
-                f"{profile_model.__name__} profile updated successfully!",
-            )
+    # form_class = get_form_class_from_profile_reference(profile_type)
+
+    if request.method == "POST":
+        form = form_class(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"{profile_model.__name__} profile updated successfully!")
             return redirect("home")
         else:
-            # Debuggig...sth went wrong.
-            print(form.non_field_errors())
-            print(form.errors)
-            return HttpResponse(f"Invalid form. Something went wrong")
+            return HttpResponse("Invalid form. Something went wrong.")
     else:
-
-        form = form_class(instance=profile_instance)
+        form = form_class(instance=profile)
         context = {"form": form}
-        html_name = f"base/create_{profile_model.__name__}.html".lower()
-        return render(
-            request,
-            html_name,
-            context,
-        )
+        return render(request, f"base/create_{profile_type}.html", context)
+
+# def update_profile(request, slug=None):
+#     # TODO: Allow user to only update their own profile
+#     # TODO: When we finsih the tag(Skill) search feature, we will probably have to fix this as well.
+#     profile_ref = get_object_or_404(ProfileReference, id=pk)
+#     form_class = get_form_class_from_profile_reference(profile_ref)
+#     if not form_class:
+#         # Sth went wrong (Invalid profile ref?)
+#         return redirect("home")
+#
+#     # profile_instance = profile_ref.get_profile()
+#     profile_instance = profile_ref.content_object
+#
+#     profile_model = profile_ref.content_type.model_class()
+#     model_name = profile_model.__name__
+#
+#     if request.user != profile_instance.user:
+#         return HttpResponse("You are not allowed here.")
+#     # profile = get_object_or_404(profile_model, id=pk)
+#     if request.method == "POST":
+#         form = form_class(request.POST, instance=profile_instance)
+#         if form.is_valid():
+#             profile = form.save(commit=False)
+#             profile.user = request.user
+#             profile.save()
+#             # save skills
+#             form.save_m2m()
+#
+#             messages.success(
+#                 request,
+#                 f"{profile_model.__name__} profile updated successfully!",
+#             )
+#             return redirect("home")
+#         else:
+#             # Debuggig...sth went wrong.
+#             print(form.non_field_errors())
+#             print(form.errors)
+#             return HttpResponse(f"Invalid form. Something went wrong")
+#     else:
+#
+#         form = form_class(instance=profile_instance)
+#         context = {"form": form}
+#         html_name = f"base/create_{profile_model.__name__}.html".lower()
+#         return render(
+#             request,
+#             html_name,
+#             context,
+#         )
 
 
 @login_required(login_url="/login")
@@ -289,14 +321,14 @@ def delete_profile(request, pk):
         return render(request, "base/delete.html", {"obj": profile})
 
 
-# def create_job_seeker(request):
+# def create_jobseeker(request):
 #     if request.method == "POST":
 #         # Ceate a job seeker
 #         form = JobSeekerForm(request.POST)
 #         if form.is_valid():
-#             job_seeker = form.save(commit=False)
-#             job_seeker.user = request.user
-#             job_seeker.save()
+#             jobseeker = form.save(commit=False)
+#             jobseeker.user = request.user
+#             jobseeker.save()
 #             messages.success(request, "Successfully created a job seeker profile!")
 #             return redirect("home")
 #         else:
@@ -305,7 +337,7 @@ def delete_profile(request, pk):
 #             )
 #     else:
 #         form = JobSeekerForm()
-#         return render(request, "base/create_job_seeker.html", {"form": form})
+#         return render(request, "base/create_jobseeker.html", {"form": form})
 
 
 @login_required(login_url="/login")
