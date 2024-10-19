@@ -1,18 +1,64 @@
 {% load static %}
 
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            <img src="{% static 'images/favicon.svg' %}" alt="Logo" width="30" height="24"
+                 class="d-inline-block align-text-top">
+            HireMonkey
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        Me
+                    </a>
+                    <ul class="dropdown-menu">
+          
+                        {% if request.user.is_authenticated %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'user_mode_selection' %}">Select User Model</a>
+                            </li>
+                            {#                    <a href="{% url 'user_mode_selection' %}">Select user mode</a>#}
+                        {% else %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'login' %}">Login</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'register' %}">Signup</a>
+                            </li>
+
+                        {% endif %}
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+                </li>
 
 
-<a href="/">
-    <img src="{% static 'images/favicon.svg' %}" alt="Logo" class="img-fluid" style="width: 50px;">
-</a>
-
-
-
-{% if request.user.is_authenticated %}
-<p>Hello {{request.user}}</p>
-<a href="{% url 'logout' %}">Logout</a>
-{% else %}
-<a href="{% url 'login' %}">Login</a>
-{% endif %}
-
-<hr>
+            </ul>
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</nav>

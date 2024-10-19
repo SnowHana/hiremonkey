@@ -13,25 +13,18 @@ from .forms import JobSeekerForm, RecruiterForm
 from .models import JobSeeker, Recruiter, Skill
 
 @login_required
-def profile_selection_view(request):
+def user_mode_selection(request):
     if request.method == 'POST':
         selected_mode = request.POST.get('user_mode')
         request.session['user_mode'] = selected_mode  # Store the selection in session
         return redirect('home')  # Redirect to home view after selection
 
-    return render(request, 'base/profile_selection.html')
+    return render(request, 'base/user_mode_selection.html')
 
 
 def home(request):
     # User is not authenticated. Prompt to login and choose profile
     user_mode = request.session.get('user_mode', 'job_seeker')  # Default to job seeker
-
-    if user_mode == 'job_seeker':
-        # Load job seeker specific content
-        messages.info(request, 'You have selected job seeker!')
-    elif user_mode == 'recruiter':
-        messages.info(request, 'You have selected recruiter!')
-        # Load recruiter specific content
 
 
     # Get 5 latest job seeker and recruiters' profile reference objects
@@ -45,7 +38,21 @@ def home(request):
         'job_seekers': job_seekers, 'recruiters': recruiters
     }
 
+    if user_mode == 'job_seeker':
+        # Load job seeker specific content
+        # messages.info(request, 'You have selected job seeker!')
+        context = {
+            'job_seekers': [], 'recruiters': recruiters
+        }
+    elif user_mode == 'recruiter':
+        context = {
+            'job_seekers': job_seekers, 'recruiters': []
+        }
+
     return render(request, "base/home.html", context)
+    # messages.info(request, 'You have selected recruiter!')
+    # Load recruiter specific content
+
 
 
 
@@ -74,7 +81,7 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
-            return redirect("profile_selection")
+            return redirect("user_mode_selection")
         else:
             messages.error(request, "Username or password does not exit")
 
