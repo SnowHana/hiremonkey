@@ -40,7 +40,7 @@ class JobSeekerAdmin(admin.ModelAdmin):
         "title",
         "user",
         "academics",
-        'salary',
+        'min_salary',
         "created",
         "updated",
         'slug',
@@ -61,7 +61,7 @@ class JobSeekerAdmin(admin.ModelAdmin):
 
 @admin.register(Recruiter)
 class RecruiterAdmin(admin.ModelAdmin):
-    list_display = ("user", "company", "created", "updated", 'slug')
+    list_display = ("user", "company", "created", "updated", 'slug', 'min_salary')
     search_fields = ("user__username", "company")
     exclude = ["profile_type"]
     # For debugging

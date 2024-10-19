@@ -18,7 +18,34 @@ class JobSeekerForm(forms.ModelForm):
 
     class Meta:
         model = JobSeeker
-        fields = ["title", "academics", "skills"]
+        fields = ["title", 'bio', "academics", "skills", 'min_salary', 'max_salary', ]
+
+
+class RecruiterForm(forms.ModelForm):
+    skills = forms.ModelMultipleChoiceField(
+        queryset=Skill.objects.all(),
+        widget=autocomplete.ModelSelect2Multiple(
+            url="skill-autocomplete",
+            attrs={
+                "data-placeholder": "Search or add skills",
+            },
+        ),
+        required=False,
+    )
+    # bio : More like a description of the role i guess
+    # skills: required skill
+    class Meta:
+        model = Recruiter
+        fields = ["title", 'bio', "company", 'skills', 'min_salary', 'max_salary', ]
+
+
+PROFILE_FORM_MAPPING = {JobSeeker: JobSeekerForm, Recruiter: RecruiterForm}
+
+#
+# def get_form_class_from_profile_reference(profile_reference: ProfileReference):
+#     profile_model = profile_reference.content_type.model_class()
+#
+#     return PROFILE_FORM_MAPPING.get(profile_model)
 
 
 # def clean_skills(self):
@@ -45,17 +72,3 @@ class JobSeekerForm(forms.ModelForm):
 
 #     return skills
 
-
-class RecruiterForm(forms.ModelForm):
-    class Meta:
-        model = Recruiter
-        fields = ["title", "company"]
-
-
-PROFILE_FORM_MAPPING = {JobSeeker: JobSeekerForm, Recruiter: RecruiterForm}
-
-#
-# def get_form_class_from_profile_reference(profile_reference: ProfileReference):
-#     profile_model = profile_reference.content_type.model_class()
-#
-#     return PROFILE_FORM_MAPPING.get(profile_model)

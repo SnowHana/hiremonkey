@@ -211,16 +211,39 @@ def create_jobseeker(request):
 
             messages.success(request, "Job Seeker profile created successfully!")
             return redirect("home")
+        else:
+            messages.error(request, "Error occured during creating a Job Seeker profile")
+
     else:
         form = JobSeekerForm()
+        return render(
+            request,
+            "base/create_jobseeker.html",
+            {
+                "form": form,
+            },
+        )
 
-    return render(
-        request,
-        "base/create_jobseeker.html",
-        {
-            "form": form,
-        },
-    )
+
+
+@login_required(login_url="/login")
+def create_recruiter(request):
+    if request.method == "POST":
+        # Ceate a job seeker
+        form = RecruiterForm(request.POST)
+        if form.is_valid():
+            recruiter = form.save(commit=False)
+            recruiter.user = request.user
+            recruiter.save()
+            # Save skills
+            form._save_m2m()
+            messages.success(request, "Successfully created a recruiter profile!")
+            return redirect("home")
+        else:
+            messages.error(request, "Error occured during creating a recruiter profile")
+    else:
+        form = RecruiterForm()
+        return render(request, "base/create_recruiter.html", {"form": form})
 
 
 @login_required(login_url="/login")
@@ -373,24 +396,6 @@ def delete_profile(request, profile_type=None, slug=None):
 #     else:
 #         form = JobSeekerForm()
 #         return render(request, "base/create_jobseeker.html", {"form": form})
-
-
-@login_required(login_url="/login")
-def create_recruiter(request):
-    if request.method == "POST":
-        # Ceate a job seeker
-        form = RecruiterForm(request.POST)
-        if form.is_valid():
-            recruiter = form.save(commit=False)
-            recruiter.user = request.user
-            recruiter.save()
-            messages.success(request, "Successfully created a recruiter profile!")
-            return redirect("home")
-        else:
-            messages.error(request, "Error occured during creating a recruiter profile")
-    else:
-        form = RecruiterForm()
-        return render(request, "base/create_recruiter.html", {"form": form})
 
 
 #
