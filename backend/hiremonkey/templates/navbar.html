@@ -1,6 +1,11 @@
+{% load static %}
+
+
+
 <a href="/">
-    <h1>LOGO</h1>
+    <img src="{% static 'images/favicon.svg' %}" alt="Logo" class="img-fluid" style="width: 50px;">
 </a>
+
 
 
 {% if request.user.is_authenticated %}
