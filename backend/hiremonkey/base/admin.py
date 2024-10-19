@@ -40,11 +40,12 @@ class JobSeekerAdmin(admin.ModelAdmin):
         "title",
         "user",
         "academics",
-        "profile_type",
+        'salary',
         "created",
         "updated",
         'slug',
     )
+    # list_display = [field.name for field in JobSeeker._meta.get_fields()]
     search_fields = ("user__username", "academics")
     # inlines = [SkillInline]
     exclude = ["profile_type"]
@@ -60,7 +61,7 @@ class JobSeekerAdmin(admin.ModelAdmin):
 
 @admin.register(Recruiter)
 class RecruiterAdmin(admin.ModelAdmin):
-    list_display = ("user", "company", "profile_type", "created", "updated", 'slug')
+    list_display = ("user", "company", "created", "updated", 'slug')
     search_fields = ("user__username", "company")
     exclude = ["profile_type"]
     # For debugging

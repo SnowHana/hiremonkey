@@ -30,40 +30,48 @@
         <div>
             <h2>Active Job Seekers</h2>
             <hr>
-            {% for ref, profile in job_seekers %}
+            {% for profile in job_seekers %}
                 <div>
                     <h5><a href="{% url 'jobseeker' profile.slug %}" class="h5-link">{{ profile.title }}</a></h5>
                     {% if request.user == profile.user %}
                         <a href="{% url 'update_profile' 'jobseeker' profile.slug %}">Edit</a>
                         <a href="{% url 'delete_profile' 'jobseeker' profile.slug %}">Delete</a>
                     {% endif %}
-                    <span>{{ profile.title }}</span>
                     <h5>@{{ profile.user.username }}</h5>
                     <p>Bio: {{ profile.bio }}</p>
                     <p>Academics: {{ profile.academics }}</p>
-                    <p>Skills:</p>
+                    <p>Skills Available:</p>
                     <ul>
                         {% for skill in profile.skills.all|slice:":5" %}
                             <li>{{ skill.title }}</li>
                         {% endfor %}
                     </ul>
+                    <p>Estimated Salary Offering: {{ profile.salary }}</p>
+                    <p>Last Updated: {{ profile.updated }}</p>
                 </div>
                 <hr>
             {% endfor %}
             <hr>
 
             <h2>Active Recruiters</h2>
-            {% for ref, profile in recruiters %}
+            {% for profile in recruiters %}
                 <div>
                     <h5><a href="{% url 'recruiter' profile.slug %}" class="h5-link">{{ profile.title }}</a></h5>
                     {% if request.user == profile.user %}
                         <a href="{% url 'update_profile' 'recruiter' profile.slug %}">Edit</a>
                         <a href="{% url 'delete_profile' 'recruiter' profile.slug %}">Delete</a>
                     {% endif %}
-                    <span>{{ profile.title }}</span>
                     <h5>@{{ profile.user.username }}</h5>
-                    <!-- <p>Bio: {{ profile.bio }}</p> -->
+                    <p>Bio: {{ profile.bio }}</p>
                     <p>Company: {{ profile.company }}</p>
+                    <p>Skills Looking For: </p>
+                    <ul>
+                        {% for skill in profile.skills.all|slice:":5" %}
+                            <li>{{ skill.title }}</li>
+                        {% endfor %}
+                    </ul>
+                    <p>Estimated Salary Offering: {{ profile.salary }}</p>
+                    <p>Last Updated: {{ profile.updated }}</p>
                 </div>
                 <hr>
             {% endfor %}
