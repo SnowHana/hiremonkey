@@ -3,7 +3,7 @@ from django.contrib import admin
 from .forms import JobSeekerForm
 
 # Register your models here.
-from .models import JobSeeker, ProfileReference, Recruiter, Skill
+from .models import JobSeeker, Recruiter, Skill
 
 
 # class SkillInline(admin.TabularInline):
@@ -16,22 +16,23 @@ class SkillAdmin(admin.ModelAdmin):
     list_display = ("title",)
 
 
-@admin.register(ProfileReference)
-class ProfileReferenceAdmin(admin.ModelAdmin):
-    # Optionally, customize the list display
-    list_display = ("id", "content_type", "object_id", "content_object")
-    search_fields = ("object_id",)
-
-    def content_object_display(self, obj):
-        return str(obj.content_object)
-
-    content_object_display.short_description = "Profile"
-
-    def get_queryset(self, request):
-        queryset = super().get_queryset(request)
-        queryset = queryset.select_related("content_type")
-        return queryset
-
+#
+# @admin.register(ProfileReference)
+# class ProfileReferenceAdmin(admin.ModelAdmin):
+#     # Optionally, customize the list display
+#     list_display = ("id", "content_type", "object_id", "content_object")
+#     search_fields = ("object_id",)
+#
+#     def content_object_display(self, obj):
+#         return str(obj.content_object)
+#
+#     content_object_display.short_description = "Profile"
+#
+#     def get_queryset(self, request):
+#         queryset = super().get_queryset(request)
+#         queryset = queryset.select_related("content_type")
+#         return queryset
+#
 
 @admin.register(JobSeeker)
 class JobSeekerAdmin(admin.ModelAdmin):
@@ -64,7 +65,6 @@ class RecruiterAdmin(admin.ModelAdmin):
     exclude = ["profile_type"]
     # For debugging
     readonly_fields = ("id",)
-
 
 # @admin.register(Skill)
 # class SkillAdmin(admin.ModelAdmin):
