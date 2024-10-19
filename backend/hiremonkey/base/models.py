@@ -13,15 +13,15 @@ class Profile(models.Model):
     #     (JOB_SEEKER, "Job Seeker"),
     #     (RECRUITER, "Recruiter"),
     # ]
-
-    JOB_SEEKER_MODE = 'job_seeker'
-    RECRUITER_MODE = 'recruiter'
-
-    MODE_CHOICES = [
-        (JOB_SEEKER_MODE, 'Job Seeker Mode'),
-        (RECRUITER_MODE, 'Recruiter Mode'),
-    ]
-    user_mode = models.CharField(max_length=20, choices=MODE_CHOICES, default=JOB_SEEKER_MODE)
+    #
+    # JOB_SEEKER_MODE = 'job_seeker'
+    # RECRUITER_MODE = 'recruiter'
+    #
+    # MODE_CHOICES = [
+    #     (JOB_SEEKER_MODE, 'Job Seeker Mode'),
+    #     (RECRUITER_MODE, 'Recruiter Mode'),
+    # ]
+    # user_mode = models.CharField(max_length=20, choices=MODE_CHOICES, default=JOB_SEEKER_MODE)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="%(class)s_profiles")
     slug = models.SlugField(max_length=200, blank=True, null=True, unique=True)
@@ -46,7 +46,7 @@ class Profile(models.Model):
         self.clean()
         super().save(*args, **kwargs)
     def __str__(self):
-        return f"{self.user.username} - {self.get_profile_type_display()} - {self.title}"
+        return f"{self.user.username} - {self.title}"
 
     class Meta:
         abstract = True
@@ -70,7 +70,7 @@ class JobSeeker(Profile):
     matches = models.ManyToManyField('Recruiter', through='Match', related_name="job_seekers")
 
     def save(self, *args, **kwargs):
-        self.user_mode = Profile.JOB_SEEKER_MODE
+        # self.user_mode = Profile.JOB_SEEKER_MODE
         super().save(*args, **kwargs)
 
 
@@ -79,7 +79,7 @@ class Recruiter(Profile):
     matches = models.ManyToManyField(JobSeeker, through="Match", related_name="recruiters")
 
     def save(self, *args, **kwargs):
-        self.user_mode = Profile.RECRUITER_MODE
+        # self.user_mode = Profile.RECRUITER_MODE
         super().save(*args, **kwargs)
 
 

@@ -1,8 +1,17 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<h1>{{ profile.title }}</h1>
+    <h1>{{ profile.title }}</h1>
     <h2>by {{ profile.user.username }}</h2>
-<p>Studied at {{ profile.company }}</p>
-<!-- Add more profile details here -->
-{% endblock content %}
+
+    {% include 'base/profile_card.html' with profile_type='recruiter' profile_url='recruiter' profile=profile %}
+{% endblock %}
+
+{#{% extends 'main.html' %}#}
+{##}
+{#{% block content %}#}
+{#<h1>{{ profile.title }}</h1>#}
+{#    <h2>by {{ profile.user.username }}</h2>#}
+{#<p>Studied at {{ profile.company }}</p>#}
+{#<!-- Add more profile details here -->#}
+{#{% endblock content %}#}
