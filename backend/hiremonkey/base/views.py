@@ -12,10 +12,29 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .forms import JobSeekerForm, RecruiterForm
 from .models import JobSeeker, Recruiter, Skill
 
+@login_required
+def profile_selection_view(request):
+    if request.method == 'POST':
+        selected_mode = request.POST.get('user_mode')
+        request.session['user_mode'] = selected_mode  # Store the selection in session
+        return redirect('home')  # Redirect to home view after selection
+
+    return render(request, 'base/profile_selection.html')
+
 
 def home(request):
-    # Get 5 latest job seeker and recruiters' profile reference objects
+    # User is not authenticated. Prompt to login and choose profile
+    user_mode = request.session.get('user_mode', 'job_seeker')  # Default to job seeker
 
+    if user_mode == 'job_seeker':
+        # Load job seeker specific content
+        messages.info(request, 'You have selected job seeker!')
+    elif user_mode == 'recruiter':
+        messages.info(request, 'You have selected recruiter!')
+        # Load recruiter specific content
+
+
+    # Get 5 latest job seeker and recruiters' profile reference objects
     # Query concrete subclasses
     job_seekers = JobSeeker.objects.prefetch_related("skills")[:5]
     # job_seekers = JobSeeker.objects.all()[:5]
@@ -25,60 +44,9 @@ def home(request):
     context = {
         'job_seekers': job_seekers, 'recruiters': recruiters
     }
-    #
-    # # Get profile references
-    # js_ids = [js.id for js in job_seekers]
-    # rc_ids = [rc.id for rc in recruiters]
-    #
-    # # Content type
-    # js_content = ContentType.objects.get_for_model(JobSeeker)
-    # rc_content = ContentType.objects.get_for_model(Recruiter)
-    #
-    # # Query
-    # # NOTE:Probably order got mixed here..?
-    # # TODO: Fix this so it finds profile ref in order.
-    # # for js_id in js_ids:
-    # #     js_ref = ProfileReference.objects.filter(
-    # #         content_type=js_content, object_id__in=js_ids
-    # #     )
-    # js_ref_q = ProfileReference.objects.filter(
-    #     content_type=js_content, object_id__in=js_ids
-    # )
-    # rc_ref_q = ProfileReference.objects.filter(
-    #     content_type=rc_content, object_id__in=rc_ids
-    # )
-    #
-    # js_ref_map = {ref.object_id: ref for ref in js_ref_q}
-    # rc_ref_map = {ref.object_id: ref for ref in rc_ref_q}
-    #
-    # js_ref = [js_ref_map[js_id] for js_id in js_ids if js_id in js_ref_map]
-    #
-    # rc_ref = [
-    #     rc_ref_map[rc_id] for rc_id in rc_ids if rc_id in rc_ref_map
-    # ]  # Error checking
-    #
-    # if len(js_ref) != len(js_ids) or len(rc_ref) != len(rc_ids):
-    #     # TODO: Flash message feature (saying sth went wrong)
-    #     # print(len(js_ref))
-    #     # print(js_ids)
-    #
-    #     # print(rc_ref)
-    #     # print(rc_ids)
-    #     return HttpResponse("Sth went wrong!")
-    #
-    # js = list(zip(js_ref, job_seekers))
-    # rc = list(zip(rc_ref, recruiters))
-    # profile_references = ProfileReference.objects.all()[:5]
-    # context = {
-    #     "js_ref": js_ref,
-    #     "rc_ref": rc_ref,
-    #     "job_seekers": job_seekers,
-    #     "recruiters": recruiters,
-    # }
-    # context = {"job_seekers": js, "recruiters": rc}
-    # print(js[0])
 
     return render(request, "base/home.html", context)
+
 
 
 def loginPage(request):
@@ -106,7 +74,7 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
-            return redirect("home")
+            return redirect("profile_selection")
         else:
             messages.error(request, "Username or password does not exit")
 

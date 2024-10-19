@@ -1,0 +1,18 @@
+<!-- profile_selection.html -->
+{% extends 'main.html' %}
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        <label for="job_seeker_mode">
+            <input type="radio" id="job_seeker_mode" name="user_mode" value="job_seeker">
+            Job Seeker Mode
+        </label>
+
+        <label for="recruiter_mode">
+            <input type="radio" id="recruiter_mode" name="user_mode" value="recruiter">
+            Recruiter Mode
+        </label>
+
+        <button type="submit">Select</button>
+    </form>
+{% endblock content %}

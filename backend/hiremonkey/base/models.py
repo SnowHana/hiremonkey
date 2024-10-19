@@ -6,13 +6,22 @@ from .utils import slugify_instance_title
 
 
 class Profile(models.Model):
-    JOB_SEEKER = "JS"
-    RECRUITER = "RE"
+    # JOB_SEEKER = "JS"
+    # RECRUITER = "RE"
+    #
+    # PROFILE_CHOICES = [
+    #     (JOB_SEEKER, "Job Seeker"),
+    #     (RECRUITER, "Recruiter"),
+    # ]
 
-    PROFILE_CHOICES = [
-        (JOB_SEEKER, "Job Seeker"),
-        (RECRUITER, "Recruiter"),
+    JOB_SEEKER_MODE = 'job_seeker'
+    RECRUITER_MODE = 'recruiter'
+
+    MODE_CHOICES = [
+        (JOB_SEEKER_MODE, 'Job Seeker Mode'),
+        (RECRUITER_MODE, 'Recruiter Mode'),
     ]
+    user_mode = models.CharField(max_length=20, choices=MODE_CHOICES, default=JOB_SEEKER_MODE)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="%(class)s_profiles")
     slug = models.SlugField(max_length=200, blank=True, null=True, unique=True)
@@ -61,7 +70,7 @@ class JobSeeker(Profile):
     matches = models.ManyToManyField('Recruiter', through='Match', related_name="job_seekers")
 
     def save(self, *args, **kwargs):
-        self.profile_type = Profile.JOB_SEEKER
+        self.user_mode = Profile.JOB_SEEKER_MODE
         super().save(*args, **kwargs)
 
 
@@ -70,7 +79,7 @@ class Recruiter(Profile):
     matches = models.ManyToManyField(JobSeeker, through="Match", related_name="recruiters")
 
     def save(self, *args, **kwargs):
-        self.profile_type = Profile.RECRUITER
+        self.user_mode = Profile.RECRUITER_MODE
         super().save(*args, **kwargs)
 
 
