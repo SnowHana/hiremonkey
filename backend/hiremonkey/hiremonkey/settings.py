@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     "base.apps.BaseConfig",
     "dal",
     "dal_select2",
+    'crispy_forms',
+    'crispy_bootstrap5'
 ]
 
 MIDDLEWARE = [
@@ -71,7 +73,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "hiremonkey.wsgi.application"
-
+CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
+CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases

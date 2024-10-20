@@ -1,6 +1,7 @@
 {% load static %}
 
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
+{#<nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">#}
+<nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'home' %}">
             <img src="{% static 'images/favicon.svg' %}" alt="Logo" width="30" height="24"
@@ -22,7 +23,11 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                        aria-expanded="false">
-                        Me
+                        {% if request.user.is_authenticated %}
+                            Me
+                        {% else %}
+                            Guest
+                        {% endif %}
                     </a>
                     <ul class="dropdown-menu">
           

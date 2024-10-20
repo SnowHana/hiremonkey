@@ -1,5 +1,5 @@
 {% extends 'main.html' %}
-
+{% load crispy_forms_tags %}
 {% block content %}
     <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
         <div class="col-md-6 col-lg-4">
@@ -30,7 +30,18 @@
                 <h2 class="text-center mb-4">Register</h2>
                 <form method="POST" action="" class="border p-4 shadow rounded">
                     {% csrf_token %}
-                    {{ form.as_p }}
+                    {{ form|crispy }}
+{#                    {% for field in form %}#}
+{#                        <div class="form-group">#}
+{#                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>#}
+{#                            {{ field }}#}
+{#                            <div class="invalid-feedback">#}
+{#                                {{ field.errors|striptags }}#}
+{#                            </div>#}
+{#                            <input id="username" name="username" type="text" placeholder="Enter User Name">#}
+{#                        </div>#}
+{#                    {% endfor %}#}
+{#                    {{ form.as_p }}#}
                     <button type="submit" class="btn btn-primary w-100">Register</button>
                 </form>
                 <p class="text-center mt-3">Already signed up?</p>
