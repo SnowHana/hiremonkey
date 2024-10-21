@@ -19,8 +19,6 @@ class JobSeekerForm(forms.ModelForm):
     class Meta:
         model = JobSeeker
         fields = ["title", 'bio', "academics", "skills", 'min_salary', 'max_salary', ]
-
-
 class RecruiterForm(forms.ModelForm):
     skills = forms.ModelMultipleChoiceField(
         queryset=Skill.objects.all(),
@@ -32,11 +30,28 @@ class RecruiterForm(forms.ModelForm):
         ),
         required=False,
     )
-    # bio : More like a description of the role i guess
-    # skills: required skill
+
     class Meta:
         model = Recruiter
-        fields = ["title", 'bio', "company", 'skills', 'min_salary', 'max_salary', ]
+        fields = ["title", 'bio', "company", 'skills', 'min_salary', 'max_salary']
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)  # Pop the user from kwargs
+        super(RecruiterForm, self).__init__(*args, **kwargs)  # Call parent __init__
+
+    def clean_title(self):
+        title = self.cleaned_data.get('title')
+
+        if self.user is None:
+            raise forms.ValidationError("User information is missing.")
+
+        # Query the database to check for existing titles for the same user
+        queryset = Recruiter.objects.filter(user=self.user, title=title)
+        print(queryset)
+        if queryset.exists():
+            raise forms.ValidationError("A recruiter profile with this title already exists.")
+
+        return title
 
 
 PROFILE_FORM_MAPPING = {JobSeeker: JobSeekerForm, Recruiter: RecruiterForm}

@@ -1,15 +1,29 @@
 {% extends 'main.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 {% block content %}
-<div class="container">
-    <h2>Create Recruiter Profile</h2>
-    <form method="POST" id="job-seeker-form">
-        {% csrf_token %}
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        {{ form.media }}
-        {{ form.as_p }}
+    <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="col-md-6 col-lg-4">
+            <h2 class="text-center mb-4">Create Recruiter Profile</h2>
+            <form method="POST" action="" class="border p-4 shadow rounded">
+                {% csrf_token %}
+                {{ form.media }}
+                {{ form|crispy }}
 
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-</div>
+                <button type="submit" class="btn btn-primary w-100">Submit</button>
+
+                <!-- Display form errors -->
+                {% if form.errors %}
+                    <div class="alert alert-danger mt-3">
+                        {{ form.non_field_errors }}
+                        {% for field in form %}
+                            {% if field.errors %}
+                                <div>{{ field.label }}: {{ field.errors|striptags }}</div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
 {% endblock content %}

@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -200,25 +200,25 @@ def create_jobseeker(request):
         )
 
 
-
-@login_required(login_url="/login")
 def create_recruiter(request):
     if request.method == "POST":
-        # Ceate a job seeker
-        form = RecruiterForm(request.POST)
+        print(f"Request user in POST: {request.user}")
+        form = RecruiterForm(request.POST, user=request.user)
         if form.is_valid():
             recruiter = form.save(commit=False)
+            print(f"Recruiter user: {recruiter.user}")
             recruiter.user = request.user
             recruiter.save()
-            # Save skills
             form._save_m2m()
             messages.success(request, "Successfully created a recruiter profile!")
             return redirect("home")
-        else:
-            messages.error(request, "Error occured during creating a recruiter profile")
+        # else:
+        #     messages.error(request, "Error occurred during creating a recruiter profile")
     else:
-        form = RecruiterForm()
-        return render(request, "base/create_recruiter.html", {"form": form})
+        print(f"Request user in GET: {request.user}")
+        form = RecruiterForm(user=request.user)
+
+    return render(request, "base/create_recruiter.html", {"form": form})
 
 
 @login_required(login_url="/login")
@@ -258,7 +258,11 @@ def update_profile(request, profile_type=None, slug=None):
             messages.success(request, f"{profile_model.__name__} profile updated successfully!")
             return redirect("home")
         else:
-            return HttpResponse("Invalid form. Something went wrong.")
+            messages.error(request, f"Error occurred during updating a {profile_model.__name__}.")
+            # TODO: USER INFORMATION MISSING ERROR
+            context = {"form": form}
+            return render(request, f"base/create_{profile_type}.html", context)
+            # return render(request, f"base/create_{profile_type}.html", context)
     else:
         form = form_class(instance=profile)
         context = {"form": form}
