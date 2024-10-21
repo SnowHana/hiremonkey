@@ -2,6 +2,7 @@
 
 from django.db import migrations, models
 
+
 def set_user_mode(apps, schema_editor):
     JobSeeker = apps.get_model('base', 'JobSeeker')
     Recruiter = apps.get_model('base', 'Recruiter')
@@ -12,7 +13,6 @@ def set_user_mode(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('base', '0003_rename_salary_jobseeker_max_salary_and_more'),
     ]
@@ -21,12 +21,14 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='jobseeker',
             name='user_mode',
-            field=models.CharField(choices=[('job_seeker', 'Job Seeker Mode'), ('recruiter', 'Recruiter Mode')], default='job_seeker', max_length=20),
+            field=models.CharField(choices=[('job_seeker', 'Job Seeker Mode'), ('recruiter', 'Recruiter Mode')],
+                                   default='job_seeker', max_length=20),
         ),
         migrations.AddField(
             model_name='recruiter',
             name='user_mode',
-            field=models.CharField(choices=[('job_seeker', 'Job Seeker Mode'), ('recruiter', 'Recruiter Mode')], default='job_seeker', max_length=20),
+            field=models.CharField(choices=[('job_seeker', 'Job Seeker Mode'), ('recruiter', 'Recruiter Mode')],
+                                   default='job_seeker', max_length=20),
         ),
         migrations.RunPython(set_user_mode),
     ]

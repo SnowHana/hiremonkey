@@ -1,6 +1,6 @@
 <div>
-{#    <h1>{{ profile_url }} Hello </h1>#}
-{#{{ profile.slug }}#}
+    {#    <h1>{{ profile_url }} Hello </h1>#}
+    {#{{ profile.slug }}#}
     <h5>
         <a href="{% url profile_url profile.slug %}" class="h5-link">{{ profile.title }}</a>
     </h5>
@@ -25,8 +25,8 @@
     {% else %}
         <p>Skills Looking For: </p>
     {% endif %}
-{#    <p>Skills {{ "Available" if profile_type == 'jobseeker' else "Looking For" }}:</p>#}
-{#    <p>Skills {{ "Available" }}:</p>#}
+    {#    <p>Skills {{ "Available" if profile_type == 'jobseeker' else "Looking For" }}:</p>#}
+    {#    <p>Skills {{ "Available" }}:</p>#}
     <ul>
         {% for skill in profile.skills.all|slice:":5" %}
             <li>{{ skill.title }}</li>

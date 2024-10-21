@@ -26,20 +26,20 @@
 
         <div>
             {% if job_seekers %}
-            <h2>Active Job Seekers</h2>
-            <hr>
-            {% for profile in job_seekers %}
-                {% include 'base/profile_card.html' with profile_type='jobseeker' profile_url='jobseeker' %}
-            {% endfor %}
+                <h2>Active Job Seekers</h2>
+                <hr>
+                {% for profile in job_seekers %}
+                    {% include 'base/profile_card.html' with profile_type='jobseeker' profile_url='jobseeker' %}
+                {% endfor %}
             {% endif %}
 
             <hr>
             {% if recruiters %}
-            <h2>Active Recruiters</h2>
-            <hr>
-            {% for profile in recruiters %}
-                {% include 'base/profile_card.html' with profile_type='recruiter' profile_url='recruiter' %}
-            {% endfor %}
+                <h2>Active Recruiters</h2>
+                <hr>
+                {% for profile in recruiters %}
+                    {% include 'base/profile_card.html' with profile_type='recruiter' profile_url='recruiter' %}
+                {% endfor %}
             {% endif %}
         </div>
 

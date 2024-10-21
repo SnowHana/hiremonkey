@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('base', '0002_jobseeker_age_jobseeker_salary_recruiter_salary_and_more'),
     ]

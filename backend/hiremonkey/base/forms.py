@@ -1,7 +1,7 @@
-from django import forms
-from .models import JobSeeker, Recruiter, Skill
 from dal import autocomplete
-from taggit.forms import TagWidget
+from django import forms
+
+from .models import JobSeeker, Recruiter, Skill
 
 
 class JobSeekerForm(forms.ModelForm):
@@ -19,6 +19,8 @@ class JobSeekerForm(forms.ModelForm):
     class Meta:
         model = JobSeeker
         fields = ["title", 'bio', "academics", "skills", 'min_salary', 'max_salary', ]
+
+
 class RecruiterForm(forms.ModelForm):
     skills = forms.ModelMultipleChoiceField(
         queryset=Skill.objects.all(),
@@ -86,4 +88,3 @@ PROFILE_FORM_MAPPING = {JobSeeker: JobSeekerForm, Recruiter: RecruiterForm}
 #         #     skills = skills | Skill.objects.filter(id=new_skill.pk)
 
 #     return skills
-

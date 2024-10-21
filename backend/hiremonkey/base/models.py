@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import pre_save, post_save
+
 from .utils import slugify_instance_title
 
 
@@ -45,6 +46,7 @@ class Profile(models.Model):
         # Call the clean method to enforce validation
         self.clean()
         super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.user.username} - {self.title}"
 

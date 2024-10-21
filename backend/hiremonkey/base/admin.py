@@ -1,7 +1,6 @@
 from django.contrib import admin
 
 from .forms import JobSeekerForm
-
 # Register your models here.
 from .models import JobSeeker, Recruiter, Skill
 

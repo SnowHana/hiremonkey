@@ -30,7 +30,7 @@
                         {% endif %}
                     </a>
                     <ul class="dropdown-menu">
-          
+
                         {% if request.user.is_authenticated %}
                             <li>
                                 <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>

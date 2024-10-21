@@ -5,12 +5,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
-from django.http import Http404, JsonResponse
+from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import JobSeekerForm, RecruiterForm
 from .models import JobSeeker, Recruiter, Skill
+
 
 @login_required
 def user_mode_selection(request):
@@ -25,7 +26,6 @@ def user_mode_selection(request):
 def home(request):
     # User is not authenticated. Prompt to login and choose profile
     user_mode = request.session.get('user_mode', 'job_seeker')  # Default to job seeker
-
 
     # Get 5 latest job seeker and recruiters' profile reference objects
     # Query concrete subclasses
@@ -52,8 +52,6 @@ def home(request):
     return render(request, "base/home.html", context)
     # messages.info(request, 'You have selected recruiter!')
     # Load recruiter specific content
-
-
 
 
 def loginPage(request):
@@ -252,21 +250,23 @@ def update_profile(request, profile_type=None, slug=None):
     # form_class = get_form_class_from_profile_reference(profile_type)
 
     if request.method == "POST":
-        form = form_class(request.POST, instance=profile)
+        # Pass user info as well
+        form = form_class(request.POST, instance=profile, user=request.user)
         if form.is_valid():
             form.save()
             messages.success(request, f"{profile_model.__name__} profile updated successfully!")
             return redirect("home")
         else:
             messages.error(request, f"Error occurred during updating a {profile_model.__name__}.")
-            # TODO: USER INFORMATION MISSING ERROR
+            # TODO: Display messages more elegantly
             context = {"form": form}
             return render(request, f"base/create_{profile_type}.html", context)
             # return render(request, f"base/create_{profile_type}.html", context)
     else:
-        form = form_class(instance=profile)
+        form = form_class(instance=profile, user=request.user)
         context = {"form": form}
         return render(request, f"base/create_{profile_type}.html", context)
+
 
 # def update_profile(request, slug=None):
 #     # TODO: Allow user to only update their own profile

@@ -12,7 +12,7 @@
                         <label for="username" class="form-label">Username</label>
                         <input type="text" class="form-control" id="username" name="username"
                                placeholder="Enter Username" aria-describedby="usernameHelp">
-                         <div id="usernameHelp" class="form-text">We'll never share your info with anyone else.</div>
+                        <div id="usernameHelp" class="form-text">We'll never share your info with anyone else.</div>
                     </div>
 
                     <div class="mb-3">
@@ -31,17 +31,17 @@
                 <form method="POST" action="" class="border p-4 shadow rounded">
                     {% csrf_token %}
                     {{ form|crispy }}
-{#                    {% for field in form %}#}
-{#                        <div class="form-group">#}
-{#                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>#}
-{#                            {{ field }}#}
-{#                            <div class="invalid-feedback">#}
-{#                                {{ field.errors|striptags }}#}
-{#                            </div>#}
-{#                            <input id="username" name="username" type="text" placeholder="Enter User Name">#}
-{#                        </div>#}
-{#                    {% endfor %}#}
-{#                    {{ form.as_p }}#}
+                    {#                    {% for field in form %}#}
+                    {#                        <div class="form-group">#}
+                    {#                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>#}
+                    {#                            {{ field }}#}
+                    {#                            <div class="invalid-feedback">#}
+                    {#                                {{ field.errors|striptags }}#}
+                    {#                            </div>#}
+                    {#                            <input id="username" name="username" type="text" placeholder="Enter User Name">#}
+                    {#                        </div>#}
+                    {#                    {% endfor %}#}
+                    {#                    {{ form.as_p }}#}
                     <button type="submit" class="btn btn-primary w-100">Register</button>
                 </form>
                 <p class="text-center mt-3">Already signed up?</p>

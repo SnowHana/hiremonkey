@@ -16,11 +16,16 @@
     {% include 'navbar.html' %}
 
     {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        <li>{{ message }}</li>
-        {% endfor %}
-    </ul>
+{#        <ul class="messages">#}
+        <div class="container-sm d-flex align-items-center">
+            {% for message in messages %}
+                {#                <li>{{ message }}</li>#}
+                <div class="alert alert-warning" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+{#        </ul>#}
     {% endif %}
 
     {% block content %}

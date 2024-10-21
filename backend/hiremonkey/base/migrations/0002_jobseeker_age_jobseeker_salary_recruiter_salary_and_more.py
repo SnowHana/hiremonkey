@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('base', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
@@ -46,7 +45,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='jobseeker',
             name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='%(class)s_profiles', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='%(class)s_profiles',
+                                    to=settings.AUTH_USER_MODEL),
         ),
         migrations.AlterField(
             model_name='recruiter',
@@ -61,7 +61,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='recruiter',
             name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='%(class)s_profiles', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='%(class)s_profiles',
+                                    to=settings.AUTH_USER_MODEL),
         ),
         migrations.CreateModel(
             name='Match',
