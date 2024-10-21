@@ -173,7 +173,7 @@ def create_jobseeker(request):
     # common_skills = JobSeeker.skills.most_common()[:4]
 
     if request.method == "POST":
-        form = JobSeekerForm(request.POST)
+        form = JobSeekerForm(request.POST, user=request.user)
 
         if form.is_valid():
             job_seeker = form.save(commit=False)
@@ -186,7 +186,8 @@ def create_jobseeker(request):
             return redirect("home")
         else:
             messages.error(request, "Error occured during creating a Job Seeker profile")
-
+            context = {"form": form}
+            return render(request, f"base/create_jobseeker.html", context)
     else:
         form = JobSeekerForm()
         return render(
@@ -198,25 +199,57 @@ def create_jobseeker(request):
         )
 
 
+@login_required(login_url="/login")
 def create_recruiter(request):
-    if request.method == "POST":
-        print(f"Request user in POST: {request.user}")
-        form = RecruiterForm(request.POST, user=request.user)
-        if form.is_valid():
-            recruiter = form.save(commit=False)
-            print(f"Recruiter user: {recruiter.user}")
-            recruiter.user = request.user
-            recruiter.save()
-            form._save_m2m()
-            messages.success(request, "Successfully created a recruiter profile!")
-            return redirect("home")
-        # else:
-        #     messages.error(request, "Error occurred during creating a recruiter profile")
-    else:
-        print(f"Request user in GET: {request.user}")
-        form = RecruiterForm(user=request.user)
+    # NOTE f
+    # common_skills = JobSeeker.skills.most_common()[:4]
 
-    return render(request, "base/create_recruiter.html", {"form": form})
+    if request.method == "POST":
+        form = RecruiterForm(request.POST, user=request.user)
+
+        if form.is_valid():
+            job_seeker = form.save(commit=False)
+            job_seeker.user = request.user
+            job_seeker.save()
+            # save skills
+            form.save_m2m()
+
+            messages.success(request, "Recruiter profile created successfully!")
+            return redirect("home")
+        else:
+            messages.error(request, "Error occured during creating a Recruiter profile")
+            context = {"form": form}
+            return render(request, f"base/create_recruiter.html", context)
+
+    else:
+        form = RecruiterForm()
+        return render(
+            request,
+            "base/create_recruiter.html",
+            {
+                "form": form,
+            },
+        )
+
+
+# if request.method == "POST":
+#     print(f"Request user in POST: {request.user}")
+#     form = RecruiterForm(request.POST, user=request.user)
+#     if form.is_valid():
+#         recruiter = form.save(commit=False)
+#         print(f"Recruiter user: {recruiter.user}")
+#         recruiter.user = request.user
+#         recruiter.save()
+#         form._save_m2m()
+#         messages.success(request, "Successfully created a recruiter profile!")
+#         return redirect("home")
+#     # else:
+#     #     messages.error(request, "Error occurred during creating a recruiter profile")
+# else:
+#     print(f"Request user in GET: {request.user}")
+#     form = RecruiterForm(user=request.user)
+#
+# return render(request, "base/create_recruiter.html", {"form": form})
 
 
 @login_required(login_url="/login")
