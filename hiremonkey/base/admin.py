@@ -1,8 +1,9 @@
 from django.contrib import admin
 
 from .forms import JobSeekerForm
+
 # Register your models here.
-from .models import JobSeeker, Recruiter, Skill
+from .models import JobSeeker, Recruiter, Skill, Match
 
 
 # class SkillInline(admin.TabularInline):
@@ -33,16 +34,17 @@ class SkillAdmin(admin.ModelAdmin):
 #         return queryset
 #
 
+
 @admin.register(JobSeeker)
 class JobSeekerAdmin(admin.ModelAdmin):
     list_display = (
         "title",
         "user",
         "academics",
-        'min_salary',
+        "min_salary",
         "created",
         "updated",
-        'slug',
+        "slug",
     )
     # list_display = [field.name for field in JobSeeker._meta.get_fields()]
     search_fields = ("user__username", "academics")
@@ -60,11 +62,17 @@ class JobSeekerAdmin(admin.ModelAdmin):
 
 @admin.register(Recruiter)
 class RecruiterAdmin(admin.ModelAdmin):
-    list_display = ("user", "company", "created", "updated", 'slug', 'min_salary')
+    list_display = ("user", "company", "created", "updated", "slug", "min_salary")
     search_fields = ("user__username", "company")
     exclude = ["profile_type"]
     # For debugging
     readonly_fields = ("id",)
+
+
+@admin.register(Match)
+class MatchAdmin(admin.ModelAdmin):
+    list_display = ("job_seeker", "recruiter", "match_date", "match_status", "memo")
+
 
 # @admin.register(Skill)
 # class SkillAdmin(admin.ModelAdmin):

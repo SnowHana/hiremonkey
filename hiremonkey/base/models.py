@@ -24,13 +24,17 @@ class Profile(models.Model):
     # ]
     # user_mode = models.CharField(max_length=20, choices=MODE_CHOICES, default=JOB_SEEKER_MODE)
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="%(class)s_profiles")
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="%(class)s_profiles"
+    )
     slug = models.SlugField(max_length=200, blank=True, null=True, unique=True)
     # profile_type = models.CharField(max_length=2, choices=PROFILE_CHOICES)
     title = models.CharField(max_length=200, default="default profile")
     bio = models.TextField(blank=True, null=True)
 
-    skills = models.ManyToManyField('Skill', related_name="%(class)s_profiles", blank=True)
+    skills = models.ManyToManyField(
+        "Skill", related_name="%(class)s_profiles", blank=True
+    )
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
     # Salary Range Fields
@@ -40,7 +44,9 @@ class Profile(models.Model):
     def clean(self):
         # Ensure min_salary is less than or equal to max_salary
         if self.min_salary and self.max_salary and self.min_salary > self.max_salary:
-            raise ValidationError("Minimum salary cannot be greater than maximum salary.")
+            raise ValidationError(
+                "Minimum salary cannot be greater than maximum salary."
+            )
 
     def save(self, *args, **kwargs):
         # Call the clean method to enforce validation
@@ -69,7 +75,9 @@ class Skill(models.Model):
 class JobSeeker(Profile):
     academics = models.TextField(blank=True, null=True)
     age = models.PositiveIntegerField(blank=True, null=True, default=0)
-    matches = models.ManyToManyField('Recruiter', through='Match', related_name="job_seekers")
+    matches = models.ManyToManyField(
+        "Recruiter", through="Match", related_name="job_seekers"
+    )
 
     def save(self, *args, **kwargs):
         # self.user_mode = Profile.JOB_SEEKER_MODE
@@ -78,7 +86,9 @@ class JobSeeker(Profile):
 
 class Recruiter(Profile):
     company = models.CharField(max_length=255)
-    matches = models.ManyToManyField(JobSeeker, through="Match", related_name="recruiters")
+    matches = models.ManyToManyField(
+        JobSeeker, through="Match", related_name="recruiters"
+    )
 
     def save(self, *args, **kwargs):
         # self.user_mode = Profile.RECRUITER_MODE
@@ -90,6 +100,7 @@ class Match(models.Model):
     recruiter = models.ForeignKey(Recruiter, on_delete=models.CASCADE)
     match_date = models.DateTimeField(auto_now_add=True)
     match_status = models.CharField(max_length=50, default="pending")
+    memo = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.job_seeker.user.username} matched with {self.recruiter.user.username} on {self.match_date}"
