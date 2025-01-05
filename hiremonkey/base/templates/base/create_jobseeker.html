@@ -3,27 +3,27 @@
 {% load crispy_forms_tags %}
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 50vh; margin-top: 5vh;">
-        <div class="col-md-6 col-lg-4">
-            <h2 class="text-center mb-4">Create Job Seeker Profile</h2>
-            <form method="POST" action="" class="border p-4 shadow rounded">
-                {% csrf_token %}
-                {{ form.media }}
-                {{ form|crispy }}
+    <div class="col-md-6 col-lg-4">
+        <h2 class="text-center mb-4">Create Job Seeker Profile</h2>
+        <form method="POST" action="" class="border p-4 shadow rounded">
+            {% csrf_token %}
+            {{ form.media }}
+            {{ form|crispy }}
 
-                <button type="submit" class="btn btn-primary w-100">Submit</button>
+            <button type="submit" class="btn btn-primary w-100">Submit</button>
 
-                <!-- Display form errors -->
-                {% if form.errors %}
-                    <div class="alert alert-danger mt-3">
-                        {{ form.non_field_errors }}
-                        {% for field in form %}
-                            {% if field.errors %}
-                                <div>{{ field.label }}: {{ field.errors|striptags }}</div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
+            <!-- Display form errors -->
+            {% if form.errors %}
+            <div class="alert alert-danger mt-3">
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                {% if field.errors %}
+                <div>{{ field.label }}: {{ field.errors|striptags }}</div>
                 {% endif %}
-            </form>
-        </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </form>
     </div>
+</div>
 {% endblock content %}
