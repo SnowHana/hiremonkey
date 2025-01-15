@@ -122,7 +122,7 @@ class Match(models.Model):
     memo = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.job_seeker.user.username} matched with {self.recruiter.user.username} on {self.match_date}"
+        return f"{self.match_status} : {self.job_seeker.user.username} matched with {self.recruiter.user.username} on {self.match_date}"
 
 
 def profile_pre_save(sender, instance, *args, **kwargs):
