@@ -45,14 +45,11 @@
 
     <div>
         <h3>My Profiles</h3>
-        <ul>
-            {% if recruiters %}
-            <li><a href="{% url 'create_jobseeker' %}">Create Job Seeker Profile</a></li>
-            {% else %}
-            <li><a href="{% url 'create_recruiter' %}">Create Recruiter Profile</a></li>
-            {% endif %}
-            <li><a href="{% url 'matched_profile' %}">Matched Profiles</a></li>
-        </ul>
+        {% if recruiters %}
+        <a href="{% url 'create_jobseeker' %}">Create Job Seeker Profile</a>
+        {% else %}
+        <a href="{% url 'create_recruiter' %}">Create Recruiter Profile</a>
+        {% endif %}
 
     </div>
 </div>

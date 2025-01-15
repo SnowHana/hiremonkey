@@ -231,11 +231,9 @@ def create_recruiter(request):
 
 
 @login_required(login_url="/login")
-def matched_profile(request, slug=None):
+def match(request, slug=None):
 
     user_mode = request.session.get("user_mode", False)
-    print("####################################")
-    print(user_mode)
     user_mode_data = {"job_seeker": JobSeeker, "recruiter": Recruiter}
     if user_mode is False or user_mode not in user_mode_data:
         messages.error(request, "Error occured while accesesing Match page")
@@ -422,6 +420,40 @@ def delete_profile(request, profile_type=None, slug=None):
         return redirect("home")
     else:
         return render(request, "base/delete.html", {"obj": profile})
+
+
+# def create_jobseeker(request):
+#     if request.method == "POST":
+#         # Ceate a job seeker
+#         form = JobSeekerForm(request.POST)
+#         if form.is_valid():
+#             jobseeker = form.save(commit=False)
+#             jobseeker.user = request.user
+#             jobseeker.save()
+#             messages.success(request, "Successfully created a job seeker profile!")
+#             return redirect("home")
+#         else:
+#             messages.error(
+#                 request, "Error occured during creating a job seeker profile"
+#             )
+#     else:
+#         form = JobSeekerForm()
+#         return render(request, "base/create_jobseeker.html", {"form": form})
+
+
+#
+# class JobSeekerAutoComplete(autocomplete.Select2QuerySetView):
+#     def get_queryset(self):
+#         # Filter out result based on a visitor
+#         if not self.request.user.is_authenticated:
+#             return JobSeeker.objects.none()
+#
+#         qs = JobSeeker.objects.all()
+#
+#         if self.q:
+#             qs = qs.filter(name__istartswith=self.q)
+#
+#         return qs
 
 
 class SkillAutoComplete(autocomplete.Select2QuerySetView):
