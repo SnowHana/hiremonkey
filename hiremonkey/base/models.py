@@ -1,3 +1,4 @@
+from enum import Enum
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -95,11 +96,29 @@ class Recruiter(Profile):
         super().save(*args, **kwargs)
 
 
+class MatchStatusEnum(Enum):
+    """Match Status Enum class
+
+    Args:
+        Enum (_type_): _description_
+    """
+
+    PENDING = "P", "Pending"
+    ACCEPTED = "A", "Accepted"
+    DECLINED = "D", "Declined"
+    FAILED = "F", "Failed"
+
+
 class Match(models.Model):
     job_seeker = models.ForeignKey(JobSeeker, on_delete=models.CASCADE)
     recruiter = models.ForeignKey(Recruiter, on_delete=models.CASCADE)
     match_date = models.DateTimeField(auto_now_add=True)
-    match_status = models.CharField(max_length=50, default="pending")
+    # match_status = models.CharField(max_length=50, default="pending")
+    match_status = models.CharField(
+        max_length=1,
+        choices=[(tag.value[0], tag.value[1]) for tag in MatchStatusEnum],
+        default=MatchStatusEnum.PENDING.value[0],
+    )
     memo = models.TextField(null=True, blank=True)
 
     def __str__(self):
