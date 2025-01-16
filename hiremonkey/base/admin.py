@@ -3,12 +3,13 @@ from django.contrib import admin
 from .forms import JobSeekerForm
 
 # Register your models here.
-from .models import JobSeeker, Recruiter, Skill, Match
+from .models import JobSeeker, Profile, Recruiter, Skill, Match
 
 
 # class SkillInline(admin.TabularInline):
 #     model = JobSeeker.skills.through
 #     extra = 1
+admin.site.register(Profile)
 
 
 @admin.register(Skill)

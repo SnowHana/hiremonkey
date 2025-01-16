@@ -7,6 +7,17 @@ from django.db.models.signals import pre_save, post_save
 from .utils import slugify_instance_title
 
 
+class UserStatusEnum(Enum):
+    """User Status Enum class
+
+    Args:
+        Enum (_type_): _description_
+    """
+
+    JOBSEEKER = "J", "JobSeeker"
+    RECRUITER = "R", "Recruiter"
+
+
 class Profile(models.Model):
     # JOB_SEEKER = "JS"
     # RECRUITER = "RE"
@@ -24,6 +35,12 @@ class Profile(models.Model):
     #     (RECRUITER_MODE, 'Recruiter Mode'),
     # ]
     # user_mode = models.CharField(max_length=20, choices=MODE_CHOICES, default=JOB_SEEKER_MODE)
+
+    user_status = models.CharField(
+        max_length=1,
+        chocies=[(tag.value[0], tag.value[1]) for tag in UserStatusEnum],
+        default=UserStatusEnum.JOBSEEKER.value[0],
+    )
 
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="%(class)s_profiles"
@@ -58,7 +75,7 @@ class Profile(models.Model):
         return f"{self.user.username} - {self.title}"
 
     class Meta:
-        abstract = True
+        abstract = False
         ordering = ["-updated", "-created"]
 
 
