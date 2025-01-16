@@ -38,7 +38,7 @@ class Profile(models.Model):
 
     user_status = models.CharField(
         max_length=1,
-        chocies=[(tag.value[0], tag.value[1]) for tag in UserStatusEnum],
+        choices=[(tag.value[0], tag.value[1]) for tag in UserStatusEnum],
         default=UserStatusEnum.JOBSEEKER.value[0],
     )
 
