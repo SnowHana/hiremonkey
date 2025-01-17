@@ -25,6 +25,7 @@ def user_mode_selection(request):
             profile = Profile.objects.get(user=request.user)
             profile.user_status = selected_mode
             profile.save()
+            messages.info(request, f"You have selected {profile.get_user_status()}!")
         except User.DoesNotExist:
             raise Http404
 
@@ -45,18 +46,8 @@ def home(request):
             profile = Profile.objects.get(user=request.user)
         except Profile.DoesNotExist:
             raise Http404
-        # if profile.is_jobseeker():
-        #     # Load job seeker specific content
-        #     # messages.info(request, 'You have selected job seeker!')
-        #     context = {
-        #         "job_seekers": [],
-        #         "recruiters": recruiters,
-        #     }
-        # elif profile.is_recruiter():
-        #     context = {
-        #         "job_seekers": job_seekers,
-        #         "recruiters": [],
-        #     }
+        except Profile.MultipleObjectsReturned:
+            pass
         user_status = profile.get_user_status()
         context = {
             "user_status": user_status,
@@ -70,7 +61,6 @@ def home(request):
         return redirect("login")
 
     # messages.info(request, 'You have selected recruiter!')
-    # Load recruiter specific content
 
 
 def loginPage(request):
