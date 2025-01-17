@@ -1,6 +1,6 @@
 from enum import Enum
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models
 from django.db.models.signals import pre_save, post_save
 
@@ -77,6 +77,18 @@ class Profile(models.Model):
     class Meta:
         abstract = False
         ordering = ["-updated", "-created"]
+
+    def is_jobseeker(self):
+        return self.user_status == UserStatusEnum.JOBSEEKER.value[0]
+
+    def is_recruiter(self):
+        return self.user_status == UserStatusEnum.RECRUITER.value[0]
+
+    def get_user_status(self):
+        if self.is_jobseeker:
+            return "JobSeeker"
+        else:
+            return "Recruiter"
 
 
 class Skill(models.Model):
@@ -158,3 +170,17 @@ pre_save.connect(profile_pre_save, sender=JobSeeker)
 
 post_save.connect(profile_post_save, sender=JobSeeker)
 post_save.connect(profile_post_save, sender=Recruiter)
+
+
+# # Simple Profile fn
+# def get_user_status(user):
+#     try:
+#         profile = Profile.objects.get(user=user)
+#         return profile.user_status
+#     except User.DoesNotExist:
+#         raise ObjectDoesNotExist(f"User {user} does not exist.")
+#     except Profile.DoesNotExist:
+#         raise ObjectDoesNotExist(f"Profile does not exist for user {user}.")
+
+
+# User.add_to_class("get_user_status", get_user_status)

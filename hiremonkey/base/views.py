@@ -10,14 +10,25 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import JobSeekerForm, RecruiterForm
-from .models import JobSeeker, Recruiter, Skill, Match
+from .models import JobSeeker, Profile, Recruiter, Skill, Match
 
 
 @login_required
 def user_mode_selection(request):
     if request.method == "POST":
-        selected_mode = request.POST.get("user_mode")
-        request.session["user_mode"] = selected_mode  # Store the selection in session
+        try:
+
+            selected_mode = request.POST.get("user_mode")
+            # print(selected_mode)
+
+            # Change profile's field
+            profile = Profile.objects.get(user=request.user)
+            profile.user_status = selected_mode
+            profile.save()
+        except User.DoesNotExist:
+            raise Http404
+
+        # request.session["user_mode"] = selected_mode  # Store the selection in session
         return redirect("home")  # Redirect to home view after selection
 
     return render(request, "base/user_mode_selection.html")
@@ -25,25 +36,39 @@ def user_mode_selection(request):
 
 def home(request):
     # User is not authenticated. Prompt to login and choose profile
-    user_mode = request.session.get("user_mode", "job_seeker")  # Default to job seeker
-
-    # Get 5 latest job seeker and recruiters' profile reference objects
-    # Query concrete subclasses
     job_seekers = JobSeeker.objects.prefetch_related("skills")[:5]
-    # job_seekers = JobSeeker.objects.all()[:5]
-
     recruiters = Recruiter.objects.all()[:5]
-
     context = {"job_seekers": job_seekers, "recruiters": recruiters}
+    if request.user.is_authenticated:
+        # Authorised
+        try:
+            profile = Profile.objects.get(user=request.user)
+        except Profile.DoesNotExist:
+            raise Http404
+        # if profile.is_jobseeker():
+        #     # Load job seeker specific content
+        #     # messages.info(request, 'You have selected job seeker!')
+        #     context = {
+        #         "job_seekers": [],
+        #         "recruiters": recruiters,
+        #     }
+        # elif profile.is_recruiter():
+        #     context = {
+        #         "job_seekers": job_seekers,
+        #         "recruiters": [],
+        #     }
+        user_status = profile.get_user_status()
+        context = {
+            "user_status": user_status,
+            "job_seekers": job_seekers,
+            "recruiters": recruiters,
+        }
 
-    if user_mode == "job_seeker":
-        # Load job seeker specific content
-        # messages.info(request, 'You have selected job seeker!')
-        context = {"job_seekers": [], "recruiters": recruiters}
-    elif user_mode == "recruiter":
-        context = {"job_seekers": job_seekers, "recruiters": []}
+        return render(request, "base/home.html", context)
+    else:
+        # Not logged in
+        return redirect("login")
 
-    return render(request, "base/home.html", context)
     # messages.info(request, 'You have selected recruiter!')
     # Load recruiter specific content
 

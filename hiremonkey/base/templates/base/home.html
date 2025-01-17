@@ -25,7 +25,8 @@
     </div>
 
     <div>
-        {% if job_seekers %}
+        <h1>{{ user_status }}</h1>
+        {% if user_status == 'Recruiter' %}
         <h2>Active Job Seekers</h2>
         <hr>
         {% for profile in job_seekers %}
@@ -34,7 +35,7 @@
         {% endif %}
 
         <hr>
-        {% if recruiters %}
+        {% if user_status == 'JobSeeker' %}
         <h2>Active Recruiters</h2>
         <hr>
         {% for profile in recruiters %}
@@ -46,7 +47,7 @@
     <div>
         <h3>My Profiles</h3>
         <ul>
-            {% if recruiters %}
+            {% if user_status == 'JobSeeker' %}
             <li><a href="{% url 'create_jobseeker' %}">Create Job Seeker Profile</a></li>
             {% else %}
             <li><a href="{% url 'create_recruiter' %}">Create Recruiter Profile</a></li>
