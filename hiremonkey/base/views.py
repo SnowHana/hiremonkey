@@ -10,48 +10,58 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import JobSeekerForm, RecruiterForm
-from .models import JobSeeker, Recruiter, Skill
+from .models import JobSeeker, Profile, Recruiter, Skill, Match, UserStatusEnum
 
 
 @login_required
 def user_mode_selection(request):
-    if request.method == 'POST':
-        selected_mode = request.POST.get('user_mode')
-        request.session['user_mode'] = selected_mode  # Store the selection in session
-        return redirect('home')  # Redirect to home view after selection
+    if request.method == "POST":
+        try:
 
-    return render(request, 'base/user_mode_selection.html')
+            selected_mode = request.POST.get("user_mode")
+            # print(selected_mode)
+
+            # Change profile's field
+            profile = Profile.objects.get(user=request.user)
+
+            profile.user_status = UserStatusEnum.from_human_readable(selected_mode)
+            profile.save()
+            messages.info(request, f"You have selected {profile.get_user_status()}!")
+        except User.DoesNotExist:
+            raise Http404
+
+        # request.session["user_mode"] = selected_mode  # Store the selection in session
+        return redirect("home")  # Redirect to home view after selection
+
+    return render(request, "base/user_mode_selection.html")
 
 
 def home(request):
     # User is not authenticated. Prompt to login and choose profile
-    user_mode = request.session.get('user_mode', 'job_seeker')  # Default to job seeker
-
-    # Get 5 latest job seeker and recruiters' profile reference objects
-    # Query concrete subclasses
     job_seekers = JobSeeker.objects.prefetch_related("skills")[:5]
-    # job_seekers = JobSeeker.objects.all()[:5]
-
     recruiters = Recruiter.objects.all()[:5]
-
-    context = {
-        'job_seekers': job_seekers, 'recruiters': recruiters
-    }
-
-    if user_mode == 'job_seeker':
-        # Load job seeker specific content
-        # messages.info(request, 'You have selected job seeker!')
+    context = {"job_seekers": job_seekers, "recruiters": recruiters}
+    if request.user.is_authenticated:
+        # Authorised
+        try:
+            profile = Profile.objects.get(user=request.user)
+        except Profile.DoesNotExist:
+            raise Http404
+        except Profile.MultipleObjectsReturned:
+            pass
+        user_status = profile.get_user_status()
         context = {
-            'job_seekers': [], 'recruiters': recruiters
-        }
-    elif user_mode == 'recruiter':
-        context = {
-            'job_seekers': job_seekers, 'recruiters': []
+            "user_status": user_status,
+            "job_seekers": job_seekers,
+            "recruiters": recruiters,
         }
 
-    return render(request, "base/home.html", context)
+        return render(request, "base/home.html", context)
+    else:
+        # Not logged in
+        return redirect("login")
+
     # messages.info(request, 'You have selected recruiter!')
-    # Load recruiter specific content
 
 
 def loginPage(request):
@@ -106,7 +116,9 @@ def registerPage(request):
             # Add skill add / edit permission to user
             # Get all permissions related to the Skill model
             skill_content_type = ContentType.objects.get_for_model(Skill)
-            all_skill_permissions = Permission.objects.filter(content_type=skill_content_type)
+            all_skill_permissions = Permission.objects.filter(
+                content_type=skill_content_type
+            )
             # Add all permissions to the user
             user.user_permissions.add(*all_skill_permissions)
             login(request, user)
@@ -117,14 +129,6 @@ def registerPage(request):
 
 
 def jobseeker(request, slug=None):
-    # profile = get_object_or_404(Profile, id=profile_id)
-    # context = {"profile": profile}
-    # try:
-    #     profile_reference = ProfileReference.objects.get(object_id=pk)
-    #     profile = profile_reference.get_profile()
-    # except ProfileReference.DoesNotExist:
-    #     # TODO: Later create a 404.html to handle 404 errors
-    #     raise Http404("Profile does not exist")
     if slug is not None:
         try:
             profile = get_object_or_404(JobSeeker, slug=slug)
@@ -185,7 +189,9 @@ def create_jobseeker(request):
             messages.success(request, "Job Seeker profile created successfully!")
             return redirect("home")
         else:
-            messages.error(request, "Error occured during creating a Job Seeker profile")
+            messages.error(
+                request, "Error occured during creating a Job Seeker profile"
+            )
             context = {"form": form}
             return render(request, f"base/create_jobseeker.html", context)
     else:
@@ -230,6 +236,37 @@ def create_recruiter(request):
                 "form": form,
             },
         )
+
+
+@login_required(login_url="/login")
+def matched_profile(request, slug=None):
+
+    user_mode = request.session.get("user_mode", False)
+    print("####################################")
+    print(user_mode)
+    user_mode_data = {"job_seeker": JobSeeker, "recruiter": Recruiter}
+    if user_mode is False or user_mode not in user_mode_data:
+        messages.error(request, "Error occured while accesesing Match page")
+
+    if user_mode == "job_seeker":
+        target = user_mode_data["recruiter"]
+    elif user_mode == "recruiter":
+        target = user_mode_data["job_seeker"]
+
+    user_subclass = user_mode_data[user_mode]
+    if slug is not None:
+        try:
+            profile = get_object_or_404(user_subclass, slug=slug)
+        except user_subclass.DoesNotExist:
+            raise Http404
+        except user_subclass.MultipleObjectsReturned:
+            profile = user_subclass.objects.filter(slug=slug).first()
+        except:
+            raise Http404
+
+    # Query
+    # NOTE: This will go wrong lol
+    matches = Match.objects.filter(user_mode=request.user)
 
 
 # if request.method == "POST":
@@ -287,10 +324,14 @@ def update_profile(request, profile_type=None, slug=None):
         form = form_class(request.POST, instance=profile, user=request.user)
         if form.is_valid():
             form.save()
-            messages.success(request, f"{profile_model.__name__} profile updated successfully!")
+            messages.success(
+                request, f"{profile_model.__name__} profile updated successfully!"
+            )
             return redirect("home")
         else:
-            messages.error(request, f"Error occurred during updating a {profile_model.__name__}.")
+            messages.error(
+                request, f"Error occurred during updating a {profile_model.__name__}."
+            )
             # TODO: Display messages more elegantly
             context = {"form": form}
             return render(request, f"base/create_{profile_type}.html", context)
@@ -389,40 +430,6 @@ def delete_profile(request, profile_type=None, slug=None):
         return redirect("home")
     else:
         return render(request, "base/delete.html", {"obj": profile})
-
-
-# def create_jobseeker(request):
-#     if request.method == "POST":
-#         # Ceate a job seeker
-#         form = JobSeekerForm(request.POST)
-#         if form.is_valid():
-#             jobseeker = form.save(commit=False)
-#             jobseeker.user = request.user
-#             jobseeker.save()
-#             messages.success(request, "Successfully created a job seeker profile!")
-#             return redirect("home")
-#         else:
-#             messages.error(
-#                 request, "Error occured during creating a job seeker profile"
-#             )
-#     else:
-#         form = JobSeekerForm()
-#         return render(request, "base/create_jobseeker.html", {"form": form})
-
-
-#
-# class JobSeekerAutoComplete(autocomplete.Select2QuerySetView):
-#     def get_queryset(self):
-#         # Filter out result based on a visitor
-#         if not self.request.user.is_authenticated:
-#             return JobSeeker.objects.none()
-#
-#         qs = JobSeeker.objects.all()
-#
-#         if self.q:
-#             qs = qs.filter(name__istartswith=self.q)
-#
-#         return qs
 
 
 class SkillAutoComplete(autocomplete.Select2QuerySetView):

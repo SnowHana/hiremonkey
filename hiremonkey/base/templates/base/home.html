@@ -1,149 +1,60 @@
 {% extends 'main.html' %}
 
 {% block content %}
-    <style>
-        .home-container {
-            display: grid;
-            grid-template-columns: 1fr 3fr 1fr;
-        }
+<style>
+    .home-container {
+        display: grid;
+        grid-template-columns: 1fr 3fr 1fr;
+    }
 
-        .h5-link {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #007bff;
-            text-decoration: none;
-        }
-    </style>
+    .h5-link {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #007bff;
+        text-decoration: none;
+    }
+</style>
 
-    <h1>Home</h1>
-    <hr>
+<h1>Home</h1>
+<hr>
 
-    <div class="home-container">
-        <div>
-            <h3>Browse Topics</h3>
-            <hr>
-        </div>
-
-        <div>
-            {% if job_seekers %}
-                <h2>Active Job Seekers</h2>
-                <hr>
-                {% for profile in job_seekers %}
-                    {% include 'base/profile_card.html' with profile_type='jobseeker' profile_url='jobseeker' %}
-                {% endfor %}
-            {% endif %}
-
-            <hr>
-            {% if recruiters %}
-                <h2>Active Recruiters</h2>
-                <hr>
-                {% for profile in recruiters %}
-                    {% include 'base/profile_card.html' with profile_type='recruiter' profile_url='recruiter' %}
-                {% endfor %}
-            {% endif %}
-        </div>
-
-        <div>
-            <h3>My Profiles</h3>
-            <a href="{% url 'create_jobseeker' %}">Create Job Seeker Profile</a>
-            <br>
-            <a href="{% url 'create_recruiter' %}">Create Recruiter Profile</a>
-        </div>
+<div class="home-container">
+    <div>
+        <h3>Browse Topics</h3>
+        <hr>
     </div>
+
+    <div>
+        <h1>{{ user_status }}</h1>
+        {% if user_status == 'Recruiter' %}
+        <h2>Active Job Seekers</h2>
+        <hr>
+        {% for profile in job_seekers %}
+        {% include 'base/profile_card.html' with profile_type='jobseeker' profile_url='jobseeker' %}
+        {% endfor %}
+        {% endif %}
+
+        <hr>
+        {% if user_status == 'JobSeeker' %}
+        <h2>Active Recruiters</h2>
+        <hr>
+        {% for profile in recruiters %}
+        {% include 'base/profile_card.html' with profile_type='recruiter' profile_url='recruiter' %}
+        {% endfor %}
+        {% endif %}
+    </div>
+
+    <div>
+        <h3>My Profiles</h3>
+        <ul>
+            {% if user_status == 'JobSeeker' %}
+            <li><a href="{% url 'create_jobseeker' %}">Create Job Seeker Profile</a></li>
+            {% else %}
+            <li><a href="{% url 'create_recruiter' %}">Create Recruiter Profile</a></li>
+            {% endif %}
+            <li><a href="{% url 'matched_profile' %}">Matched Profiles</a></li>
+        </ul>
+
+    </div>
+</div>
 {% endblock %}
-
-
-{#{% extends 'main.html' %}#}
-{##}
-{#{% block content %}#}
-{##}
-{#    <style>#}
-{#        .home-container {#}
-{#            display: grid;#}
-{#            grid-template-columns: 1fr 3fr 1fr;#}
-{#        }#}
-{##}
-{#        .h5-link {#}
-{#            font-size: 1.25rem; /* Adjust the font size as needed */#}
-{#            font-weight: bold;#}
-{#            color: #007bff; /* Change the color as desired */#}
-{#            text-decoration: none; /* Remove the underline if you don't want it */#}
-{#        }#}
-{#    </style>#}
-{##}
-{##}
-{#    <h1>Home</h1>#}
-{#    <hr>#}
-{##}
-{#    <div class="home-container">#}
-{#        <div>#}
-{#            <h3>Browse Topics</h3>#}
-{#            <hr>#}
-{##}
-{#        </div>#}
-{##}
-{#        <div>#}
-{#            <h2>Active Job Seekers</h2>#}
-{#            <hr>#}
-{#            {% for profile in job_seekers %}#}
-{#                <div>#}
-{#                    <h5><a href="{% url 'jobseeker' profile.slug %}" class="h5-link">{{ profile.title }}</a></h5>#}
-{#                    {% if request.user == profile.user %}#}
-{#                        <a href="{% url 'update_profile' 'jobseeker' profile.slug %}">Edit</a>#}
-{#                        <a href="{% url 'delete_profile' 'jobseeker' profile.slug %}">Delete</a>#}
-{#                    {% endif %}#}
-{#                    <h5>@{{ profile.user.username }}</h5>#}
-{#                    <p>Bio: {{ profile.bio }}</p>#}
-{#                    <p>Academics: {{ profile.academics }}</p>#}
-{#                    <p>Skills Available:</p>#}
-{#                    <ul>#}
-{#                        {% for skill in profile.skills.all|slice:":5" %}#}
-{#                            <li>{{ skill.title }}</li>#}
-{#                        {% endfor %}#}
-{#                    </ul>#}
-{#                    <p>Estimated Salary Offering: {{ profile.min_salary }} ~ {{ profile.max_salary }}</p>#}
-{#                    <p>Last Updated: {{ profile.updated }}</p>#}
-{#                </div>#}
-{#                <hr>#}
-{#            {% endfor %}#}
-{#            <hr>#}
-{##}
-{#            <h2>Active Recruiters</h2>#}
-{#            {% for profile in recruiters %}#}
-{#                <div>#}
-{#                    <h5><a href="{% url 'recruiter' profile.slug %}" class="h5-link">{{ profile.title }}</a></h5>#}
-{#                    {% if request.user == profile.user %}#}
-{#                        <a href="{% url 'update_profile' 'recruiter' profile.slug %}">Edit</a>#}
-{#                        <a href="{% url 'delete_profile' 'recruiter' profile.slug %}">Delete</a>#}
-{#                    {% endif %}#}
-{#                    <h5>@{{ profile.user.username }}</h5>#}
-{#                    <p>Bio: {{ profile.bio }}</p>#}
-{#                    <p>Company: {{ profile.company }}</p>#}
-{#                    <p>Skills Looking For: </p>#}
-{#                    <ul>#}
-{#                        {% for skill in profile.skills.all|slice:":5" %}#}
-{#                            <li>{{ skill.title }}</li>#}
-{#                        {% endfor %}#}
-{#                    </ul>#}
-{#                    <p>Estimated Salary Offering: {{ profile.min_salary }} ~ {{ profile.max_salary }}</p>#}
-{#                    <p>Last Updated: {{ profile.updated }}</p>#}
-{#                </div>#}
-{#                <hr>#}
-{#            {% endfor %}#}
-{##}
-{#        </div>#}
-{##}
-{#        <div>#}
-{#            <h3>My Profiles</h3>#}
-{#            <a href="{% url 'create_jobseeker' %}">Create Job Seeker Profile</a>#}
-{#            <br>#}
-{#            <a href="{% url 'create_recruiter' %}">Create Recruiter Profile</a>#}
-{#        </div>#}
-{##}
-{##}
-{#        <hr>#}
-{##}
-{#        <hr>#}
-{##}
-{#    </div>#}
-{#{% endblock content %}#}
