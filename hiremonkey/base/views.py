@@ -27,10 +27,6 @@ def user_mode_selection(request):
             profile.user_status = UserStatusEnum.from_human_readable(selected_mode)
             profile.save()
             messages.info(request, f"You have selected {profile.get_user_status()}!")
-            messages.info(
-                request,
-                f"You have selected {UserStatusEnum.from_human_readable(selected_mode)}!",
-            )
         except User.DoesNotExist:
             raise Http404
 
@@ -133,14 +129,6 @@ def registerPage(request):
 
 
 def jobseeker(request, slug=None):
-    # profile = get_object_or_404(Profile, id=profile_id)
-    # context = {"profile": profile}
-    # try:
-    #     profile_reference = ProfileReference.objects.get(object_id=pk)
-    #     profile = profile_reference.get_profile()
-    # except ProfileReference.DoesNotExist:
-    #     # TODO: Later create a 404.html to handle 404 errors
-    #     raise Http404("Profile does not exist")
     if slug is not None:
         try:
             profile = get_object_or_404(JobSeeker, slug=slug)
