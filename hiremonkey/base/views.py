@@ -10,7 +10,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import JobSeekerForm, RecruiterForm
-from .models import JobSeeker, Profile, Recruiter, Skill, Match
+from .models import JobSeeker, Profile, Recruiter, Skill, Match, UserStatusEnum
 
 
 @login_required
@@ -23,9 +23,14 @@ def user_mode_selection(request):
 
             # Change profile's field
             profile = Profile.objects.get(user=request.user)
-            profile.user_status = selected_mode
+
+            profile.user_status = UserStatusEnum.from_human_readable(selected_mode)
             profile.save()
             messages.info(request, f"You have selected {profile.get_user_status()}!")
+            messages.info(
+                request,
+                f"You have selected {UserStatusEnum.from_human_readable(selected_mode)}!",
+            )
         except User.DoesNotExist:
             raise Http404
 

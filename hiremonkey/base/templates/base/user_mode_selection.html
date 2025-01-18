@@ -2,50 +2,24 @@
 {% extends 'main.html' %}
 {% block content %}
 
-    <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
-        <div class="col-md-6 col-lg-4">
-            <form method="post" class="border p-4 shadow rounded">
-                {% csrf_token %}
+<div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="col-md-6 col-lg-4">
+        <form method="post" class="border p-4 shadow rounded">
+            {% csrf_token %}
 
-                <!-- Bootstrap Select Dropdown -->
-                <div class="mb-3">
-                    <label for="user_mode" class="form-label">Select your mode:</label>
-                    <select class="form-select" name="user_mode" id="user_mode">
-                        <option value="" disabled selected>Select mode</option>
-                        <option value="job_seeker">Job Seeker Mode</option>
-                        <option value="recruiter">Recruiter Mode</option>
-                    </select>
-                </div>
+            <!-- Bootstrap Select Dropdown -->
+            <div class="mb-3">
+                <label for="user_mode" class="form-label">Select your mode:</label>
+                <select class="form-select" name="user_mode" id="user_mode">
+                    <option value="" disabled selected>Select mode</option>
+                    <option value="JobSeeker">Job Seeker Mode</option>
+                    <option value="Recruiter">Recruiter Mode</option>
+                </select>
+            </div>
 
-                <button type="submit" class="btn btn-primary w-100">Select</button>
-            </form>
-        </div>
+            <button type="submit" class="btn btn-primary w-100">Select</button>
+        </form>
     </div>
+</div>
 
 {% endblock content %}
-
-{#{% extends 'main.html' %}#}
-{#{% block content %}#}
-{##}
-{#    <form method="post">#}
-{#        {% csrf_token %}#}
-{#        <label for="job_seeker_mode">#}
-{#            <input type="radio" id="job_seeker_mode" name="user_mode" value="job_seeker">#}
-{#            Job Seeker Mode#}
-{#        </label>#}
-{##}
-{#        <label for="recruiter_mode">#}
-{#            <input type="radio" id="recruiter_mode" name="user_mode" value="recruiter">#}
-{#            Recruiter Mode#}
-{#        </label>#}
-{##}
-{#        <button type="submit">Select</button>#}
-{#    </form>#}
-{#{% endblock content %}#}
-{##}
-{#<select class="form-select" aria-label="Default select example">#}
-{#  <option selected>Open this select menu</option>#}
-{#  <option value="1">One</option>#}
-{#  <option value="2">Two</option>#}
-{#  <option value="3">Three</option>#}
-{#</select>#}

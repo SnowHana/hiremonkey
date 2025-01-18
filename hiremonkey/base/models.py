@@ -18,6 +18,36 @@ class UserStatusEnum(Enum):
     JOBSEEKER = "J", "JobSeeker"
     RECRUITER = "R", "Recruiter"
 
+    @classmethod
+    def from_human_readable(cls, readable_name):
+        """
+        Convert human-readable name to enum value.
+        e.g. 'JobSeeker' -> 'J' / 'Recruiter' -> 'R'/ 'Job-seeker' -> 'J'
+        """
+        name = (
+            readable_name.strip()
+            .replace("_", "")
+            .replace("-", "")
+            .replace(" ", "")
+            .lower()
+        )
+
+        for tag in cls:
+            if tag.value[1].lower() == name:
+                return tag.value[0]
+        raise ValueError(f"Invalid user status: {readable_name}")
+
+    @classmethod
+    def to_human_readable(cls, enum_value):
+        """
+        Convert enum value to human-readable name.
+        ie. 'R' -> 'Recruiter' , 'J' -> 'JobSeeker'
+        """
+        for tag in cls:
+            if tag.value[0] == enum_value:
+                return tag.value[1]
+        raise ValueError(f"Invalid enum value: {enum_value}")
+
 
 class Profile(models.Model):
     # JOB_SEEKER = "JS"
@@ -86,10 +116,10 @@ class Profile(models.Model):
         return self.user_status == UserStatusEnum.RECRUITER.value[0]
 
     def get_user_status(self):
-        if self.is_jobseeker:
-            return "JobSeeker"
+        if self.is_jobseeker():
+            return UserStatusEnum.JOBSEEKER.value[1]
         else:
-            return "Recruiter"
+            return UserStatusEnum.RECRUITER.value[1]
 
 
 class Skill(models.Model):
