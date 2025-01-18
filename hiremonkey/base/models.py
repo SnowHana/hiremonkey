@@ -1,3 +1,4 @@
+from django.utils import timezone
 from enum import Enum
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -102,7 +103,45 @@ class Skill(models.Model):
         ordering = ["-title"]
 
 
-class JobSeeker(Profile):
+class JobProfile(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="%(class)s_profiles"
+    )
+    slug = models.SlugField(max_length=200, blank=True, null=True, unique=True)
+    title = models.CharField(max_length=200, default="default profile")
+    bio = models.TextField(blank=True, null=True)
+
+    skills = models.ManyToManyField(
+        "Skill", related_name="%(class)s_profiles", blank=True
+    )
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+    # Salary Range Fields
+    min_salary = models.FloatField(blank=True, null=True, default=0)
+    max_salary = models.FloatField(blank=True, null=True, default=0)
+
+    def clean(self):
+        # Ensure min_salary is less than or equal to max_salary
+        if self.min_salary and self.max_salary and self.min_salary > self.max_salary:
+            raise ValidationError(
+                "Minimum salary cannot be greater than maximum salary."
+            )
+
+    def save(self, *args, **kwargs):
+        # Call the clean method to enforce validation
+        self.clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.title}"
+
+    class Meta:
+        # NOTE: Might change this to False if error.
+        abstract = True
+        ordering = ["-updated", "-created"]
+
+
+class JobSeeker(JobProfile):
     academics = models.TextField(blank=True, null=True)
     age = models.PositiveIntegerField(blank=True, null=True, default=0)
     matches = models.ManyToManyField(
@@ -110,11 +149,11 @@ class JobSeeker(Profile):
     )
 
     def save(self, *args, **kwargs):
-        # self.user_mode = Profile.JOB_SEEKER_MODE
+        # self.user_mode = JobProfile.JOB_SEEKER_MODE
         super().save(*args, **kwargs)
 
 
-class Recruiter(Profile):
+class Recruiter(JobProfile):
     company = models.CharField(max_length=255)
     matches = models.ManyToManyField(
         JobSeeker, through="Match", related_name="recruiters"
