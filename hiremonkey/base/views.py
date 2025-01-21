@@ -47,6 +47,7 @@ def home(request):
             raise Http404
         except Profile.MultipleObjectsReturned:
             pass
+
         user_status = profile.get_user_status()
         context = {
             "user_status": user_status,
@@ -237,7 +238,7 @@ def create_recruiter(request):
 
 
 @login_required(login_url="/login")
-def matched_profile(request, slug=None):
+def matched_profile(request):
 
     # Get User Profile
     try:
@@ -259,7 +260,7 @@ def matched_profile(request, slug=None):
 
     print(matches)
 
-    return render(request, "base/matched_profile")
+    return render(request, "base/matched_profile.html")
 
     # # user_mode = request.session.get("user_mode", False)
     # user_subclass = JobSeeker if profile.is_jobseeker() else Recruiter
