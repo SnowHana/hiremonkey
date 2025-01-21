@@ -19,7 +19,6 @@ def user_mode_selection(request):
         try:
 
             selected_mode = request.POST.get("user_mode")
-            # print(selected_mode)
 
             # Change profile's field
             profile = Profile.objects.get(user=request.user)
@@ -30,7 +29,6 @@ def user_mode_selection(request):
         except User.DoesNotExist:
             raise Http404
 
-        # request.session["user_mode"] = selected_mode  # Store the selection in session
         return redirect("home")  # Redirect to home view after selection
 
     return render(request, "base/user_mode_selection.html")
@@ -241,52 +239,44 @@ def create_recruiter(request):
 @login_required(login_url="/login")
 def matched_profile(request, slug=None):
 
-    user_mode = request.session.get("user_mode", False)
-    print("####################################")
-    print(user_mode)
-    user_mode_data = {"job_seeker": JobSeeker, "recruiter": Recruiter}
-    if user_mode is False or user_mode not in user_mode_data:
-        messages.error(request, "Error occured while accesesing Match page")
+    # Get User Profile
+    try:
+        profile = Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
+        raise Http404
+    except Profile.MultipleObjectsReturned:
+        raise Http404
 
-    if user_mode == "job_seeker":
-        target = user_mode_data["recruiter"]
-    elif user_mode == "recruiter":
-        target = user_mode_data["job_seeker"]
+    # Find matches
+    user = profile.user
+    if profile.is_jobseeker():
+        matches = Match.objects.filter(job_seeker__user=user)
+    elif profile.is_recruiter():
+        matches = Match.objects.filter(recruiter__user=user)
+    else:
+        # Error
+        messages.error(request, "Profile is neither a JobSeeker nor a Recruiter!")
 
-    user_subclass = user_mode_data[user_mode]
-    if slug is not None:
-        try:
-            profile = get_object_or_404(user_subclass, slug=slug)
-        except user_subclass.DoesNotExist:
-            raise Http404
-        except user_subclass.MultipleObjectsReturned:
-            profile = user_subclass.objects.filter(slug=slug).first()
-        except:
-            raise Http404
+    print(matches)
+
+    return render(request, "base/matched_profile")
+
+    # # user_mode = request.session.get("user_mode", False)
+    # user_subclass = JobSeeker if profile.is_jobseeker() else Recruiter
+
+    # if slug is not None:
+    #     try:
+    #         profile = get_object_or_404(user_subclass, slug=slug)
+    #     except user_subclass.DoesNotExist:
+    #         raise Http404
+    #     except user_subclass.MultipleObjectsReturned:
+    #         profile = user_subclass.objects.filter(slug=slug).first()
+    #     except:
+    #         raise Http404
 
     # Query
     # NOTE: This will go wrong lol
-    matches = Match.objects.filter(user_mode=request.user)
-
-
-# if request.method == "POST":
-#     print(f"Request user in POST: {request.user}")
-#     form = RecruiterForm(request.POST, user=request.user)
-#     if form.is_valid():
-#         recruiter = form.save(commit=False)
-#         print(f"Recruiter user: {recruiter.user}")
-#         recruiter.user = request.user
-#         recruiter.save()
-#         form._save_m2m()
-#         messages.success(request, "Successfully created a recruiter profile!")
-#         return redirect("home")
-#     # else:
-#     #     messages.error(request, "Error occurred during creating a recruiter profile")
-# else:
-#     print(f"Request user in GET: {request.user}")
-#     form = RecruiterForm(user=request.user)
-#
-# return render(request, "base/create_recruiter.html", {"form": form})
+    # matches = Match.objects.filter(user_mode=request.user)
 
 
 @login_required(login_url="/login")
@@ -317,8 +307,6 @@ def update_profile(request, profile_type=None, slug=None):
         # TODO: Later do some elegant way..maybe pop up message or sth
         return HttpResponse("You are not allowed here.")
 
-    # form_class = get_form_class_from_profile_reference(profile_type)
-
     if request.method == "POST":
         # Pass user info as well
         form = form_class(request.POST, instance=profile, user=request.user)
@@ -340,55 +328,6 @@ def update_profile(request, profile_type=None, slug=None):
         form = form_class(instance=profile, user=request.user)
         context = {"form": form}
         return render(request, f"base/create_{profile_type}.html", context)
-
-
-# def update_profile(request, slug=None):
-#     # TODO: Allow user to only update their own profile
-#     # TODO: When we finsih the tag(Skill) search feature, we will probably have to fix this as well.
-#     profile_ref = get_object_or_404(ProfileReference, id=pk)
-#     form_class = get_form_class_from_profile_reference(profile_ref)
-#     if not form_class:
-#         # Sth went wrong (Invalid profile ref?)
-#         return redirect("home")
-#
-#     # profile_instance = profile_ref.get_profile()
-#     profile_instance = profile_ref.content_object
-#
-#     profile_model = profile_ref.content_type.model_class()
-#     model_name = profile_model.__name__
-#
-#     if request.user != profile_instance.user:
-#         return HttpResponse("You are not allowed here.")
-#     # profile = get_object_or_404(profile_model, id=pk)
-#     if request.method == "POST":
-#         form = form_class(request.POST, instance=profile_instance)
-#         if form.is_valid():
-#             profile = form.save(commit=False)
-#             profile.user = request.user
-#             profile.save()
-#             # save skills
-#             form.save_m2m()
-#
-#             messages.success(
-#                 request,
-#                 f"{profile_model.__name__} profile updated successfully!",
-#             )
-#             return redirect("home")
-#         else:
-#             # Debuggig...sth went wrong.
-#             print(form.non_field_errors())
-#             print(form.errors)
-#             return HttpResponse(f"Invalid form. Something went wrong")
-#     else:
-#
-#         form = form_class(instance=profile_instance)
-#         context = {"form": form}
-#         html_name = f"base/create_{profile_model.__name__}.html".lower()
-#         return render(
-#             request,
-#             html_name,
-#             context,
-#         )
 
 
 @login_required(login_url="/login")
@@ -415,12 +354,6 @@ def delete_profile(request, profile_type=None, slug=None):
             # Or we can do http404
         except:
             raise Http404
-    # profile_ref = get_object_or_404(ProfileReference, id=pk)
-    # profile_model = profile_ref.content_type.model_class()
-    # We need to get pk (profileReference id) to profile id?
-
-    # profile = get_object_or_404(profile_model, id=profile_ref.object_id)
-    # profile = Profile.objects.get(id=pk)
 
     if request.user != profile.user:
         return HttpResponse("You are not allowed here.")
@@ -441,5 +374,5 @@ class SkillAutoComplete(autocomplete.Select2QuerySetView):
 
         if self.q:
             qs = qs.filter(title__icontains=self.q)
-        # print("HELLOOOoooOOOOOOOO")
+
         return qs

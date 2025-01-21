@@ -36,5 +36,5 @@ urlpatterns = [
         views.SkillAutoComplete.as_view(create_field="title", validate_create=True),
         name="skill-autocomplete",
     ),
-    path("matched_profile/", views.matched_profile, name="matched_profile"),
+    path("matched_profile/<slug:slug>/", views.matched_profile, name="matched_profile"),
 ]
