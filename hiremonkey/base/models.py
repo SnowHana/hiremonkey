@@ -57,7 +57,7 @@ class Profile(models.Model):
     #     default=UserStatusEnum.JOBSEEKER.value[0],
     # )
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="profile")
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     slug = models.SlugField(max_length=200, blank=True, null=True, unique=True)
     # profile_type = models.CharField(max_length=2, choices=PROFILE_CHOICES)
     title = models.CharField(max_length=200, default="default profile")
@@ -204,9 +204,7 @@ def profile_post_save(sender, instance, created, *args, **kwargs):
 
 
 class UserSession(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="user_session"
-    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     user_status = models.CharField(
         max_length=1,
