@@ -14,11 +14,15 @@ class Command(BaseCommand):
         call_command("flush", "--no-input")
 
         # Create Users
-        self.stdout.write("Creating users...")
+        # self.stdout.write("Creating users...")
         user1 = User.objects.create_superuser(
             username="nautilus", password="rladnwls2001"
         )
         user2 = User.objects.create_superuser(username="azir", password="rladnwls2001")
+        user2 = User.objects.create_superuser(
+            username="graves", password="rladnwls2001"
+        )
+        user2 = User.objects.create_superuser(username="kaisa", password="rladnwls2001")
 
         # Load the fixture data
         self.stdout.write("Loading fixture data...")

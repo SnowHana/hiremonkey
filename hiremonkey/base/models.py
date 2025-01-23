@@ -57,7 +57,7 @@ class Profile(models.Model):
     #     default=UserStatusEnum.JOBSEEKER.value[0],
     # )
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
     slug = models.SlugField(max_length=200, blank=True, null=True, unique=True)
     # profile_type = models.CharField(max_length=2, choices=PROFILE_CHOICES)
     title = models.CharField(max_length=200, default="default profile")
@@ -204,7 +204,7 @@ def profile_post_save(sender, instance, created, *args, **kwargs):
 
 
 class UserSession(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
 
     user_status = models.CharField(
         max_length=1,
@@ -236,6 +236,9 @@ class UserSession(models.Model):
             return Recruiter.objects.filter(id=self.activated_profile_id).first()
         else:
             raise ValueError(f"Error: Neither a recruiter or a jobseeker type.")
+
+    def __str__(self):
+        return f"{self.user} - {self.user_status} : Actiaved {self.get_activated_profile()}"
 
 
 # Signals
