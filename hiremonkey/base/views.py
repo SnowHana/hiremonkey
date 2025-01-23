@@ -237,8 +237,35 @@ def create_recruiter(request):
         )
 
 
+def match_select_job_profile(request):
+    """Select profile among all user's profile.
+
+    Args:
+        request (_type_): _description_
+
+    Raises:
+        Http404: _description_
+        Http404: _description_
+        Http404: _description_
+        Http404: _description_
+        Http404: _description_
+        Http404: _description_
+        Http404: _description_
+        Http404: _description_
+
+    Returns:
+        _type_: _description_
+    """
+    if request.method == "POST":
+        try:
+            selected_profile_slug = request.POST.get("job_profile_selection")
+            profile = Profile.objects.get(slug=selected_profile_slug)
+        except:
+            pass
+
+
 @login_required(login_url="/login")
-def matched_profile(request):
+def matched_profile(request, slug=None):
 
     # Get User Profile
     try:
@@ -249,18 +276,23 @@ def matched_profile(request):
         raise Http404
 
     # Find matches
+    matches = None
     user = profile.user
     if profile.is_jobseeker():
-        matches = Match.objects.filter(job_seeker__user=user)
+        # matches = Match.objects.filter(job_seeker__user=user)
+        matches = Match.objects.filter(job_seeker__slug=slug)
+        # matches = get_object_or_404(Match, )
     elif profile.is_recruiter():
-        matches = Match.objects.filter(recruiter__user=user)
+        # matches = Match.objects.filter(recruiter__user=user)
+        matches = Match.objects.filter(recruiter__slug=slug)
     else:
         # Error
         messages.error(request, "Profile is neither a JobSeeker nor a Recruiter!")
 
     print(matches)
-
-    return render(request, "base/matched_profile.html")
+    # messages.info(request, matches)
+    context = {"matches": matches}
+    return render(request, "base/matched_profile.html", context=context)
 
     # # user_mode = request.session.get("user_mode", False)
     # user_subclass = JobSeeker if profile.is_jobseeker() else Recruiter

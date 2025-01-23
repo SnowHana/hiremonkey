@@ -4,7 +4,9 @@
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 50vh; margin-top: 5vh;">
     <div class="col-md-6 col-lg-4">
         <h2 class="text-center mb-4">Matched Profile</h2>
-        Hello
+        {% for match in matches %}
+        <li>{{ match }}</li>
+        {% endfor %}
     </div>
 </div>
 
