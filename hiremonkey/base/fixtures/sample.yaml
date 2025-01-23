@@ -1,0 +1,36 @@
+- model: base.jobseeker
+  pk: 1
+  fields:
+    user: 1
+    slug: jobseeker-1
+    title: Software Developer
+    bio: Experienced software developer with a focus on web development.
+    skills: []
+    updated: 2025-01-23T00:00:00Z
+    created: 2025-01-01T00:00:00Z
+    min_salary: 50000
+    max_salary: 90000
+    academics: Bachelor's in Computer Science
+    age: 30
+
+- model: base.recruiter
+  pk: 1
+  fields:
+    user: 2
+    slug: recruiter-1
+    title: Tech Recruiter
+    bio: Specializing in recruiting top talent for tech companies.
+    skills: []
+    updated: 2025-01-23T00:00:00Z
+    created: 2025-01-01T00:00:00Z
+    min_salary: 60000
+    max_salary: 120000
+    company: Tech Recruiters Inc.
+# - model: base.match
+#   pk: 1
+#   fields:
+#     job_seeker: 1
+#     recruiter: 1
+#     match_date: 2025-01-23T00:00:00Z
+#     match_status: P
+#     memo: Initial match for a software developer position.

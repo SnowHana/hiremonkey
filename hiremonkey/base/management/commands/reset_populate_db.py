@@ -26,6 +26,6 @@ class Command(BaseCommand):
 
         # Load the fixture data
         self.stdout.write("Loading fixture data...")
-        # call_command("loaddata", "sample")  # or your_fixture_file.yaml
+        call_command("loaddata", "sample")  # or your_fixture_file.yaml
 
         self.stdout.write(self.style.SUCCESS("Database has been reset and populated!"))
