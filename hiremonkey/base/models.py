@@ -237,6 +237,9 @@ class UserSession(models.Model):
         else:
             raise ValueError(f"Error: Neither a recruiter or a jobseeker type.")
 
+    def set_activated_profile(self, profile_id):
+        self.activated_profile_id = profile_id
+
     def __str__(self):
         return f"{self.user} - {self.user_status} : Actiaved {self.get_activated_profile()}"
 

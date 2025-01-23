@@ -44,6 +44,42 @@ def user_mode_selection(request):
     return render(request, "base/user_mode_selection.html")
 
 
+@login_required(login_url="/login")
+def active_profile_selection(request):
+    if request.method == "POST":
+        try:
+            selected_profile_id = request.POST.get("selected_profile")
+
+            user_session = UserSession.objects.get(user=request.user)
+            user_session.set_activated_profile(selected_profile_id)
+            user_session.save()
+
+            messages.info(
+                request, f"You have selected {user_session.get_activated_profile()}!"
+            )
+        except UserSession.MultipleObjectsReturned:
+            raise Http404
+        except UserSession.DoesNotExist:
+            raise Http404
+
+        return redirect("home")
+
+    # Deliver choices
+    user_session = UserSession.objects.get(user=request.user)
+    # Return list of possible ids
+    profiles = None
+    if user_session.is_jobseeker():
+        # Query Jobseekr
+        profiles = JobSeeker.objects.filter(user=request.user)
+    elif user_session.is_recruiter():
+        profiles = Recruiter.objects.filter(user=request.user)
+    else:
+        raise ValueError(f"{request.user} chose neither JS nor RC user status")
+
+    context = {"profiles": profiles}
+    return render(request, "base/active_profile_selection.html", context=context)
+
+
 def home(request):
     # User is not authenticated. Prompt to login and choose profile
     job_seekers = JobSeeker.objects.prefetch_related("skills")[:5]
@@ -166,18 +202,6 @@ def recruiter(request, slug=None):
             raise Http404
     context = {"profile": profile}
     return render(request, "base/recruiter.html", context)
-
-
-@login_required
-def select_profile_type(request):
-    if request.method == "POST":
-        # Register or Create a profile
-        profile_type = request.POST.get("profile_type")
-        if profile_type == "jobseeker":
-            return redirect("create_jobseeker")
-        elif profile_type == "recruiter":
-            return redirect("create_recruiter")
-    return render(request, "base/select_profile_type.html")
 
 
 @login_required(login_url="/login")

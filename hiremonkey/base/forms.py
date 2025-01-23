@@ -4,6 +4,10 @@ from django import forms
 from .models import JobSeeker, Recruiter, Skill, Match
 
 
+class ProfileSelectionForm(forms.ModelForm):
+    pass
+
+
 class JobSeekerForm(forms.ModelForm):
     skills = forms.ModelMultipleChoiceField(
         queryset=Skill.objects.all(),
