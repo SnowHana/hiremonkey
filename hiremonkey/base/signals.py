@@ -23,13 +23,17 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 
-from .models import Profile
+from .models import Profile, UserSession
 
 
 @receiver(post_save, sender=User)
 def manage_profile(sender, instance, created, **kwargs):
     if created:
+        # Create Profile, UserSession
         Profile.objects.create(user=instance)
+        UserSession.objects.create(user=instance)
     else:
         if hasattr(instance, "profile"):
             instance.profile.save()
+        if hasattr(instance, "user_session"):
+            instance.user_session.save()

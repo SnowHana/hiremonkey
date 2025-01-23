@@ -10,7 +10,15 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import JobSeekerForm, RecruiterForm
-from .models import JobSeeker, Profile, Recruiter, Skill, Match, UserStatusEnum
+from .models import (
+    JobSeeker,
+    Profile,
+    Recruiter,
+    Skill,
+    Match,
+    UserStatusEnum,
+    UserSession,
+)
 
 
 @login_required
@@ -21,11 +29,13 @@ def user_mode_selection(request):
             selected_mode = request.POST.get("user_mode")
 
             # Change profile's field
-            profile = Profile.objects.get(user=request.user)
+            user_session = UserSession.objects.get(user=request.user)
 
-            profile.user_status = UserStatusEnum.from_human_readable(selected_mode)
-            profile.save()
-            messages.info(request, f"You have selected {profile.get_user_status()}!")
+            user_session.user_status = UserStatusEnum.from_human_readable(selected_mode)
+            user_session.save()
+            messages.info(
+                request, f"You have selected {user_session.get_user_status()}!"
+            )
         except User.DoesNotExist:
             raise Http404
 
@@ -42,13 +52,13 @@ def home(request):
     if request.user.is_authenticated:
         # Authorised
         try:
-            profile = Profile.objects.get(user=request.user)
-        except Profile.DoesNotExist:
+            user_session = UserSession.objects.get(user=request.user)
+        except UserSession.DoesNotExist:
             raise Http404
-        except Profile.MultipleObjectsReturned:
-            pass
+        except UserSession.MultipleObjectsReturned:
+            raise Http404
 
-        user_status = profile.get_user_status()
+        user_status = user_session.get_user_status()
         context = {
             "user_status": user_status,
             "job_seekers": job_seekers,

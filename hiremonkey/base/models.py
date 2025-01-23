@@ -50,32 +50,14 @@ class UserStatusEnum(Enum):
 
 
 class Profile(models.Model):
-    # JOB_SEEKER = "JS"
-    # RECRUITER = "RE"
-    #
-    # PROFILE_CHOICES = [
-    #     (JOB_SEEKER, "Job Seeker"),
-    #     (RECRUITER, "Recruiter"),
-    # ]
-    #
-    # JOB_SEEKER_MODE = 'job_seeker'
-    # RECRUITER_MODE = 'recruiter'
-    #
-    # MODE_CHOICES = [
-    #     (JOB_SEEKER_MODE, 'Job Seeker Mode'),
-    #     (RECRUITER_MODE, 'Recruiter Mode'),
-    # ]
-    # user_mode = models.CharField(max_length=20, choices=MODE_CHOICES, default=JOB_SEEKER_MODE)
+    # Keep track of which user_status and actiavted profile user is viewing
+    # user_status = models.CharField(
+    #     max_length=1,
+    #     choices=[(tag.value[0], tag.value[1]) for tag in UserStatusEnum],
+    #     default=UserStatusEnum.JOBSEEKER.value[0],
+    # )
 
-    user_status = models.CharField(
-        max_length=1,
-        choices=[(tag.value[0], tag.value[1]) for tag in UserStatusEnum],
-        default=UserStatusEnum.JOBSEEKER.value[0],
-    )
-
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="%(class)s_profiles"
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="profile")
     slug = models.SlugField(max_length=200, blank=True, null=True, unique=True)
     # profile_type = models.CharField(max_length=2, choices=PROFILE_CHOICES)
     title = models.CharField(max_length=200, default="default profile")
@@ -108,18 +90,6 @@ class Profile(models.Model):
     class Meta:
         abstract = False
         ordering = ["-updated", "-created"]
-
-    def is_jobseeker(self):
-        return self.user_status == UserStatusEnum.JOBSEEKER.value[0]
-
-    def is_recruiter(self):
-        return self.user_status == UserStatusEnum.RECRUITER.value[0]
-
-    def get_user_status(self):
-        if self.is_jobseeker():
-            return UserStatusEnum.JOBSEEKER.value[1]
-        else:
-            return UserStatusEnum.RECRUITER.value[1]
 
 
 class Skill(models.Model):
@@ -231,6 +201,43 @@ def profile_pre_save(sender, instance, *args, **kwargs):
 def profile_post_save(sender, instance, created, *args, **kwargs):
     if created:
         slugify_instance_title(instance, save=True)
+
+
+class UserSession(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="user_session"
+    )
+
+    user_status = models.CharField(
+        max_length=1,
+        choices=[(tag.value[0], tag.value[1]) for tag in UserStatusEnum],
+        default=UserStatusEnum.JOBSEEKER.value[0],
+    )
+
+    activated_profile_id = models.PositiveIntegerField(null=True, blank=True)
+
+    def is_jobseeker(self):
+        return self.user_status == UserStatusEnum.JOBSEEKER.value[0]
+
+    def is_recruiter(self):
+        return self.user_status == UserStatusEnum.RECRUITER.value[0]
+
+    def get_user_status(self):
+        if self.is_jobseeker():
+            return UserStatusEnum.JOBSEEKER.value[1]
+        else:
+            return UserStatusEnum.RECRUITER.value[1]
+
+    def get_activated_profile(self):
+        """
+        Fetch the currently activated profile (JobSeeker or Recruiter).
+        """
+        if self.is_jobseeker():
+            return JobSeeker.objects.filter(id=self.activated_profile_id).first()
+        elif self.is_recruiter():
+            return Recruiter.objects.filter(id=self.activated_profile_id).first()
+        else:
+            raise ValueError(f"Error: Neither a recruiter or a jobseeker type.")
 
 
 # Signals
