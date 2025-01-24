@@ -303,7 +303,7 @@ def matched_profile(request, slug=None):
 
     # Get User Profile
     try:
-        profile = Profile.objects.get(user=request.user)
+        profile = request.user.usersession.get_activated_profile()
     except Profile.DoesNotExist:
         raise Http404
     except Profile.MultipleObjectsReturned:
@@ -311,19 +311,20 @@ def matched_profile(request, slug=None):
 
     # Find matches
     matches = None
-    user = profile.user
-    if profile.is_jobseeker():
-        # matches = Match.objects.filter(job_seeker__user=user)
-        matches = Match.objects.filter(job_seeker__slug=slug)
-        # matches = get_object_or_404(Match, )
-    elif profile.is_recruiter():
-        # matches = Match.objects.filter(recruiter__user=user)
-        matches = Match.objects.filter(recruiter__slug=slug)
-    else:
-        # Error
-        messages.error(request, "Profile is neither a JobSeeker nor a Recruiter!")
+    # user = profile.user
+    # if profile.is_jobseeker():
+    #     # matches = Match.objects.filter(job_seeker__user=user)
+    #     matches = Match.objects.filter(job_seeker__slug=slug)
+    #     # matches = get_object_or_404(Match, )
+    # elif profile.is_recruiter():
+    #     # matches = Match.objects.filter(recruiter__user=user)
+    #     matches = Match.objects.filter(recruiter__slug=slug)
+    # else:
+    #     # Error
+    #     messages.error(request, "Profile is neither a JobSeeker nor a Recruiter!")
+    matches = profile.matches.all()
 
-    print(matches)
+    # print(matches)
     # messages.info(request, matches)
     context = {"matches": matches}
     return render(request, "base/matched_profile.html", context=context)

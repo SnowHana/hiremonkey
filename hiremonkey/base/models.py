@@ -152,6 +152,9 @@ class JobSeeker(JobProfile):
         # self.user_mode = JobProfile.JOB_SEEKER_MODE
         super().save(*args, **kwargs)
 
+    def pending_matches(self):
+        return self.matches.filter(match__match_status=MatchStatusEnum.PENDING)
+
 
 class Recruiter(JobProfile):
     company = models.CharField(max_length=255)
@@ -162,6 +165,9 @@ class Recruiter(JobProfile):
     def save(self, *args, **kwargs):
         # self.user_mode = Profile.RECRUITER_MODE
         super().save(*args, **kwargs)
+
+    def accepted_matches(self):
+        return self.matches.filter(match__match_status=MatchStatusEnum.ACCEPTED)
 
 
 class MatchStatusEnum(Enum):
@@ -227,15 +233,29 @@ class UserSession(models.Model):
             return UserStatusEnum.RECRUITER.value[1]
 
     def get_activated_profile(self):
+        """Get currently activated profile of User
+
+        Raises:
+            ValueError: If user is neither a job seeker, nor a recruiter
+
+        Returns:
+            _type_: JobProfile Object (JobSeeker, Recruiter)
+            None : If Not exists..
         """
-        Fetch the currently activated profile (JobSeeker or Recruiter).
-        """
-        if self.is_jobseeker():
-            return JobSeeker.objects.filter(id=self.activated_profile_id).first()
-        elif self.is_recruiter():
-            return Recruiter.objects.filter(id=self.activated_profile_id).first()
-        else:
-            raise ValueError(f"Error: Neither a recruiter or a jobseeker type.")
+        try:
+            if self.is_jobseeker():
+                return JobSeeker.objects.get(id=self.activated_profile_id)
+            elif self.is_recruiter():
+                return Recruiter.objects.get(id=self.activated_profile_id)
+            else:
+                raise ValueError("Error: Neither a recruiter nor a jobseeker type.")
+        except (
+            JobSeeker.DoesNotExist,
+            Recruiter.DoesNotExist,
+            JobSeeker.MultipleObjectsReturned,
+            Recruiter.MultipleObjectsReturned,
+        ):
+            return None
 
     def set_activated_profile(self, profile_id):
         self.activated_profile_id = profile_id

@@ -31,7 +31,7 @@
 - model: base.recruiter
   pk: 1
   fields:
-    user: 2
+    user: 1
     slug: recruiter-1
     title: Tech Recruiter
     bio: Specializing in recruiting top talent for tech companies.
@@ -45,7 +45,7 @@
 - model: base.recruiter
   pk: 2
   fields:
-    user: 3
+    user: 2
     slug: recruiter-2
     title: Burger Recruiter
     bio: Specializing in recruiting top talent for fast food companies.
@@ -55,11 +55,12 @@
     min_salary: 20000
     max_salary: 50000
     company: Maccas.
-# - model: base.match
-#   pk: 1
-#   fields:
-#     job_seeker: 1
-#     recruiter: 1
-#     match_date: 2025-01-23T00:00:00Z
-#     match_status: P
-#     memo: Initial match for a software developer position.
+
+- model: base.match
+  pk: 1
+  fields:
+    job_seeker: 1
+    recruiter: 2
+    match_date: 2025-01-23T00:00:00Z
+    match_status: P
+    memo: Initial match for a software developer position.
