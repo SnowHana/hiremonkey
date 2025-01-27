@@ -9,9 +9,9 @@
 
             <!-- Bootstrap Select Dropdown -->
             <div class="mb-3">
-                <label for="user_mode" class="form-label">Select your mode:</label>
+                <label for="user_mode" class="form-label">Select your Job Profile to activate:</label>
                 <select class="form-select" name="selected_profile" id="selected_profile">
-                    <option value="" disabled selected>Select mode</option>
+                    <option value="" disabled selected>Select Job Profile</option>
                     {% for profile in profiles %}
                     <option value="{{ profile.id }}">{{ profile.title }}</option>
                     {% endfor %}
