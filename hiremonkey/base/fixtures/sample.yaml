@@ -1,3 +1,69 @@
+# - model: base.jobseeker
+#   pk: 1
+#   fields:
+#     user: 1
+#     slug: jobseeker-1
+#     title: Software Developer
+#     bio: Experienced software developer with a focus on web development.
+#     skills: []
+#     updated: 2025-01-23T00:00:00Z
+#     created: 2025-01-01T00:00:00Z
+#     min_salary: 50000
+#     max_salary: 90000
+#     academics: Bachelor's in Computer Science
+#     age: 30
+
+# - model: base.jobseeker
+#   pk: 2
+#   fields:
+#     user: 2
+#     slug: jobseeker-2
+#     title: Burger Flipper
+#     bio: Experienced burger flipper.
+#     skills: []
+#     updated: 2025-01-20T00:00:00Z
+#     created: 2025-01-02T00:00:00Z
+#     min_salary: 20000
+#     max_salary: 50000
+#     academics: []
+#     age: 25
+
+# - model: base.recruiter
+#   pk: 1
+#   fields:
+#     user: 1
+#     slug: recruiter-1
+#     title: Tech Recruiter
+#     bio: Specializing in recruiting top talent for tech companies.
+#     skills: []
+#     updated: 2025-01-23T00:00:00Z
+#     created: 2025-01-01T00:00:00Z
+#     min_salary: 60000
+#     max_salary: 120000
+#     company: Tech Recruiters Inc.
+
+# - model: base.recruiter
+#   pk: 2
+#   fields:
+#     user: 2
+#     slug: recruiter-2
+#     title: Burger Recruiter
+#     bio: Specializing in recruiting top talent for fast food companies.
+#     skills: []
+#     updated: 2025-01-23T00:00:00Z
+#     created: 2025-01-01T00:00:00Z
+#     min_salary: 20000
+#     max_salary: 50000
+#     company: Maccas.
+
+# - model: base.match
+#   pk: 1
+#   fields:
+#     job_seeker: 1
+#     recruiter: 2
+#     match_date: 2025-01-23T00:00:00Z
+#     match_status: P
+#     memo: Initial match for a software developer position.
 - model: base.jobseeker
   pk: 1
   fields:
@@ -5,7 +71,6 @@
     slug: jobseeker-1
     title: Software Developer
     bio: Experienced software developer with a focus on web development.
-    skills: []
     updated: 2025-01-23T00:00:00Z
     created: 2025-01-01T00:00:00Z
     min_salary: 50000
@@ -20,13 +85,40 @@
     slug: jobseeker-2
     title: Burger Flipper
     bio: Experienced burger flipper.
-    skills: []
     updated: 2025-01-20T00:00:00Z
     created: 2025-01-02T00:00:00Z
     min_salary: 20000
     max_salary: 50000
     academics: []
     age: 25
+
+- model: base.jobseeker
+  pk: 3
+  fields:
+    user: 3
+    slug: jobseeker-3
+    title: Graphic Designer
+    bio: Passionate graphic designer with experience in branding and digital design.
+    updated: 2025-01-25T00:00:00Z
+    created: 2025-01-05T00:00:00Z
+    min_salary: 45000
+    max_salary: 80000
+    academics: Bachelor's in Graphic Design
+    age: 28
+
+- model: base.jobseeker
+  pk: 4
+  fields:
+    user: 4
+    slug: jobseeker-4
+    title: Data Scientist
+    bio: Data scientist with a deep understanding of machine learning and AI.
+    updated: 2025-01-22T00:00:00Z
+    created: 2025-01-10T00:00:00Z
+    min_salary: 70000
+    max_salary: 120000
+    academics: Master's in Data Science
+    age: 32
 
 - model: base.recruiter
   pk: 1
@@ -35,7 +127,6 @@
     slug: recruiter-1
     title: Tech Recruiter
     bio: Specializing in recruiting top talent for tech companies.
-    skills: []
     updated: 2025-01-23T00:00:00Z
     created: 2025-01-01T00:00:00Z
     min_salary: 60000
@@ -49,12 +140,37 @@
     slug: recruiter-2
     title: Burger Recruiter
     bio: Specializing in recruiting top talent for fast food companies.
-    skills: []
     updated: 2025-01-23T00:00:00Z
     created: 2025-01-01T00:00:00Z
     min_salary: 20000
     max_salary: 50000
     company: Maccas.
+
+- model: base.recruiter
+  pk: 3
+  fields:
+    user: 3
+    slug: recruiter-3
+    title: Senior Tech Recruiter
+    bio: Head recruiter for top software engineering positions.
+    updated: 2025-01-23T00:00:00Z
+    created: 2025-01-01T00:00:00Z
+    min_salary: 90000
+    max_salary: 150000
+    company: CodeHire Inc.
+
+- model: base.recruiter
+  pk: 4
+  fields:
+    user: 4
+    slug: recruiter-4
+    title: Data Science Recruiter
+    bio: Expert in recruiting data scientists and machine learning professionals.
+    updated: 2025-01-23T00:00:00Z
+    created: 2025-01-01T00:00:00Z
+    min_salary: 70000
+    max_salary: 130000
+    company: Data Pros
 
 - model: base.match
   pk: 1
@@ -64,3 +180,48 @@
     match_date: 2025-01-23T00:00:00Z
     match_status: P
     memo: Initial match for a software developer position.
+
+- model: base.match
+  pk: 2
+  fields:
+    job_seeker: 1
+    recruiter: 3
+    match_date: 2025-01-23T00:00:00Z
+    match_status: P
+    memo: Another match for a software developer position.
+
+- model: base.match
+  pk: 3
+  fields:
+    job_seeker: 1
+    recruiter: 4
+    match_date: 2025-01-21T00:00:00Z
+    match_status: P
+    memo: Yet, another match for a software developer position.
+
+- model: base.match
+  pk: 4
+  fields:
+    job_seeker: 3
+    recruiter: 1
+    match_date: 2025-01-24T00:00:00Z
+    match_status: P
+    memo: Initial match for a graphic designer position.
+
+- model: base.match
+  pk: 5
+  fields:
+    job_seeker: 4
+    recruiter: 3
+    match_date: 2025-01-25T00:00:00Z
+    match_status: P
+    memo: Initial match for a data science position.
+
+- model: base.match
+  pk: 6
+  fields:
+    job_seeker: 2
+    recruiter: 4
+    match_date: 2025-01-26T00:00:00Z
+    match_status: P
+    memo: Initial match for a burger flipper position.
