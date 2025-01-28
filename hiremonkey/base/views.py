@@ -20,6 +20,8 @@ from .models import (
     UserSession,
 )
 
+from .decorators import require_job_profile, require_activated_profile
+
 
 @login_required
 def user_mode_selection(request):
@@ -44,6 +46,7 @@ def user_mode_selection(request):
     return render(request, "base/user_mode_selection.html")
 
 
+@require_job_profile
 @login_required(login_url="/login")
 def active_profile_selection(request):
     if request.method == "POST":
@@ -298,6 +301,7 @@ def match_select_job_profile(request):
             pass
 
 
+@require_activated_profile
 @login_required(login_url="/login")
 def matched_profile(request, slug=None):
     """View for matched profile
@@ -324,41 +328,9 @@ def matched_profile(request, slug=None):
 
     # Find matches
     matches = None
-    # user = profile.user
-    # if profile.is_jobseeker():
-    #     # matches = Match.objects.filter(job_seeker__user=user)
-    #     matches = Match.objects.filter(job_seeker__slug=slug)
-    #     # matches = get_object_or_404(Match, )
-    # elif profile.is_recruiter():
-    #     # matches = Match.objects.filter(recruiter__user=user)
-    #     matches = Match.objects.filter(recruiter__slug=slug)
-    # else:
-    #     # Error
-    #     messages.error(request, "Profile is neither a JobSeeker nor a Recruiter!")
-
     matches = profile.matches.all()
-
-    # print(matches)
-    # messages.info(request, matches)
     context = {"matches": matches}
     return render(request, "base/matched_profile.html", context=context)
-
-    # # user_mode = request.session.get("user_mode", False)
-    # user_subclass = JobSeeker if profile.is_jobseeker() else Recruiter
-
-    # if slug is not None:
-    #     try:
-    #         profile = get_object_or_404(user_subclass, slug=slug)
-    #     except user_subclass.DoesNotExist:
-    #         raise Http404
-    #     except user_subclass.MultipleObjectsReturned:
-    #         profile = user_subclass.objects.filter(slug=slug).first()
-    #     except:
-    #         raise Http404
-
-    # Query
-    # NOTE: This will go wrong lol
-    # matches = Match.objects.filter(user_mode=request.user)
 
 
 @login_required(login_url="/login")

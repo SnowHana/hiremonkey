@@ -242,6 +242,11 @@ class UserSession(models.Model):
             _type_: JobProfile Object (JobSeeker, Recruiter)
             None : If Not exists..
         """
+        # Handle when there is no activated profile
+        if not self.activated_profile_id:
+            # raise AttributeError("No active profile is set for this user")
+            return None
+        # Activated profile exists
         try:
             if self.is_jobseeker():
                 return JobSeeker.objects.get(id=self.activated_profile_id)
@@ -259,6 +264,20 @@ class UserSession(models.Model):
 
     def set_activated_profile(self, profile_id):
         self.activated_profile_id = profile_id
+
+    def get_all_job_profiles(self):
+        try:
+            if self.is_jobseeker():
+                return JobSeeker.objects.filter(user=self.user)
+            elif self.is_recruiter():
+                return Recruiter.objects.filter(user=self.user)
+            else:
+                raise ValueError("Error: Neither a recruiter nor a jobseeker type.")
+        except (
+            JobSeeker.DoesNotExist,
+            Recruiter.DoesNotExist,
+        ):
+            return None
 
     def __str__(self):
         return f"{self.user} - {self.user_status} : Actiaved {self.get_activated_profile()}"
