@@ -300,6 +300,19 @@ def match_select_job_profile(request):
 
 @login_required(login_url="/login")
 def matched_profile(request, slug=None):
+    """View for matched profile
+
+    Args:
+        request (_type_): _description_
+        slug (_type_, optional): _description_. Defaults to None.
+
+    Raises:
+        Http404: _description_
+        Http404: _description_
+
+    Returns:
+        _type_: _description_
+    """
 
     # Get User Profile
     try:
@@ -322,6 +335,7 @@ def matched_profile(request, slug=None):
     # else:
     #     # Error
     #     messages.error(request, "Profile is neither a JobSeeker nor a Recruiter!")
+
     matches = profile.matches.all()
 
     # print(matches)
