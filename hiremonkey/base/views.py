@@ -32,8 +32,7 @@ def user_mode_selection(request):
 
             # Change profile's field
             user_session = UserSession.objects.get(user=request.user)
-
-            user_session.user_status = UserStatusEnum.from_human_readable(selected_mode)
+            user_session.user_status = selected_mode
             user_session.save()
             messages.info(
                 request, f"You have selected {user_session.get_user_status()}!"
@@ -53,6 +52,7 @@ def active_profile_selection(request):
         try:
             selected_profile_id = request.POST.get("selected_profile")
 
+            # Set Activated Profile
             user_session = UserSession.objects.get(user=request.user)
             user_session.set_activated_profile(selected_profile_id)
             user_session.save()
@@ -90,16 +90,15 @@ def home(request):
     context = {"job_seekers": job_seekers, "recruiters": recruiters}
     if request.user.is_authenticated:
         # Authorised
-        try:
-            user_session = UserSession.objects.get(user=request.user)
-        except UserSession.DoesNotExist:
-            raise Http404
-        except UserSession.MultipleObjectsReturned:
-            raise Http404
+        # try:
+        #     user_session = UserSession.objects.get(user=request.user)
+        # except UserSession.DoesNotExist:
+        #     raise Http404
+        # except UserSession.MultipleObjectsReturned:
+        #     raise Http404
 
-        user_status = user_session.get_user_status()
+        # user_status = user_session.get_user_status()
         context = {
-            "user_status": user_status,
             "job_seekers": job_seekers,
             "recruiters": recruiters,
         }

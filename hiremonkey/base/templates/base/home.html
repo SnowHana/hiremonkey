@@ -74,7 +74,7 @@
                 </li>
 
                 <li>
-                    {% if user_status == 'JobSeeker' %}
+                    {% if user_session.user_status == JOBSEEKER %}
                     <a href="{% url 'create_jobseeker' %}" class="nav-link text-white">
                         <svg class="bi me-2" width="16" height="16">
                             <use xlink:href="#people-circle" />
@@ -110,40 +110,10 @@
             </div>
         </div>
     </div>
-    <!-- 
-    <div class="card mb-3 mt-3">
-        <h3 class="card-header">{{ request.user }}</h3>
-        <div class="card-body">
-            <h5 class="card-title">Special title treatment</h5>
-            <h6 class="card-subtitle text-muted">Support card subtitle</h6>
-        </div>
-        <svg xmlns="http://www.w3.org/2000/svg" class="d-block user-select-none" width="100%" height="200"
-            aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice"
-            viewBox="0 0 318 180" style="font-size:1.125rem;text-anchor:middle">
-            <rect width="100%" height="100%" fill="#868e96"></rect>
-            <text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image cap</text>
-        </svg>
-        <div class="card-body">
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-                content.</p>
-        </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">Cras justo odio</li>
-            <li class="list-group-item">Dapibus ac facilisis in</li>
-            <li class="list-group-item">Vestibulum at eros</li>
-        </ul>
-        <div class="card-body">
-            <a href="#" class="card-link">Card link</a>
-            <a href="#" class="card-link">Another link</a>
-        </div>
-        <div class="card-footer text-muted">
-            2 days ago
-        </div>
-    </div> -->
 
 
     <div class="card mb-3 mt-3">
-        {% if user_status == 'Recruiter' %}
+        {% if user_session.user_status == RECRUITER %}
         <!-- <h2 class="display-2">Active Job Seekers</h2> -->
         {% for profile in job_seekers %}
         <div class="container">
@@ -151,7 +121,7 @@
         {% endfor %}
         {% endif %}
 
-        {% if user_status == 'JobSeeker' %}
+        {% if user_session.user_status == JOBSEEKER %}
         <!-- <h2 class="display-2">Active Recruiters</h2> -->
         {% for profile in recruiters %}
         <div class="container">

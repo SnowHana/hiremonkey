@@ -43,12 +43,12 @@ class JobSeekerForm(forms.ModelForm):
 
         # Query the database to check for existing titles for the same user
         queryset = JobSeeker.objects.filter(user=self.user, title=title)
-        # TODO: Now queryset always exists, cuz profile exist.'\\\
+        # TODO: Now queryset always exists, cuz profile exist
         if self.instance.pk is not None:
             queryset = queryset.exclude(pk=self.instance.pk)
         if queryset.exists():
             raise forms.ValidationError(
-                "A recruiter profile with this title already exists."
+                "A jobseeker profile with this title already exists."
             )
 
         return title
@@ -83,11 +83,12 @@ class RecruiterForm(forms.ModelForm):
         # Query the database to check for existing titles for the same user
         queryset = Recruiter.objects.filter(user=self.user, title=title)
 
+        if self.instance.pk is not None:
+            queryset = queryset.exclude(pk=self.instance.pk)
         if queryset.exists():
             raise forms.ValidationError(
                 "A recruiter profile with this title already exists."
             )
-
         return title
 
 

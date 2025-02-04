@@ -5,13 +5,13 @@
     <div class="col-md-6 col-lg-4">
         <h2 class="text-center mb-4">Matched Profile</h2>
         {% for match in matches %}
-        {% if request.user.usersession.get_user_status == "JobSeeker" %}
+        {% if user_session.user_status == JOBSEEKER %}
         <div class="container">
             {% include 'base/profile_card.html' with profile=match profile_type='recruiter' profile_url='recruiter' %}
         </div>
         {% endif %}
 
-        {% if request.user.usersession.get_user_status == "Recruiter" %}
+        {% if user_session.user_status == RECRUITER %}
         <div class="container">
             {% include 'base/profile_card.html' with profile=match profile_type='recruiter' profile_url='recruiter' %}
         </div>
