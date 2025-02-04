@@ -38,8 +38,8 @@ INSTALLED_APPS = [
     "base.apps.BaseConfig",
     "dal",
     "dal_select2",
-    'crispy_forms',
-    'crispy_bootstrap5'
+    "crispy_forms",
+    "crispy_bootstrap5",
 ]
 
 MIDDLEWARE = [
@@ -65,14 +65,16 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "utils.context_processors.user_session_context",
+                "utils.context_processors.user_status_enum_context",
             ],
         },
     },
 ]
 
 WSGI_APPLICATION = "hiremonkey.wsgi.application"
-CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
-CRISPY_TEMPLATE_PACK = 'bootstrap5'
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -122,6 +124,9 @@ STATICFILES_DIRS = [
     # other directories
 ]
 
+# FIXTURE_DIRS = [
+#     BASE_DIR / "base" / "fixtures",
+# ]
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 

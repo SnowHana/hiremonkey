@@ -9,6 +9,11 @@ urlpatterns = [
     path("register/", views.registerPage, name="register"),
     path("user-mode-selection/", views.user_mode_selection, name="user_mode_selection"),
     path(
+        "active_profile_selection/",
+        views.active_profile_selection,
+        name="active_profile_selection",
+    ),
+    path(
         "jobseeker/<slug:slug>/",
         views.jobseeker,
         name="jobseeker",
@@ -18,7 +23,7 @@ urlpatterns = [
         views.recruiter,
         name="recruiter",
     ),
-    path("select_profile_type/", views.select_profile_type, name="select_profile_type"),
+    # path("select_profile_type/", views.select_profile_type, name="select_profile_type"),
     path("create_jobseeker/", views.create_jobseeker, name="create_jobseeker"),
     path("create_recruiter/", views.create_recruiter, name="create_recruiter"),
     path(

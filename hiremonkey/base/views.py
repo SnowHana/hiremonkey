@@ -10,7 +10,17 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import JobSeekerForm, RecruiterForm
-from .models import JobSeeker, Profile, Recruiter, Skill, Match, UserStatusEnum
+from .models import (
+    JobSeeker,
+    Profile,
+    Recruiter,
+    Skill,
+    Match,
+    UserStatusEnum,
+    UserSession,
+)
+
+from .decorators import require_job_profile, require_activated_profile
 
 
 @login_required
@@ -21,17 +31,56 @@ def user_mode_selection(request):
             selected_mode = request.POST.get("user_mode")
 
             # Change profile's field
-            profile = Profile.objects.get(user=request.user)
-
-            profile.user_status = UserStatusEnum.from_human_readable(selected_mode)
-            profile.save()
-            messages.info(request, f"You have selected {profile.get_user_status()}!")
+            user_session = UserSession.objects.get(user=request.user)
+            user_session.user_status = selected_mode
+            user_session.save()
+            messages.info(
+                request, f"You have selected {user_session.get_user_status()}!"
+            )
         except User.DoesNotExist:
             raise Http404
 
         return redirect("home")  # Redirect to home view after selection
 
     return render(request, "base/user_mode_selection.html")
+
+
+@require_job_profile
+@login_required(login_url="/login")
+def active_profile_selection(request):
+    if request.method == "POST":
+        try:
+            selected_profile_id = request.POST.get("selected_profile")
+
+            # Set Activated Profile
+            user_session = UserSession.objects.get(user=request.user)
+            user_session.set_activated_profile(selected_profile_id)
+            user_session.save()
+
+            messages.info(
+                request, f"You have selected {user_session.get_activated_profile()}!"
+            )
+        except UserSession.MultipleObjectsReturned:
+            raise Http404
+        except UserSession.DoesNotExist:
+            raise Http404
+
+        return redirect("home")
+
+    # Deliver choices
+    user_session = UserSession.objects.get(user=request.user)
+    # Return list of possible ids
+    profiles = None
+    if user_session.is_jobseeker():
+        # Query Jobseekr
+        profiles = JobSeeker.objects.filter(user=request.user)
+    elif user_session.is_recruiter():
+        profiles = Recruiter.objects.filter(user=request.user)
+    else:
+        raise ValueError(f"{request.user} chose neither JS nor RC user status")
+
+    context = {"profiles": profiles}
+    return render(request, "base/active_profile_selection.html", context=context)
 
 
 def home(request):
@@ -41,16 +90,15 @@ def home(request):
     context = {"job_seekers": job_seekers, "recruiters": recruiters}
     if request.user.is_authenticated:
         # Authorised
-        try:
-            profile = Profile.objects.get(user=request.user)
-        except Profile.DoesNotExist:
-            raise Http404
-        except Profile.MultipleObjectsReturned:
-            pass
+        # try:
+        #     user_session = UserSession.objects.get(user=request.user)
+        # except UserSession.DoesNotExist:
+        #     raise Http404
+        # except UserSession.MultipleObjectsReturned:
+        #     raise Http404
 
-        user_status = profile.get_user_status()
+        # user_status = user_session.get_user_status()
         context = {
-            "user_status": user_status,
             "job_seekers": job_seekers,
             "recruiters": recruiters,
         }
@@ -158,18 +206,6 @@ def recruiter(request, slug=None):
     return render(request, "base/recruiter.html", context)
 
 
-@login_required
-def select_profile_type(request):
-    if request.method == "POST":
-        # Register or Create a profile
-        profile_type = request.POST.get("profile_type")
-        if profile_type == "jobseeker":
-            return redirect("create_jobseeker")
-        elif profile_type == "recruiter":
-            return redirect("create_recruiter")
-    return render(request, "base/select_profile_type.html")
-
-
 @login_required(login_url="/login")
 def create_jobseeker(request):
     # NOTE f
@@ -264,12 +300,26 @@ def match_select_job_profile(request):
             pass
 
 
+@require_activated_profile
 @login_required(login_url="/login")
 def matched_profile(request, slug=None):
+    """View for matched profile
+
+    Args:
+        request (_type_): _description_
+        slug (_type_, optional): _description_. Defaults to None.
+
+    Raises:
+        Http404: _description_
+        Http404: _description_
+
+    Returns:
+        _type_: _description_
+    """
 
     # Get User Profile
     try:
-        profile = Profile.objects.get(user=request.user)
+        profile = request.user.usersession.get_activated_profile()
     except Profile.DoesNotExist:
         raise Http404
     except Profile.MultipleObjectsReturned:
@@ -277,39 +327,9 @@ def matched_profile(request, slug=None):
 
     # Find matches
     matches = None
-    user = profile.user
-    if profile.is_jobseeker():
-        # matches = Match.objects.filter(job_seeker__user=user)
-        matches = Match.objects.filter(job_seeker__slug=slug)
-        # matches = get_object_or_404(Match, )
-    elif profile.is_recruiter():
-        # matches = Match.objects.filter(recruiter__user=user)
-        matches = Match.objects.filter(recruiter__slug=slug)
-    else:
-        # Error
-        messages.error(request, "Profile is neither a JobSeeker nor a Recruiter!")
-
-    print(matches)
-    # messages.info(request, matches)
+    matches = profile.matches.all()
     context = {"matches": matches}
     return render(request, "base/matched_profile.html", context=context)
-
-    # # user_mode = request.session.get("user_mode", False)
-    # user_subclass = JobSeeker if profile.is_jobseeker() else Recruiter
-
-    # if slug is not None:
-    #     try:
-    #         profile = get_object_or_404(user_subclass, slug=slug)
-    #     except user_subclass.DoesNotExist:
-    #         raise Http404
-    #     except user_subclass.MultipleObjectsReturned:
-    #         profile = user_subclass.objects.filter(slug=slug).first()
-    #     except:
-    #         raise Http404
-
-    # Query
-    # NOTE: This will go wrong lol
-    # matches = Match.objects.filter(user_mode=request.user)
 
 
 @login_required(login_url="/login")

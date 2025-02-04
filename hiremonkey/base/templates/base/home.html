@@ -4,57 +4,132 @@
 <style>
     .home-container {
         display: grid;
-        grid-template-columns: 1fr 3fr 1fr;
+        grid-template-columns: 1fr 3fr;
+        gap: 20px
     }
 
-    .h5-link {
-        font-size: 1.25rem;
-        font-weight: bold;
-        color: #007bff;
-        text-decoration: none;
+    .nav-link {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .sidebar {
+        width: 280px;
     }
 </style>
 
-<h1>Home</h1>
-<hr>
+
 
 <div class="home-container">
-    <div>
-        <h3>Browse Topics</h3>
-        <hr>
+    <div class="container-fluid">
+        <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 280px;">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                <svg class="bi me-2" width="40" height="32">
+                    <use xlink:href="#bootstrap" />
+                </svg>
+                <span class="fs-4">Sidebar</span>
+            </a>
+            <hr>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item">
+                    <a href="{% url 'home' %}" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16">
+                            <use xlink:href="#home" />
+                        </svg>
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link text-white">
+                        <svg class="bi me-2" width="16" height="16">
+                            <use xlink:href="#speedometer2" />
+                        </svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'matched_profile' %}" class="nav-link text-white">
+                        <svg class="bi me-2" width="16" height="16">
+                            <use xlink:href="#table" />
+                        </svg>
+                        View Matches
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link text-white">
+                        <svg class="bi me-2" width="16" height="16">
+                            <use xlink:href="#grid" />
+                        </svg>
+                        View My Profile
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'active_profile_selection' %}" class="nav-link text-white">
+                        <svg class="bi me-2" width="16" height="16">
+                            <use xlink:href="#people-circle" />
+                        </svg>
+                        View Activated Profile
+                    </a>
+                </li>
+
+                <li>
+                    {% if user_session.user_status == JOBSEEKER %}
+                    <a href="{% url 'create_jobseeker' %}" class="nav-link text-white">
+                        <svg class="bi me-2" width="16" height="16">
+                            <use xlink:href="#people-circle" />
+                        </svg>Create Job Seeker Profile</a>
+
+                    {% else %}
+                    <a href="{% url 'create_recruiter' %}" class="nav-link text-white">
+                        <svg class="bi me-2" width="16" height="16">
+                            <use xlink:href="#people-circle" />
+                        </svg>Create Recruiter Profile</a>
+
+                    {% endif %}
+
+                </li>
+            </ul>
+            <hr>
+            <div class="dropdown">
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                    id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="https://github.com/SnowHana.png" alt="" width="32" height="32"
+                        class="rounded-circle me-2">
+                    <strong>{{ request.user }}</strong>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+                    <li><a class="dropdown-item" href="#">New project...</a></li>
+                    <li><a class="dropdown-item" href="#">Settings</a></li>
+                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
 
-    <div>
-        <h1>{{ user_status }}</h1>
-        {% if user_status == 'Recruiter' %}
-        <h2>Active Job Seekers</h2>
-        <hr>
+
+    <div class="card mb-3 mt-3">
+        {% if user_session.user_status == RECRUITER %}
+        <!-- <h2 class="display-2">Active Job Seekers</h2> -->
         {% for profile in job_seekers %}
-        {% include 'base/profile_card.html' with profile_type='jobseeker' profile_url='jobseeker' %}
+        <div class="container">
+            {% include 'base/profile_card.html' with profile_type='jobseeker' profile_url='jobseeker' %}</div>
         {% endfor %}
         {% endif %}
 
-        <hr>
-        {% if user_status == 'JobSeeker' %}
-        <h2>Active Recruiters</h2>
-        <hr>
+        {% if user_session.user_status == JOBSEEKER %}
+        <!-- <h2 class="display-2">Active Recruiters</h2> -->
         {% for profile in recruiters %}
-        {% include 'base/profile_card.html' with profile_type='recruiter' profile_url='recruiter' %}
+        <div class="container">
+            {% include 'base/profile_card.html' with profile_type='recruiter' profile_url='recruiter' %}</div>
         {% endfor %}
         {% endif %}
     </div>
 
-    <div>
-        <h3>My Profiles</h3>
-        <ul>
-            {% if user_status == 'JobSeeker' %}
-            <li><a href="{% url 'create_jobseeker' %}">Create Job Seeker Profile</a></li>
-            {% else %}
-            <li><a href="{% url 'create_recruiter' %}">Create Recruiter Profile</a></li>
-            {% endif %}
-            <li><a href="{% url 'matched_profile' %}">Matched Profiles</a></li>
-        </ul>
 
-    </div>
 </div>
 {% endblock %}

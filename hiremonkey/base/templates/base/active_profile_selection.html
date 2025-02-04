@@ -1,0 +1,26 @@
+<!-- user_mode_selection.html -->
+{% extends 'main.html' %}
+{% block content %}
+
+<div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="col-md-6 col-lg-4">
+        <form method="post" class="border p-4 shadow rounded">
+            {% csrf_token %}
+
+            <!-- Bootstrap Select Dropdown -->
+            <div class="mb-3">
+                <label for="user_mode" class="form-label">Select your Job Profile to activate:</label>
+                <select class="form-select" name="selected_profile" id="selected_profile">
+                    <option value="" disabled selected>Select Job Profile</option>
+                    {% for profile in profiles %}
+                    <option value="{{ profile.id }}">{{ profile.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Select</button>
+        </form>
+    </div>
+</div>
+
+{% endblock content %}
