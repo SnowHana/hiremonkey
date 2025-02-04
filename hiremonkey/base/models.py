@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models
 from django.db.models.signals import pre_save, post_save
+from django.utils.text import slugify
 
 from .utils import slugify_instance_title
 
@@ -46,13 +47,84 @@ class UserStatusEnum(models.TextChoices):
         return dict(cls.choices).get(enum_value, f"Invalid enum value: {enum_value}")
 
 
+class UserSession(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
+
+    user_status = models.CharField(
+        max_length=1,
+        choices=UserStatusEnum.choices,
+        default=UserStatusEnum.JOBSEEKER,
+    )
+
+    activated_profile_id = models.PositiveIntegerField(null=True, blank=True)
+
+    def is_jobseeker(self):
+        return self.user_status == UserStatusEnum.JOBSEEKER
+
+    def is_recruiter(self):
+        return self.user_status == UserStatusEnum.RECRUITER
+
+    def get_user_status(self):
+        # if self.is_jobseeker():
+        #     return UserStatusEnum.JOBSEEKER.value[1]
+        # else:
+        #     return UserStatusEnum.RECRUITER.value[1]
+        return UserStatusEnum.to_human_readable(self.user_status)
+
+    def get_activated_profile(self):
+        """Get currently activated profile of User
+
+        Raises:
+            ValueError: If user is neither a job seeker, nor a recruiter
+
+        Returns:
+            _type_: JobProfile Object (JobSeeker, Recruiter)
+            None : If Not exists..
+        """
+        # Handle when there is no activated profile
+        if not self.activated_profile_id:
+            # raise AttributeError("No active profile is set for this user")
+            return None
+        # Activated profile exists
+        try:
+            if self.is_jobseeker():
+                return JobSeeker.objects.get(id=self.activated_profile_id)
+            elif self.is_recruiter():
+                return Recruiter.objects.get(id=self.activated_profile_id)
+            else:
+                raise ValueError("Error: Neither a recruiter nor a jobseeker type.")
+        except (
+            JobSeeker.DoesNotExist,
+            Recruiter.DoesNotExist,
+            JobSeeker.MultipleObjectsReturned,
+            Recruiter.MultipleObjectsReturned,
+        ):
+            return None
+
+    def set_activated_profile(self, profile_id):
+        self.activated_profile_id = profile_id
+        self.save()
+
+    def get_all_job_profiles(self):
+        try:
+            if self.is_jobseeker():
+                return JobSeeker.objects.filter(user=self.user)
+            elif self.is_recruiter():
+                return Recruiter.objects.filter(user=self.user)
+            else:
+                raise ValueError("Error: Neither a recruiter nor a jobseeker type.")
+        except (
+            JobSeeker.DoesNotExist,
+            Recruiter.DoesNotExist,
+        ):
+            return None
+
+    def __str__(self):
+        return f"{self.user} - {self.get_user_status()} : Actiaved {self.get_activated_profile()}"
+
+
 class Profile(models.Model):
     # Keep track of which user_status and actiavted profile user is viewing
-    # user_status = models.CharField(
-    #     max_length=1,
-    #     choices=[(tag.value[0], tag.value[1]) for tag in UserStatusEnum],
-    #     default=UserStatusEnum.JOBSEEKER.value[0],
-    # )
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
     slug = models.SlugField(max_length=200, blank=True, null=True, unique=True)
@@ -64,12 +136,15 @@ class Profile(models.Model):
     #     pass
 
     def save(self, *args, **kwargs):
-        # Call the clean method to enforce validation
+        if not self.slug:
+            base_slug = slugify(self.user.username)
+            self.slug = f"{base_slug}-{self.pk}" if self.pk else base_slug
+
         self.clean()
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.user.username} - {self.title}"
+        return f"{self.user.username} - Profile"
 
     class Meta:
         abstract = False
@@ -193,90 +268,15 @@ def profile_post_save(sender, instance, created, *args, **kwargs):
         slugify_instance_title(instance, save=True)
 
 
-class UserSession(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
-
-    user_status = models.CharField(
-        max_length=1,
-        choices=UserStatusEnum.choices,
-        default=UserStatusEnum.JOBSEEKER,
-    )
-
-    activated_profile_id = models.PositiveIntegerField(null=True, blank=True)
-
-    def is_jobseeker(self):
-        return self.user_status == UserStatusEnum.JOBSEEKER
-
-    def is_recruiter(self):
-        return self.user_status == UserStatusEnum.RECRUITER
-
-    def get_user_status(self):
-        # if self.is_jobseeker():
-        #     return UserStatusEnum.JOBSEEKER.value[1]
-        # else:
-        #     return UserStatusEnum.RECRUITER.value[1]
-        return UserStatusEnum.to_human_readable(self.user_status)
-
-    def get_activated_profile(self):
-        """Get currently activated profile of User
-
-        Raises:
-            ValueError: If user is neither a job seeker, nor a recruiter
-
-        Returns:
-            _type_: JobProfile Object (JobSeeker, Recruiter)
-            None : If Not exists..
-        """
-        # Handle when there is no activated profile
-        if not self.activated_profile_id:
-            # raise AttributeError("No active profile is set for this user")
-            return None
-        # Activated profile exists
-        try:
-            if self.is_jobseeker():
-                return JobSeeker.objects.get(id=self.activated_profile_id)
-            elif self.is_recruiter():
-                return Recruiter.objects.get(id=self.activated_profile_id)
-            else:
-                raise ValueError("Error: Neither a recruiter nor a jobseeker type.")
-        except (
-            JobSeeker.DoesNotExist,
-            Recruiter.DoesNotExist,
-            JobSeeker.MultipleObjectsReturned,
-            Recruiter.MultipleObjectsReturned,
-        ):
-            return None
-
-    def set_activated_profile(self, profile_id):
-        self.activated_profile_id = profile_id
-        self.save()
-
-    def get_all_job_profiles(self):
-        try:
-            if self.is_jobseeker():
-                return JobSeeker.objects.filter(user=self.user)
-            elif self.is_recruiter():
-                return Recruiter.objects.filter(user=self.user)
-            else:
-                raise ValueError("Error: Neither a recruiter nor a jobseeker type.")
-        except (
-            JobSeeker.DoesNotExist,
-            Recruiter.DoesNotExist,
-        ):
-            return None
-
-    def __str__(self):
-        return f"{self.user} - {self.get_user_status()} : Actiaved {self.get_activated_profile()}"
-
-
 # Signals
-pre_save.connect(profile_pre_save, sender=Profile)
 pre_save.connect(profile_pre_save, sender=Recruiter)
 pre_save.connect(profile_pre_save, sender=JobSeeker)
+# pre_save.connect(profile_pre_save, sender=Profile)
 
 post_save.connect(profile_post_save, sender=JobSeeker)
 post_save.connect(profile_post_save, sender=Recruiter)
-post_save.connect(profile_post_save, sender=Profile)
+# post_save.connect(profile_post_save, sender=Profile)
+
 
 # # Simple Profile fn
 # def get_user_status(user):

@@ -1,4 +1,3 @@
-<!-- user_mode_selection.html -->
 {% extends 'main.html' %}
 {% block content %}
 
@@ -7,13 +6,12 @@
         <form method="post" class="border p-4 shadow rounded">
             {% csrf_token %}
 
-            <!-- Bootstrap Select Dropdown -->
             <div class="mb-3">
                 <label for="user_mode" class="form-label">Select your mode:</label>
                 <select class="form-select" name="user_mode" id="user_mode">
                     <option value="" disabled selected>Select mode</option>
-                    <option value="JobSeeker">Job Seeker Mode</option>
-                    <option value="Recruiter">Recruiter Mode</option>
+                    <option value="{{ JOBSEEKER }}">Job Seeker Mode</option>
+                    <option value="{{ RECRUITER }}">Recruiter Mode</option>
                 </select>
             </div>
 
