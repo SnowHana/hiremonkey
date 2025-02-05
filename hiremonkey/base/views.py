@@ -90,14 +90,6 @@ def home(request):
     context = {"job_seekers": job_seekers, "recruiters": recruiters}
     if request.user.is_authenticated:
         # Authorised
-        # try:
-        #     user_session = UserSession.objects.get(user=request.user)
-        # except UserSession.DoesNotExist:
-        #     raise Http404
-        # except UserSession.MultipleObjectsReturned:
-        #     raise Http404
-
-        # user_status = user_session.get_user_status()
         context = {
             "job_seekers": job_seekers,
             "recruiters": recruiters,
@@ -273,31 +265,34 @@ def create_recruiter(request):
         )
 
 
-def match_select_job_profile(request):
-    """Select profile among all user's profile.
+def like_profile(request):
+    """User sends like to selected profile
 
     Args:
         request (_type_): _description_
-
-    Raises:
-        Http404: _description_
-        Http404: _description_
-        Http404: _description_
-        Http404: _description_
-        Http404: _description_
-        Http404: _description_
-        Http404: _description_
-        Http404: _description_
-
-    Returns:
-        _type_: _description_
     """
     if request.method == "POST":
         try:
-            selected_profile_slug = request.POST.get("job_profile_selection")
-            profile = Profile.objects.get(slug=selected_profile_slug)
-        except:
-            pass
+            
+
+# def match_seleced_profile(request):
+#     """
+
+#     Args:
+#         request (_type_): _description_
+
+#     Raises:
+#         Http404: _description_
+
+#     Returns:
+#         _type_: _description_
+#     """
+#     if request.method == "POST":
+#         try:
+#             selected_profile_slug = request.POST.get("job_profile_selection")
+#             profile = Profile.objects.get(slug=selected_profile_slug)
+#         except:
+#             pass
 
 
 @require_activated_profile
