@@ -265,6 +265,8 @@ def create_recruiter(request):
         )
 
 
+@login_required(login_url="/login")
+@require_activated_profile
 def like_profile(request):
     """User sends like to selected profile
 
@@ -323,8 +325,8 @@ def like_profile(request):
 #             pass
 
 
-@require_activated_profile
 @login_required(login_url="/login")
+@require_activated_profile
 def matched_profile(request, slug=None):
     """View for matched profile
 
