@@ -276,6 +276,7 @@ def like_profile(request):
         result = " "
         # slug = request.POST.get("job_profile_slug")
         slug = request.POST.get("job_profile_slug")
+        # print(slug)
         like_model = None
         like_job_profile = None
         if request.user.usersession.is_jobseeker():
@@ -292,9 +293,12 @@ def like_profile(request):
                 raise Http404
 
         # 2. Found Job Profile. Send like
-        request.user.usersession.get_activated_profile().send_like(like_job_profile)
+        match, created = request.user.usersession.get_activated_profile().send_like(
+            like_job_profile
+        )
         # messages.info(request, like_job_profile)
         # print(like_job_profile)
+        print(created)
         return JsonResponse({"result": like_job_profile.user.username})
     return JsonResponse({"error": "Invalid request"}, status=400)
 

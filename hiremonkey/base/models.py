@@ -2,7 +2,7 @@ from django.utils import timezone
 from enum import Enum
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.db import models
+from django.db import IntegrityError, models, transaction
 from django.db.models.signals import pre_save, post_save
 from django.utils.text import slugify
 
@@ -228,6 +228,8 @@ class JobSeeker(JobProfile):
             match.match_status = MatchStatusEnum.ACCEPTED
             match.save()
 
+        return match, created
+
 
 class Recruiter(JobProfile):
     company = models.CharField(max_length=255)
@@ -249,6 +251,8 @@ class Recruiter(JobProfile):
             # ACCEPTED
             match.match_status = MatchStatusEnum.ACCEPTED
             match.save()
+
+        return match, created
 
 
 class MatchStatusEnum(models.TextChoices):
@@ -286,8 +290,11 @@ class Match(models.Model):
     )
     memo = models.TextField(null=True, blank=True)
 
+    class Meta:
+        unique_together = ("job_seeker", "recruiter")
+
     def __str__(self):
-        return f"{self.match_status} : {self.job_seeker.user.username} matched with {self.recruiter.user.username} on {self.match_date}"
+        return f"{self.match_status} : {self.job_seeker} matched with {self.recruiter} on {self.match_date}"
 
     def is_accepted(self):
         return self.match_status == MatchStatusEnum.ACCEPTED
@@ -302,6 +309,7 @@ class Match(models.Model):
         return self.match_status == MatchStatusEnum.FAILED
 
     @classmethod
+    @transaction.atomic
     def get_or_create_match(cls, job_seeker: JobSeeker, recruiter: Recruiter):
         """Get or create a Match object between JS and RC
 
@@ -309,14 +317,29 @@ class Match(models.Model):
             job_seeker (JobSeeker):
             recruiter (Recruiter):
         """
+        try:
+            existing_match = (
+                cls.objects.select_for_update()
+                .filter(job_seeker=job_seeker, recruiter=recruiter)
+                .first()
+            )
 
-        match, created = cls.objects.get_or_create(
-            job_seeker=job_seeker,
-            recruiter=recruiter,
-            defaults={"match_status": MatchStatusEnum.PENDING},
-        )
+            if existing_match:
+                return existing_match, False
 
-        return match, created
+            match, created = cls.objects.create(
+                job_seeker=job_seeker,
+                recruiter=recruiter,
+                match_status=MatchStatusEnum.PENDING,
+            )
+
+            print(f"Match for Match get or create: {match}")
+            print(f"Created for Match get or create: {created}")
+
+            return match, True
+        except IntegrityError:
+            # Concurrency
+            return cls.objects.get(job_seeker=job_seeker, recruiter=recruiter), False
 
     # def get_match_status(self):
     #     return MatchStatusEnum.t

@@ -2,7 +2,9 @@ from base.models import UserSession, UserStatusEnum
 
 
 def user_session_context(request):
-    user_session = UserSession.objects.get(user=request.user)
+    user_session = None
+    if request.user.is_authenticated:
+        user_session = UserSession.objects.get(user=request.user)
 
     return {"user_session": user_session}
 

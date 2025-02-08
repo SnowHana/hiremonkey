@@ -14,7 +14,7 @@ class Command(BaseCommand):
         call_command("flush", "--no-input")
 
         # Create Users
-        # self.stdout.write("Creating users...")
+        self.stdout.write("Creating users...")
         user1 = User.objects.create_superuser(
             username="nautilus", password="rladnwls2001"
         )
