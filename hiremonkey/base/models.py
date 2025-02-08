@@ -251,7 +251,7 @@ class Recruiter(JobProfile):
             match.save()
 
 
-class MatchStatusEnum(Enum):
+class MatchStatusEnum(models.TextChoices):
     """Match Status Enum class
 
     Args:
@@ -281,7 +281,7 @@ class Match(models.Model):
     match_date = models.DateTimeField(auto_now_add=True)
     match_status = models.CharField(
         max_length=1,
-        choices=MatchStatusEnum.chocies,
+        choices=MatchStatusEnum.choices,
         default=MatchStatusEnum.FAILED,
     )
     memo = models.TextField(null=True, blank=True)

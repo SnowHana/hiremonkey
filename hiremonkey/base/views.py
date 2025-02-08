@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -265,14 +265,17 @@ def create_recruiter(request):
         )
 
 
-def like_profile(request, slug=None):
+def like_profile(request):
     """User sends like to selected profile
 
     Args:
         request (_type_): _description_
     """
     # 1. Find Profile using slug
-    if request.method == "POST":
+    if request.POST.get("action") == "post":
+        result = " "
+        # slug = request.POST.get("job_profile_slug")
+        slug = request.POST.get("job_profile_slug")
         like_model = None
         like_job_profile = None
         if request.user.usersession.is_jobseeker():
@@ -290,7 +293,10 @@ def like_profile(request, slug=None):
 
         # 2. Found Job Profile. Send like
         request.user.usersession.get_activated_profile().send_like(like_job_profile)
-    return render()
+        # messages.info(request, like_job_profile)
+        # print(like_job_profile)
+        return JsonResponse({"result": like_job_profile.user.username})
+    return JsonResponse({"error": "Invalid request"}, status=400)
 
 
 # def match_seleced_profile(request):

@@ -1,8 +1,11 @@
 asgiref==3.8.1
+autocomplete==0.0.104
+bottle==0.13.2
 crispy-bootstrap5==2024.10
-Django==5.1.4
+Django==5.1.2
 django-autocomplete-light==3.11.0
 django-crispy-forms==2.3
 django-taggit==6.1.0
+django_addanother==2.2.2
 PyYAML==6.0.2
-sqlparse==0.5.3
+sqlparse==0.5.1

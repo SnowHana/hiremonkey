@@ -41,10 +41,11 @@ urlpatterns = [
         views.SkillAutoComplete.as_view(create_field="title", validate_create=True),
         name="skill-autocomplete",
     ),
-    path(
-        "match_select_job_profile/",
-        views.match_select_job_profile,
-        name="match_select_job_profile",
-    ),
+    # path(
+    #     "match_select_job_profile/",
+    #     views.match_select_job_profile,
+    #     name="match_select_job_profile",
+    # ),
     path("matched_profile/", views.matched_profile, name="matched_profile"),
+    path("like_profile/", views.like_profile, name="like_profile"),
 ]
