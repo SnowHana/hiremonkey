@@ -265,15 +265,33 @@ def create_recruiter(request):
         )
 
 
-def like_profile(request):
+def like_profile(request, slug=None):
     """User sends like to selected profile
 
     Args:
         request (_type_): _description_
     """
+    # 1. Find Profile using slug
     if request.method == "POST":
-        try:
-            
+        like_model = None
+        like_job_profile = None
+        if request.user.usersession.is_jobseeker():
+            # Currently JobSeeker, so we can only like Recruiter profile
+            like_model = Recruiter
+        else:
+            like_model = JobSeeker
+        if slug is not None:
+            try:
+                like_job_profile = get_object_or_404(like_model, slug=slug)
+            except like_model.DoesNotExist or like_model.MultipleObjectsReturned:
+                raise Http404
+            except:
+                raise Http404
+
+        # 2. Found Job Profile. Send like
+        request.user.usersession.get_activated_profile().send_like(like_job_profile)
+    return render()
+
 
 # def match_seleced_profile(request):
 #     """

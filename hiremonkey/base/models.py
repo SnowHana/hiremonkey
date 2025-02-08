@@ -212,7 +212,21 @@ class JobSeeker(JobProfile):
         super().save(*args, **kwargs)
 
     def pending_matches(self):
+        """Get pending matches of JobSeeker
+
+        Returns:
+            _type_: _description_
+        """
         return self.matches.filter(match__match_status=MatchStatusEnum.PENDING)
+
+    def send_like(self, recruiter):
+        match, created = Match.get_or_create_match(self, recruiter)
+        # Now update Match object
+        # We sent like, for a alr existing pending match => Match!
+        if not created and match.is_pending():
+            # ACCEPTED
+            match.match_status = MatchStatusEnum.ACCEPTED
+            match.save()
 
 
 class Recruiter(JobProfile):
@@ -227,6 +241,14 @@ class Recruiter(JobProfile):
 
     def accepted_matches(self):
         return self.matches.filter(match__match_status=MatchStatusEnum.ACCEPTED)
+
+    def send_like(self, job_seeker):
+        match, created = Match.get_or_create_match(job_seeker, self)
+
+        if not created and match.is_pending():
+            # ACCEPTED
+            match.match_status = MatchStatusEnum.ACCEPTED
+            match.save()
 
 
 class MatchStatusEnum(Enum):
@@ -243,19 +265,61 @@ class MatchStatusEnum(Enum):
 
 
 class Match(models.Model):
+    """Represent Match established
+    between a Job Seeker and a Recruiter
+
+
+    Args:
+        models (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+
     job_seeker = models.ForeignKey(JobSeeker, on_delete=models.CASCADE)
     recruiter = models.ForeignKey(Recruiter, on_delete=models.CASCADE)
     match_date = models.DateTimeField(auto_now_add=True)
-    # match_status = models.CharField(max_length=50, default="pending")
     match_status = models.CharField(
         max_length=1,
-        choices=[(tag.value[0], tag.value[1]) for tag in MatchStatusEnum],
-        default=MatchStatusEnum.PENDING.value[0],
+        choices=MatchStatusEnum.chocies,
+        default=MatchStatusEnum.FAILED,
     )
     memo = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.match_status} : {self.job_seeker.user.username} matched with {self.recruiter.user.username} on {self.match_date}"
+
+    def is_accepted(self):
+        return self.match_status == MatchStatusEnum.ACCEPTED
+
+    def is_pending(self):
+        return self.match_status == MatchStatusEnum.PENDING
+
+    def is_declined(self):
+        return self.match_status == MatchStatusEnum.DECLINED
+
+    def is_failed(self):
+        return self.match_status == MatchStatusEnum.FAILED
+
+    @classmethod
+    def get_or_create_match(cls, job_seeker: JobSeeker, recruiter: Recruiter):
+        """Get or create a Match object between JS and RC
+
+        Args:
+            job_seeker (JobSeeker):
+            recruiter (Recruiter):
+        """
+
+        match, created = cls.objects.get_or_create(
+            job_seeker=job_seeker,
+            recruiter=recruiter,
+            defaults={"match_status": MatchStatusEnum.PENDING},
+        )
+
+        return match, created
+
+    # def get_match_status(self):
+    #     return MatchStatusEnum.t
 
 
 def profile_pre_save(sender, instance, *args, **kwargs):
